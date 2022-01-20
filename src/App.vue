@@ -5,6 +5,9 @@
         <div class="row">
           <div class="col-md-2" />
           <div class="col-md-8 text-center">
+            <h1 class="mb-3 font-weight-bold">
+              {{ title }}
+            </h1>
             <h1 class="mb-3">
               {{ siteName }}
               Build better digital products to unify your customer experiences and accelerate growth.
@@ -101,6 +104,7 @@ export default {
     return {
       year: new Date().getFullYear(),
       siteName: liquidParser.parse('{{site.name | replace: "my", "your" | upcase}}'),
+      title: 'Boilerplate Modyo Vue',
     };
   },
   computed: {
@@ -119,4 +123,5 @@ export default {
 img {
   max-width: 100%;
 }
+
 </style>
