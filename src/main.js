@@ -5,7 +5,8 @@ import store from './store';
 import i18n from './i18n';
 import './vee-validate-config';
 import './vue-fontawesome-config';
-import 'bootstrap';
+// import 'bootstrap';
+// import 'bootstrap/dist/js/bootstrap.bundle';
 import './scss/custom.scss';
 
 if (process.env.NODE_ENV === 'development') {

@@ -4,8 +4,9 @@
 .btn {
   padding-right: 1.25rem;
   padding-left: 1.25rem;
-
   border-radius: 50px;
+  font-size: 14px;
+  padding: 0.50rem 1.25rem;
 }
 
 .btn-lg {
@@ -15,13 +16,22 @@
 
 .btn-primary {
   color: #fff;
-
-  background-color: #61a60e;
-  border-color: #61a60e;
+  background-color: $blue;
+  border-color: $blue;
 }
 
 .btn-outline-primary {
-  color: #61a60e;
+  color: $blue;
+  border-color: $blue;
+}
 
-  border-color: #61a60e;
+
+.btn-outline-success {
+	color: $brand-invex;
+	border-color: $brand-invex;
+    &:hover {
+        color: rgba(255, 255, 255, 1);
+        background-color: $brand-invex;
+        border-color: $brand-invex;
+    }
 }

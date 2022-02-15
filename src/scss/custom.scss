@@ -2,28 +2,127 @@
 @import "~bootstrap";
 @import "./theme";
 
+/* Vista Operaciones */
 
 .wrapper-widget {
-    /* border:1px solid orange;
-    height: 500px;
+    /* border-top:1px solid orange;
+    background-repeat: no-repeat; */
+    /* background-position: center 22px; */
+    /* background-position: center 33px;
     background-image: url(../assets/vista-operaciones.jpg); */
-    background-repeat: no-repeat;
-    background-position: top center;
+    /* height: 531px; */
+    // background-color: #FFFFFF;
+    /* background-color: rgba(255,0,0,0.1); */
+    /* box-shadow: 2.5px 8px 12px rgba(66, 66, 66, 0.1);
+    border-radius: 8px; */
 }
 
 .box-rfs {
-    background-color: #F6F6F6;
-    height: 125px;
-    border-radius: 10px;
+    background-color: #F5F5F5;
+    border: 1px solid #F5F5F5;
+    border-radius: 8px;
+    height: 130px;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: 24px;
     span {
-        font-size: 1.4rem;
-        font-weight: bold;
+        color:$grey-dark;
+        font-size: 1.5rem;
+        font-weight: 600;
     }
 }
 
 .box-btn {
     margin: 30px 0;
+}
+
+.box-operaciones {
+    box-shadow: 2.5px 8px 12px rgba(66, 66, 66, 0.1);
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    padding: 25px 30px;
+}
+
+.box-spot-mes {
+    box-shadow: 0px 1.75px 3.5px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    padding: 15px;
+    margin-bottom: 18px;
+
+    summary {
+        color:$grey-dark;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    ol {
+        list-style: none;
+        padding: 0 0 0 16px;
+        margin: 0;
+        li {
+            color:$grey-2;
+            font-size: 14px;
+            span {
+                color:$grey-dark;
+                font-weight: bold;
+            }
+        }
+    }
+}
+
+.title-group {
+    color:$grey-dark;
+    font-size: 12px;
+}
+
+.form-group {
+    select {
+        color:$grey-2;
+        font-size: 14px;
+    }
+}
+
+.box-divisas {
+    margin-top: 50px;
+    .dropdown-toggle {
+        border: 1px solid #CCCCCC;
+        padding: 0.375rem 0.75rem;
+        border-radius: 8px;
+    }
+}
+
+.group-select {
+    position: relative;
+    .title-group {
+        position: absolute;
+        top: -25px;
+    } 
+}
+
+.box-input-row {
+    position: relative;
+    .title-group {
+        position: absolute;
+        top: -25px;
+    }
+}
+
+.title-fecha {
+    width: 220px;
+}
+
+.input-divisa, .input-fecha {
+    font-size: 14px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    outline: none;
+    &:focus {
+        outline: 0 none;
+    }
+}
+
+.box-two-btn {
+    max-width: 400px;
+    margin: 32px auto 0;
 }
