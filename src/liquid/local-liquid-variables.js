@@ -1,6 +1,6 @@
 export default {
   site: {
-    name: 'my site',
+    name: 'Invex',
     language: 'es',
     url: 'https://un.modyo.cloud/testing',
   },
