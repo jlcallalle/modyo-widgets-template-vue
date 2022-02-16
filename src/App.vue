@@ -3,7 +3,7 @@
     id="app"
     class="wrapper-widget">
     <div class="widget-operaciones-fx">
-      <div class="container">
+      <div class="container container-widget">
         <div class="row">
           <div class="col-md-8 box-operaciones">
             <form action="">

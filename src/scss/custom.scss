@@ -123,6 +123,12 @@
 }
 
 .box-two-btn {
-    max-width: 400px;
+    max-width: 450px;
     margin: 32px auto 0;
+}
+
+.btn-cancelar, .btn-solicita {
+    @include media-breakpoint-up(sm) { 
+        min-width: 200px;
+    }
 }
