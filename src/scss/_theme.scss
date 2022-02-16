@@ -16,7 +16,8 @@
 
 .btn-primary {
   color: #fff;
-  background-color: $blue;
+  // background-color: $blue;
+  background: linear-gradient(167.43deg, #6B87BD 9.17%, #3B5A8D 96.28%);
   border-color: $blue;
 }
 
@@ -34,4 +35,18 @@
         background-color: $brand-invex;
         border-color: $brand-invex;
     }
+}
+
+.form-control {
+  height: 40px;
+  border:1px solid #CCCCCC;
+}
+
+.form-group {
+  select {
+      color:$grey-2;
+      border-color: #CCCCCC;
+      font-size: 14px;
+      border-radius: 8px;
+  }
 }

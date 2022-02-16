@@ -5,7 +5,7 @@
     <div class="widget-operaciones-fx">
       <div class="container container-widget">
         <div class="row">
-          <div class="col-md-8 box-operaciones">
+          <div class="col-md-12 col-lg-8 box-operaciones">
             <form action="">
               <div class="row">
                 <div class="col-12 col-md-6">
@@ -16,9 +16,12 @@
                     <select
                       id="tipoOperacionlSelect"
                       class="form-control">
-                      <option>FX Spot</option>
-                      <option>2</option>
-                      <option>3</option>
+                      <option value="fx-spot">FX Spot</option>
+                      <option value="USD">FX Forward</option>
+                      <option value="USD">FX Block Trade</option>
+                      <option value="USD">FX Swap</option>
+                      <option value="USD">Limit</option>
+                      <option value="USD">Market</option>
                     </select>
                   </div>
                   <div class="box-rfs">
@@ -29,45 +32,38 @@
                       href=""
                       class="btn btn-outline-success btn-block btn-operacion">Vender USD</a>
                   </div>
-                  <div class="box-divisas">
-                    <div class="input-group">
-                      <div class="input-group-prepend group-select">
-                        <button
-                          class="btn dropdown-toggle"
-                          type="button"
-                          data-toggle="dropdown"
-                          aria-haspopup="true"
-                          aria-expanded="false">
+                  <div class="box-monto input-group">
+                    <div class="group-select">
+                      <div class="title-group">
+                        Divisa
+                      </div>
+                      <select
+                        name="select"
+                        class="select-precio">
+                        <option value="USD">
                           USD
-                        </button>
-                        <div class="dropdown-menu">
-                          <a
-                            class="dropdown-item"
-                            href="#">USD</a>
-                          <a
-                            class="dropdown-item"
-                            href="#">MXN</a>
-                          <a
-                            class="dropdown-item"
-                            href="#">EUR</a>
-                        </div>
-                        <div class="title-group">
-                          Divisa
-                        </div>
+                        </option>
+                        <option
+                          value="MXN"
+                          selected>
+                          MXN
+                        </option>
+                        <option value="EUR">
+                          EUR
+                        </option>
+                      </select>
+                    </div>
+                    <div class="box-input-row">
+                      <div class="title-group">
+                        Monto en dólares
                       </div>
-                      <div class="box-input-row">
-                        <div class="title-group">
-                          Monto en dólares
-                        </div>
-                        <input
-                          type="text"
-                          class="form-control input-divisa"
-                          aria-label="Text input with dropdown button">
-                      </div>
+                      <input
+                        type="text"
+                        class="form-control input-precio">
                     </div>
                   </div>
                 </div>
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-6 mt-5 mt-md-0">
                   <div class="form-group">
                     <label
                       for="tipoDivisasSelect"
@@ -87,39 +83,32 @@
                       href=""
                       class="btn btn-outline-success btn-block btn-operacion">Comprar USD</a>
                   </div>
-                  <div class="box-divisas">
-                    <div class="input-group">
-                      <div class="input-group-prepend group-select">
-                        <button
-                          class="btn dropdown-toggle"
-                          type="button"
-                          data-toggle="dropdown"
-                          aria-haspopup="true"
-                          aria-expanded="false">
-                          Today
-                        </button>
-                        <div class="dropdown-menu">
-                          <a
-                            class="dropdown-item"
-                            href="#">Today</a>
-                          <a
-                            class="dropdown-item"
-                            href="#">Tomorrow</a>
-                          <a
-                            class="dropdown-item"
-                            href="#">SpotNext</a>
-                        </div>
-                        <div class="title-group title-fecha">
-                          Fecha de Liquidación
-                        </div>
+                  <div class="box-monto input-group">
+                    <div class="group-select">
+                      <div class="title-group title-fecha">
+                        Fecha de Liquidación
                       </div>
-                      <div class="box-input-row">
-                        <input
+                      <select
+                        name="select"
+                        class="select-fecha">
+                        <option
+                          value="Today"
+                          selected>
+                          Today
+                        </option>
+                        <option value="Tomorrow">
+                          Tomorrow
+                        </option>
+                        <option value="SpotNext">
+                          SpotNext
+                        </option>
+                      </select>
+                    </div>
+                    <div class="box-input-row">
+                      <input
                           type="date"
                           value="2022-01-10"
-                          class="form-control input-fecha"
-                          aria-label="Text input with dropdown button">
-                      </div>
+                          class="form-control input-fecha">
                     </div>
                   </div>
                 </div>
@@ -134,7 +123,7 @@
               </div>
             </form>
           </div>
-          <div class="col-md-4 box-sidebar-spot mt-4 mt-md-0">
+          <div class="col-md-12 col-lg-4 box-sidebar-spot mt-4 mt-lg-0">
             <div class="box-spot-mes">
               <details open>
                 <summary>FX Spot de noviembre</summary>
