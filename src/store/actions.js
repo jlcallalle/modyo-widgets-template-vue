@@ -3,6 +3,9 @@ import Repository from '../repositories/RepositoryFactory';
 const PostRepository = Repository.get('posts');
 
 export default {
+  async updatePage({ commit }, payload) {
+    commit('updatePage', payload);
+  },
   async getPosts({ commit }) {
     commit('setLoading', true);
     try {

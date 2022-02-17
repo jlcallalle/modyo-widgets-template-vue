@@ -3,7 +3,6 @@
 @import "./theme";
 
 /* Vista Operaciones */
-
 .wrapper-widget {
     /* border-top:1px solid orange;
     background-repeat: no-repeat; */
@@ -15,6 +14,18 @@
     /* background-color: rgba(255,0,0,0.1); */
     /* box-shadow: 2.5px 8px 12px rgba(66, 66, 66, 0.1);
     border-radius: 8px; */
+}
+
+.box-operaciones {
+    box-shadow: 2.5px 8px 12px rgba(66, 66, 66, 0.1);
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    padding: 25px 30px;
+}
+
+.title-group {
+    color:$grey-dark;
+    font-size: 12px;
 }
 
 .box-rfs {
@@ -35,13 +46,6 @@
 
 .box-btn {
     margin: 30px 0;
-}
-
-.box-operaciones {
-    box-shadow: 2.5px 8px 12px rgba(66, 66, 66, 0.1);
-    border-radius: 8px;
-    background-color: #FFFFFF;
-    padding: 25px 30px;
 }
 
 .box-spot-mes {
@@ -73,22 +77,6 @@
     }
 }
 
-.title-group {
-    color:$grey-dark;
-    font-size: 12px;
-}
-
-
-
-.box-divisas {
-    margin-top: 50px;
-    .dropdown-toggle {
-        border: 1px solid #CCCCCC;
-        padding: 0.375rem 0.75rem;
-        border-radius: 8px;
-    }
-}
-
 .group-select {
     position: relative;
     .title-group {
@@ -110,33 +98,20 @@
     width: 220px;
 }
 
-/* .input-divisa, .input-fecha {
-    font-size: 14px;
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
-    outline: none;
-    border-left: 0;
-    position: relative;
-    left: -1px;
-    width: 253px;
-
-    &:focus {
-        outline: 0 none;
-    }
-} */
-
 .box-two-btn {
     max-width: 450px;
     margin: 32px auto 0;
 }
 
-.btn-cancelar, .btn-solicita {
+.btn-cancelar, 
+.btn-solicita {
     @include media-breakpoint-up(sm) { 
         min-width: 200px;
     }
 }
 
-.box-monto {
+.box-monto, 
+.box-liquidacion {
     display: flex;
     margin-top: 50px;
     flex-wrap: nowrap;
@@ -149,10 +124,13 @@
     padding: 6px 12px;
     font-weight: 500;
     font-size: 14px;
-    width: 110px;
+    width: 90px;
     height: 40px;
     &:focus, &:focus-visible {
         outline: #CCCCCC;
+    }
+    @include media-breakpoint-up(sm) { 
+        width: 110px;
     }
 }
 .select-fecha {
@@ -162,26 +140,17 @@
     padding: 6px 12px;
     font-weight: 500;
     font-size: 14px;
-    width: 125px;
+    width: 90px;
     height: 40px;
     &:focus, &:focus-visible {
         outline: #CCCCCC;
     }
+    @include media-breakpoint-up(sm) { 
+        width: 125px;
+    }
 }
 
-.input-precio {
-    color:$grey-2;
-    font-size: 14px;
-    position: relative;
-    left: 0;
-    border-left: 0;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
-    height: 40px;
-}
-
+.input-precio,
 .input-fecha {
     color:$grey-2;
     font-size: 14px;
@@ -195,3 +164,14 @@
     height: 40px;
 }
 
+/* Page Operacion vender*/
+
+.box-vender {
+    height: 140px;
+    border:1px solid lightgray;
+}
+
+.box-tiempo {
+    height: 70px;
+    border:1px solid lightgray;
+}

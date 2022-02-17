@@ -6,4 +6,8 @@ export default {
   updatePosts(state, payload) {
     state.posts = payload;
   },
+
+  updatePage(state, payload) {
+    state.currentView = payload;
+  },
 };
