@@ -1,12 +1,9 @@
 <template>
-  <div class="widget-operaciones-fx">
+  <div class="widget-operacion-vender">
     <div class="container container-widget">
       <div class="row">
         <div class="col-md-12 col-lg-8 box-operaciones">
           <form @submit.prevent="onSubmit">
-            <div v-if="currentView === 'login'">
-              <p>Store CurrentView {{ $store.state.currentView }}</p>
-            </div>
             <div class="row">
               <div class="col-12 col-md-6">
                 <div class="form-group">
@@ -37,8 +34,26 @@
                   </select>
                 </div>
                 <div class="box-vender">
+                  <div class="title-operacion">
+                    Comprar USD
+                  </div>
+                  <div class="box-precio">
+                    <span>22.749</span>
+                  </div>
+                  <a
+                    href=""
+                    class="btn btn-block btn-operacion">Vender USD</a>
                 </div>
-                <div class="box-tiempo mt-4"></div>
+                <div class="box-tiempo mt-4">
+                  <div class="title-tiempo">
+                    Tiempo restante para completar tu operación:
+                  </div>
+                  <div class="box-timer">
+                    <div class="timer">
+                      <span>00:39</span>
+                    </div>
+                  </div>
+                </div>
                 <div class="box-monto input-group">
                   <div class="group-select">
                     <div class="title-group">
@@ -85,7 +100,9 @@
                 <div class="box-rfs">
                   <span>RFS</span>
                 </div>
-                <div class="box-tiempo mt-4"></div>
+                <div class="box-tiempo box-clear mt-4">
+                  2
+                </div>
                 <div class="box-liquidacion input-group">
                   <div class="group-select">
                     <div class="title-group title-fecha">
@@ -169,19 +186,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-img {
-  display: block;
 
-  max-width: 100%;
-  height: 300px;
-}
-
-h3 {
-  height: 2em;
-}
-
-p {
-  height: 300px;
-  overflow: hidden;
-}
 </style>

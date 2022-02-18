@@ -14,9 +14,41 @@
   padding-left: 2rem;
 }
 
+.btn-solicita {
+  color: #fff;
+  background: linear-gradient(167.43deg, #6B87BD 9.17%, #3B5A8D 96.28%);
+  border-color: $blue;
+  &:hover {
+    color: #fff;
+    background-color: #5172b1;
+    border-color: #4c6ca9;
+  }
+}
+
+.btn-operacion {
+  color: rgba(255, 255, 255, 1);
+  background-color: $brand-invex;
+  border-color: $brand-invex;
+    &:hover {
+      color: rgba(255, 255, 255, 1);
+      border-color: $brand-invex;
+      background: darken($brand-invex, 5%);
+    }
+}
+
+.btn-outline-operacion {
+  color: $brand-invex;
+	border-color: $brand-invex;
+    &:hover {
+        color: rgba(255, 255, 255, 1);
+        background-color: $brand-invex;
+        border-color: $brand-invex;
+    }
+}
+
+
 .btn-primary {
   color: #fff;
-  // background-color: $blue;
   background: linear-gradient(167.43deg, #6B87BD 9.17%, #3B5A8D 96.28%);
   border-color: $blue;
 }
@@ -24,17 +56,6 @@
 .btn-outline-primary {
   color: $blue;
   border-color: $blue;
-}
-
-
-.btn-outline-success {
-	color: $brand-invex;
-	border-color: $brand-invex;
-    &:hover {
-        color: rgba(255, 255, 255, 1);
-        background-color: $brand-invex;
-        border-color: $brand-invex;
-    }
 }
 
 .form-control {

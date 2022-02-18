@@ -4,16 +4,9 @@
 
 /* Vista Operaciones */
 .wrapper-widget {
-    /* border-top:1px solid orange;
-    background-repeat: no-repeat; */
-    /* background-position: center 22px; */
-    /* background-position: center 33px;
-    background-image: url(../assets/vista-operaciones.jpg); */
-    /* height: 531px; */
-    // background-color: #FFFFFF;
-    /* background-color: rgba(255,0,0,0.1); */
-    /* box-shadow: 2.5px 8px 12px rgba(66, 66, 66, 0.1);
-    border-radius: 8px; */
+    /* background-image: url(../assets/vista-operacion-venta.jpg); */
+    background-position: 161px -6px;
+    background-repeat: no-repeat;
 }
 
 .box-operaciones {
@@ -166,12 +159,80 @@
 
 /* Page Operacion vender*/
 
+.widget-operacion-vender {
+    .box-rfs {
+        height: 168px;
+        margin-bottom: 35px;
+    }
+}
+
 .box-vender {
-    height: 140px;
-    border:1px solid lightgray;
+    margin-top: 24px;
+    padding: 6px 0;
 }
 
 .box-tiempo {
-    height: 70px;
-    border:1px solid lightgray;
+    position: relative;
+    height: 105px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+}
+
+.title-operacion {
+    color:$grey-dark;
+    font-weight: bold;
+    text-align: center;
+}
+
+.box-precio {
+    border: 1px solid $brand-invex;
+    border-radius: 8px;
+    margin: 14px 0 10px 0;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    span {
+        font-weight: 600;
+        font-size: 24px;
+    }
+}
+
+.box-clear {
+    visibility: hidden;
+}
+
+.title-tiempo {
+    color:$grey-dark;
+    line-height: 20px;
+    width: 222px;
+    position: relative;
+    right: -30px;
+}
+
+.box-timer {
+    width: 90px;
+    height: 90px;
+    position: absolute;
+    right: -120px;
+    top: 0;
+}
+
+.timer {
+    position: relative;
+    border:6px solid $brand-invex;
+    border-radius: 50%;
+    width: 90px;
+    height: 90px;
+    span {
+        position: absolute;
+        left: 21px;
+        top: 33px;
+        font-size: 14px;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 17px;
+    }
 }

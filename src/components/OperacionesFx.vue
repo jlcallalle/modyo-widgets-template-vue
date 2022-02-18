@@ -42,7 +42,7 @@
                 <div class="box-btn">
                   <a
                     href=""
-                    class="btn btn-outline-success btn-block btn-operacion">Vender USD</a>
+                    class="btn btn-block btn-outline-operacion">Vender USD</a>
                 </div>
                 <div class="box-monto input-group">
                   <div class="group-select">
@@ -93,7 +93,7 @@
                 <div class="box-btn">
                   <a
                     href=""
-                    class="btn btn-outline-success btn-block btn-operacion">Comprar USD</a>
+                    class="btn  btn-block btn-outline-operacion">Comprar USD</a>
                 </div>
                 <div class="box-liquidacion input-group">
                   <div class="group-select">
@@ -126,10 +126,9 @@
               </div>
             </div>
             <div class="box-two-btn d-flex justify-content-around">
-              <button
-                class="btn btn-outline-primary btn-cancelar">
-                Cancelar
-              </button>
+              <a
+                href="#;"
+                class="btn btn-outline-primary btn-cancelar">Cancelar</a>
               <button
                 type="submit"
                 class="btn btn-primary btn-solicita">
