@@ -176,8 +176,9 @@
     height: 105px;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-
+    @include media-breakpoint-up(md) { 
+        justify-content: flex-end;
+    }
 }
 
 .title-operacion {
@@ -201,23 +202,31 @@
 }
 
 .box-clear {
-    visibility: hidden;
+    display: none;
+    @include media-breakpoint-up(md) { 
+        display: block;
+        visibility: hidden;
+    }
 }
 
 .title-tiempo {
     color:$grey-dark;
     line-height: 20px;
     width: 222px;
-    position: relative;
-    right: -30px;
+    @include media-breakpoint-up(md) { 
+        position: relative;
+        right: -30px;
+    }
 }
 
 .box-timer {
     width: 90px;
     height: 90px;
-    position: absolute;
-    right: -120px;
-    top: 0;
+    @include media-breakpoint-up(md) { 
+        position: absolute;
+        right: -120px;
+        top: 0;
+    }
 }
 
 .timer {
