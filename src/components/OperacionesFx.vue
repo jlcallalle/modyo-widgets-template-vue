@@ -66,11 +66,15 @@
                   </div>
                   <div class="box-input-row">
                     <div class="title-group">
-                      Monto en dólares
+                      Monto en {{ labels[currencySelected] }}
                     </div>
-                    <input
-                      type="text"
-                      class="form-control input-precio">
+                    <currency-input
+                      v-model="monto"
+                      class="form-control input-precio"
+                      :options="{
+                        currency: currencySelected,
+                        currencyDisplay: 'narrowSymbol',
+                        hideCurrencySymbolOnFocus: true, }" />
                   </div>
                 </div>
               </div>
@@ -99,7 +103,7 @@
                 <div class="box-btn">
                   <a
                     href=""
-                    class="btn  btn-block btn-outline-operacion">Comprar {{currencySelected}}</a>
+                    class="btn  btn-block btn-outline-operacion">Comprar {{ currencySelected }}</a>
                 </div>
                 <div class="box-liquidacion input-group">
                   <div class="group-select">
@@ -171,12 +175,21 @@
 
 // import RepositoryFactory from '../repositories/RepositoryFactory';
 // const invexRepository = RepositoryFactory.get('invex');
+import CurrencyInput from './CurrencyInput.vue';
 
 export default {
   name: 'OperacionesFx',
+  components: { CurrencyInput },
   data() {
     return {
+      monto: 0,
       currencySelected: 'USD',
+      labels: {
+        USD: 'Dolares',
+        EUR: 'Euros',
+        MXN: 'Pesos Mexicanos',
+        JPY: 'Yenes',
+      },
       currenciesOptions: [
         {
           id: '1',

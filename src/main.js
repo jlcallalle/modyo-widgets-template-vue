@@ -1,5 +1,6 @@
 /* eslint-disable global-require */
 import Vue from 'vue';
+import VueEllipseProgress from 'vue-ellipse-progress';
 import App from './App.vue';
 import store from './store';
 import i18n from './i18n';
@@ -13,6 +14,7 @@ if (process.env.NODE_ENV === 'development') {
   Vue.use(VueAxe, {
     clearConsoleOnUpdate: false,
   });
+  Vue.use(VueEllipseProgress);
 }
 
 Vue.config.productionTip = false;
