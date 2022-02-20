@@ -42,7 +42,7 @@
                 <div class="box-btn">
                   <a
                     href=""
-                    class="btn btn-block btn-outline-operacion">Vender USD</a>
+                    class="btn btn-block btn-outline-operacion">Vender {{ currencySelected }}</a>
                 </div>
                 <div class="box-monto input-group">
                   <div class="group-select">
@@ -51,18 +51,17 @@
                     </div>
                     <select
                       name="select"
-                      class="select-precio">
-                      <option value="USD">
-                        USD
-                      </option>
-                      <option
-                        value="MXN"
-                        selected>
-                        MXN
-                      </option>
-                      <option value="EUR">
-                        EUR
-                      </option>
+                      class="select-precio"
+                      @change="setCurrencySelected($event)">
+                      <template v-for="(currency, index) in currenciesSelected">
+                        <option
+                          :id="index"
+                          :key="index"
+                          :selected="currencySelected === currency"
+                          :value="currency">
+                          {{ currency }}
+                        </option>
+                      </template>
                     </select>
                   </div>
                   <div class="box-input-row">
@@ -82,9 +81,16 @@
                     class="title-group">Par de divisas:</label>
                   <select
                     id="tipoDivisasSelect"
-                    class="form-control">
-                    <option>USD / MXN</option>
-                    <option>MXN / USD</option>
+                    class="form-control"
+                    @change="setCurrenciesOptions($event)">
+                    <template v-for="(currency, index) in currenciesOptions">
+                      <option
+                        :id="index"
+                        :key="index"
+                        :value="currency.id">
+                        {{ currency.firstValue }} \ {{ currency.secondValue }}
+                      </option>
+                    </template>
                   </select>
                 </div>
                 <div class="box-rfs">
@@ -93,7 +99,7 @@
                 <div class="box-btn">
                   <a
                     href=""
-                    class="btn  btn-block btn-outline-operacion">Comprar USD</a>
+                    class="btn  btn-block btn-outline-operacion">Comprar {{currencySelected}}</a>
                 </div>
                 <div class="box-liquidacion input-group">
                   <div class="group-select">
@@ -163,11 +169,50 @@
 
 <script>
 
+// import RepositoryFactory from '../repositories/RepositoryFactory';
+// const invexRepository = RepositoryFactory.get('invex');
+
 export default {
   name: 'OperacionesFx',
+  data() {
+    return {
+      currencySelected: 'USD',
+      currenciesOptions: [
+        {
+          id: '1',
+          firstValue: 'USD',
+          secondValue: 'MXN',
+        },
+        {
+          id: '2',
+          firstValue: 'EUR',
+          secondValue: 'USD',
+        },
+        {
+          id: '3',
+          firstValue: 'EUR',
+          secondValue: 'MXN',
+        },
+        {
+          id: '4',
+          firstValue: 'USD',
+          secondValue: 'JPY',
+        },
+      ],
+      currenciesSelected: ['USD', 'MXN'],
+    };
+  },
   methods: {
     async onSubmit() {
       this.$store.dispatch('updatePage', 'operacionVender');
+    },
+    setCurrenciesOptions(ev) {
+      const auxSelected = this.currenciesOptions.find((currency) => currency.id === ev.target.value);
+      this.currenciesSelected = [auxSelected.firstValue, auxSelected.secondValue];
+      this.currencySelected = auxSelected.firstValue;
+    },
+    setCurrencySelected(ev) {
+      this.currencySelected = ev.target.value;
     },
   },
 };

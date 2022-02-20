@@ -10,4 +10,7 @@ export default {
   user: {
     access_token: null,
   },
+  vars: {
+    url_invex_api: 'http://localhost:3003',
+  },
 };
