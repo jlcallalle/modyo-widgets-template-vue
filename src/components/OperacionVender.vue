@@ -141,7 +141,10 @@
               </button>
               <button
                 type="submit"
-                class="btn btn-primary btn-solicita">
+                class="btn btn-primary btn-solicita"
+                data-toggle="modal"
+                data-target="#modalExitoso"
+                @click="handleOpen">
                 Modificar
               </button>
             </div>
@@ -168,17 +171,35 @@
         </div>
       </div>
     </div>
+    <modal-exitoso
+      v-if="showModal"
+      :open="showModal"
+      @close="handleClose" />
   </div>
 </template>
 
 <script>
+import ModalExitoso from './ModalExitoso.vue';
 
 export default {
   name: 'OperacionVender',
-
+  components: {
+    ModalExitoso,
+  },
+  data() {
+    return {
+      showModal: false,
+    };
+  },
   methods: {
     goBackUrl() {
       this.$store.dispatch('updatePage', 'operacionesFx');
+    },
+    handleOpen() {
+      this.showModal = true;
+    },
+    handleClose() {
+      this.showModal = false;
     },
   },
 };
