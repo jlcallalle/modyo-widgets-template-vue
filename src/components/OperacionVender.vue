@@ -144,7 +144,10 @@
               </button>
               <button
                 type="submit"
-                class="btn btn-primary btn-solicita">
+                class="btn btn-primary btn-solicita"
+                data-toggle="modal"
+                data-target="#modalExitoso"
+                @click="handleOpen">
                 Modificar
               </button>
             </div>
@@ -171,19 +174,25 @@
         </div>
       </div>
     </div>
+    <modal-exitoso
+      v-if="showModal"
+      :open="showModal"
+      @close="handleClose" />
   </div>
 </template>
 
 <script>
 import { VueEllipseProgress } from 'vue-ellipse-progress';
+import ModalExitoso from './ModalExitoso.vue';
 
 export default {
   name: 'OperacionVender',
-  components: { VueEllipseProgress },
+  components: { VueEllipseProgress, ModalExitoso },
   data() {
     return {
       progress: 100,
       timeLeft: '00:60',
+      showModal: false,
     };
   },
   mounted() {
@@ -206,6 +215,12 @@ export default {
           this.goBackUrl();
         }
       }, 1000);
+    },
+    handleOpen() {
+      this.showModal = true;
+    },
+    handleClose() {
+      this.showModal = false;
     },
   },
 };

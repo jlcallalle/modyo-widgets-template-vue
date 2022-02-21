@@ -19,20 +19,20 @@
                     <option value="fx-spot">
                       FX Spot
                     </option>
-                    <option value="USD">
+                    <option value="fx-forward">
                       FX Forward
                     </option>
-                    <option value="USD">
+                    <option value="fx-block-trade">
                       FX Block Trade
                     </option>
-                    <option value="USD">
+                    <option value="fx-swap">
                       FX Swap
                     </option>
-                    <option value="USD">
-                      Limit
+                    <option value="limit-order">
+                      Limit Order
                     </option>
-                    <option value="USD">
-                      Market
+                    <option value="market-order">
+                      Market Order
                     </option>
                   </select>
                 </div>
@@ -104,7 +104,7 @@
                 <div class="box-btn">
                   <a
                     href=""
-                    class="btn  btn-block btn-outline-operacion">Comprar {{ currencySelected }}</a>
+                    class="btn btn-block btn-outline-operacion active">Comprar {{ currencySelected }}</a>
                 </div>
                 <div class="box-liquidacion input-group">
                   <div class="group-select">
@@ -234,19 +234,17 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-img {
-  display: block;
-
-  max-width: 100%;
-  height: 300px;
-}
-
-h3 {
-  height: 2em;
-}
-
-p {
-  height: 300px;
-  overflow: hidden;
+$brand-invex: #A41D36;
+.btn-outline-operacion {
+  &.active {
+    border-color: $brand-invex;
+    color:white;
+    background-color: $brand-invex;
+    &:hover {
+          color: rgba(255, 255, 255, 1);
+          background-color: $brand-invex;
+          border-color: $brand-invex;
+      }
+  }
 }
 </style>
