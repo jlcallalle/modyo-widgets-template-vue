@@ -42,7 +42,7 @@
                 <div class="box-btn">
                   <a
                     href=""
-                    class="btn btn-block btn-outline-operacion">Vender USD</a>
+                    class="btn btn-block btn-outline-operacion">Vender {{ currencySelected }}</a>
                 </div>
                 <div class="box-monto input-group">
                   <div class="group-select">
@@ -51,27 +51,30 @@
                     </div>
                     <select
                       name="select"
-                      class="select-precio">
-                      <option value="USD">
-                        USD
-                      </option>
-                      <option
-                        value="MXN"
-                        selected>
-                        MXN
-                      </option>
-                      <option value="EUR">
-                        EUR
-                      </option>
+                      class="select-precio"
+                      @change="setCurrencySelected($event)">
+                      <template v-for="(currency, index) in currenciesSelected">
+                        <option
+                          :id="index"
+                          :key="index"
+                          :selected="currencySelected === currency"
+                          :value="currency">
+                          {{ currency }}
+                        </option>
+                      </template>
                     </select>
                   </div>
                   <div class="box-input-row">
                     <div class="title-group">
-                      Monto en dólares
+                      Monto en {{ labels[currencySelected] }}
                     </div>
-                    <input
-                      type="text"
-                      class="form-control input-precio">
+                    <currency-input
+                      v-model="monto"
+                      class="form-control input-precio"
+                      :options="{
+                        currency: currencySelected,
+                        currencyDisplay: 'narrowSymbol',
+                        hideCurrencySymbolOnFocus: true, }" />
                   </div>
                 </div>
               </div>
@@ -82,11 +85,16 @@
                     class="title-group">Par de divisas:</label>
                   <select
                     id="tipoDivisasSelect"
-                    class="form-control">
-                    <option>USD / MXN </option>
-                    <option>EUR / USD</option>
-                    <option>EUR / MXN</option>
-                    <option>USD / JPY</option>
+                    class="form-control"
+                    @change="setCurrenciesOptions($event)">
+                    <template v-for="(currency, index) in currenciesOptions">
+                      <option
+                        :id="index"
+                        :key="index"
+                        :value="currency.id">
+                        {{ currency.firstValue }} \ {{ currency.secondValue }}
+                      </option>
+                    </template>
                   </select>
                 </div>
                 <div class="box-rfs">
@@ -95,7 +103,7 @@
                 <div class="box-btn">
                   <a
                     href=""
-                    class="btn btn-block btn-outline-operacion active">Comprar USD</a>
+                    class="btn btn-block btn-outline-operacion active">Comprar {{ currencySelected }}</a>
                 </div>
                 <div class="box-liquidacion input-group">
                   <div class="group-select">
@@ -165,11 +173,59 @@
 
 <script>
 
+// import RepositoryFactory from '../repositories/RepositoryFactory';
+// const invexRepository = RepositoryFactory.get('invex');
+import CurrencyInput from './CurrencyInput.vue';
+
 export default {
   name: 'OperacionesFx',
+  components: { CurrencyInput },
+  data() {
+    return {
+      monto: 0,
+      currencySelected: 'USD',
+      labels: {
+        USD: 'Dolares',
+        EUR: 'Euros',
+        MXN: 'Pesos Mexicanos',
+        JPY: 'Yenes',
+      },
+      currenciesOptions: [
+        {
+          id: '1',
+          firstValue: 'USD',
+          secondValue: 'MXN',
+        },
+        {
+          id: '2',
+          firstValue: 'EUR',
+          secondValue: 'USD',
+        },
+        {
+          id: '3',
+          firstValue: 'EUR',
+          secondValue: 'MXN',
+        },
+        {
+          id: '4',
+          firstValue: 'USD',
+          secondValue: 'JPY',
+        },
+      ],
+      currenciesSelected: ['USD', 'MXN'],
+    };
+  },
   methods: {
     async onSubmit() {
       this.$store.dispatch('updatePage', 'operacionVender');
+    },
+    setCurrenciesOptions(ev) {
+      const auxSelected = this.currenciesOptions.find((currency) => currency.id === ev.target.value);
+      this.currenciesSelected = [auxSelected.firstValue, auxSelected.secondValue];
+      this.currencySelected = auxSelected.firstValue;
+    },
+    setCurrencySelected(ev) {
+      this.currencySelected = ev.target.value;
     },
   },
 };

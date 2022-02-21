@@ -2,19 +2,19 @@
 
 ## Table of Contents
 
-+ [About](#about)
-+ [Getting Started](#getting_started)
-+ [Usage](#usage)
-+ [Add Ons](#add_ons)
-+ [Contributing](#contributing)
-+ [Licence](#license)
+- [About](#about)
+- [Getting Started](#getting_started)
+- [Usage](#usage)
+- [Add Ons](#add_ons)
+- [Contributing](#contributing)
+- [Licence](#license)
 
 ## About <a name="about"></a>
 
 Description of the widget and functionalities
 
 | Functionality   | Description       |
-|:----------------|:------------------|
+| :-------------- | :---------------- |
 | Functionality A | short description |
 | Functionality B | short description |
 | Functionality C | short description |
@@ -116,3 +116,5 @@ Please make sure to read the [Contributing Guide](/.github/CONTRIBUTING.md) befo
 ## License
 
 SEE LICENSE IN [LICENSE.md](/LICENSE.md)
+
+# Modificacion

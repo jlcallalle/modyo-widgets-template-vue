@@ -49,9 +49,12 @@
                     Tiempo restante para completar tu operación:
                   </div>
                   <div class="box-timer">
-                    <div class="timer">
-                      <span>00:39</span>
-                    </div>
+                    <vue-ellipse-progress
+                      color="#A41D36"
+                      :size="90"
+                      :progress="progress">
+                      <span>{{ timeLeft }}</span>
+                    </vue-ellipse-progress>
                   </div>
                 </div>
                 <div class="box-monto input-group">
@@ -179,21 +182,39 @@
 </template>
 
 <script>
+import { VueEllipseProgress } from 'vue-ellipse-progress';
 import ModalExitoso from './ModalExitoso.vue';
 
 export default {
   name: 'OperacionVender',
-  components: {
-    ModalExitoso,
-  },
+  components: { VueEllipseProgress, ModalExitoso },
   data() {
     return {
+      progress: 100,
+      timeLeft: '00:60',
       showModal: false,
     };
+  },
+  mounted() {
+    this.startTimer();
   },
   methods: {
     goBackUrl() {
       this.$store.dispatch('updatePage', 'operacionesFx');
+    },
+    startTimer() {
+      let sec = 60;
+      const timer = setInterval(() => {
+        this.timeLeft = `00:${sec < 10 ? '0' : ''}${sec}`;
+        let progressAux = sec * 100;
+        progressAux /= 60;
+        this.progress = progressAux;
+        sec -= 1;
+        if (sec < 0) {
+          clearInterval(timer);
+          this.goBackUrl();
+        }
+      }, 1000);
     },
     handleOpen() {
       this.showModal = true;
