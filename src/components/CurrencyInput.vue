@@ -10,16 +10,21 @@ import { watch } from '@vue/composition-api';
 export default {
   name: 'CurrencyInput',
   props: {
-    value: Number, // Vue 2: value
+    modelValue: Number, // Vue 2: value
     options: Object,
   },
   setup(props) {
-    const { inputRef, setOptions } = useCurrencyInput(props.options);
+    const { inputRef, setOptions, setValue } = useCurrencyInput(props.options);
     watch(
       () => props.options,
       (options) => {
-        console.log('entre a watch', options);
         setOptions(options);
+      },
+    );
+    watch(
+      () => props.modelValue, // Vue 2: props.value
+      (value) => {
+        setValue(value);
       },
     );
     return { inputRef };

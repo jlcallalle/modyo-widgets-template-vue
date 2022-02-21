@@ -69,11 +69,12 @@
                       Monto en {{ labels[currencySelected] }}
                     </div>
                     <currency-input
-                      v-model="monto"
                       class="form-control input-precio"
                       :options="{
                         currency: currencySelected,
                         currencyDisplay: 'narrowSymbol',
+                        precision: 2,
+                        valueRange: { min: 0 },
                         hideCurrencySymbolOnFocus: true, }" />
                   </div>
                 </div>
