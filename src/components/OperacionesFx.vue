@@ -173,7 +173,7 @@
 </template>
 
 <script>
-
+import { mapState } from 'vuex';
 // import RepositoryFactory from '../repositories/RepositoryFactory';
 // const invexRepository = RepositoryFactory.get('invex');
 import CurrencyInput from './CurrencyInput.vue';
@@ -215,6 +215,9 @@ export default {
       ],
       currenciesSelected: ['USD', 'MXN'],
     };
+  },
+  computed: {
+    ...mapState(['currentView']),
   },
   methods: {
     async onSubmit() {

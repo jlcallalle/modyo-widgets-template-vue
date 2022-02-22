@@ -147,7 +147,7 @@
                 class="btn btn-primary btn-solicita"
                 data-toggle="modal"
                 data-target="#modalExitoso"
-                @click="handleOpen">
+                @click.prevent="handleOpen">
                 Modificar
               </button>
             </div>
@@ -178,22 +178,32 @@
       v-if="showModal"
       :open="showModal"
       @close="handleClose" />
+    <modal-tiempo
+      v-if="showModalTiempo"
+      :open="showModalTiempo"
+      @close="handleCloseTiempo" />
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import { VueEllipseProgress } from 'vue-ellipse-progress';
 import ModalExitoso from './ModalExitoso.vue';
+import ModalTiempo from './ModaTiempo.vue';
 
 export default {
   name: 'OperacionVender',
-  components: { VueEllipseProgress, ModalExitoso },
+  components: { VueEllipseProgress, ModalExitoso, ModalTiempo },
   data() {
     return {
       progress: 100,
       timeLeft: '00:60',
       showModal: false,
+      showModalTiempo: false,
     };
+  },
+  computed: {
+    ...mapState(['currentView']),
   },
   mounted() {
     this.startTimer();
@@ -221,6 +231,12 @@ export default {
     },
     handleClose() {
       this.showModal = false;
+    },
+    handleOpenTiempo() {
+      this.showModalTiempo = true;
+    },
+    handleCloseTiempo() {
+      this.showModalTiempo = false;
     },
   },
 };
