@@ -43,7 +43,7 @@
               <button
                 type="button"
                 class="btn btn-solicita"
-                @click="$emit('close')">
+                @click="goToOperacionConcertada">
                 Aceptar
               </button>
             </div>
@@ -58,6 +58,16 @@
 export default {
   name: 'ModalExitoso',
   props: ['open'],
+  data() {
+    return {
+
+    };
+  },
+  methods: {
+    goToOperacionConcertada() {
+      this.$store.dispatch('updatePage', 'operacionConcertada');
+    },
+  },
 };
 </script>
 
