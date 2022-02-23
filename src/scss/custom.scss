@@ -263,14 +263,13 @@
 }
 
 /* Vista Operación Concertada */
+
 .subtitle {
     font-weight: 600;
     font-size: 20px;
     line-height: 24px;
     color: #28A76A;
 }
-
-/* @media (min-width: 992px) and (max-width: 1199.98px) { } */
 
 .select-precio {
     @media (min-width: 768px) and (max-width: 980px) {
@@ -283,20 +282,72 @@
     }
 }
 
-.sidebar-toggled {
-    border:2px solid blue;
-    .box-two-btn {
-        @media (max-width: 500px) {
-            flex-direction: column;
-        }
-        a {
-            @media (max-width: 500px) {
-                margin-bottom: 10px;
-            }
+.texto-color {
+    td {
+        &:last-child {
+            color: $blue;
+            font-weight: bold;
         }
     }
 }
 
 .height180 {
     height: 180px;
+}
+
+/* Title Modyo Cli*/
+
+.title-widget {
+    margin: 0 auto;
+    @include media-breakpoint-up(sm) { 
+        max-width: 540px;
+    }
+    @include media-breakpoint-up(md) { 
+        max-width: 720px;
+    }
+    @include media-breakpoint-up(lg) { 
+        max-width: 960px;
+    }
+    @include media-breakpoint-up(xl) { 
+        max-width: 1140px;
+    }
+}
+
+
+/* Vista Operacion Liquidacion */
+.box-cuentas-liquidacion {
+    box-shadow: 0px 1.75px 3.5px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    padding: 15px;
+    margin-bottom: 18px;
+    h2 {
+        color: #424242;
+        font-weight: 600;
+        font-size: 24px;
+        line-height: 29px;
+    }
+}
+
+.box-cuenta {
+    margin-bottom: 30px;
+    label {
+        font-size: 14px;
+    }
+}
+
+.box-alta {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    span {
+        color: $brand-invex;
+        font-weight: bold;
+        margin-left: 10px;
+        font-size: 14px;
+        line-height: 17px;
+    }
+    &:hover {
+        text-decoration: none;
+    }
 }
