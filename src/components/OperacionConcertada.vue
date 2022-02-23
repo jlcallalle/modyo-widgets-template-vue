@@ -31,27 +31,27 @@
                       <td>Status</td>
                       <td>Executed</td>
                     </tr>
-                    <tr>
+                    <tr class="texto-color">
                       <td>Product</td>
                       <td>FX Spot</td>
                     </tr>
-                    <tr>
+                    <tr class="texto-color">
                       <td>Requester Action</td>
                       <td>I Buy USD / Sell MXN</td>
                     </tr>
-                    <tr>
+                    <tr class="texto-color">
                       <td>Notional Amount</td>
                       <td>1, 212.00 USD</td>
                     </tr>
-                    <tr>
+                    <tr class="texto-color">
                       <td>Opposite Amount</td>
                       <td>25, 808.19 MXN</td>
                     </tr>
-                    <tr>
+                    <tr class="texto-color">
                       <td>Effective Date</td>
                       <td>Spot // Mon, 06 Dec 2021</td>
                     </tr>
-                    <tr>
+                    <tr class="texto-color">
                       <td>Spot Rate</td>
                       <td>21.29389</td>
                     </tr>
@@ -66,7 +66,8 @@
                 @click="goToOperaciones">Realizar otra operación</a>
               <button
                 type="submit"
-                class="btn btn-primary btn-solicita">
+                class="btn btn-primary btn-solicita"
+                @click="goToLiquidacion">
                 Asignar Instrucciones
               </button>
             </div>
@@ -98,6 +99,9 @@ export default {
     }, */
     goToOperaciones() {
       this.$store.dispatch('updatePage', 'operacionVender');
+    },
+    goToLiquidacion() {
+      this.$store.dispatch('updatePage', 'operacionLiquidacion');
     },
   },
 };
