@@ -226,8 +226,11 @@ export default {
     },
     setCurrenciesOptions(ev) {
       const auxSelected = this.currenciesOptions.find((currency) => currency.id === ev.target.value);
-      this.currenciesSelected = [auxSelected.firstValue, auxSelected.secondValue];
-      this.currencySelected = auxSelected.firstValue;
+      if (auxSelected) {
+        this.currencySelectedId = ev.target.value;
+        this.currenciesSelected = [auxSelected.firstValue, auxSelected.secondValue];
+        this.currencySelected = auxSelected.firstValue;
+      }
     },
     setCurrencySelected(ev) {
       this.currencySelected = ev.target.value;
