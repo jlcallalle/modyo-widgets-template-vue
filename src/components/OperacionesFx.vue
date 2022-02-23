@@ -42,7 +42,7 @@
                 </div>
                 <div
                   v-if="!solicitarPrecio || optionSelected !== 'Vender'"
-                  :class="{'height170': !solicitarPrecio || optionSelected !== 'Vender'}"
+                  :class="{'height180': !solicitarPrecio || optionSelected !== 'Vender'}"
                   class="box-rfs">
                   <span>RFS</span>
                 </div>
@@ -150,7 +150,7 @@
                 </div>
                 <div
                   v-if="!solicitarPrecio || solicitarPrecio && optionSelected === 'Vender'"
-                  :class="{'height170': !solicitarPrecio || optionSelected === 'Vender'}"
+                  :class="{'height180': !solicitarPrecio || optionSelected === 'Vender'}"
                   class="box-rfs">
                   <span>RFS</span>
                 </div>
