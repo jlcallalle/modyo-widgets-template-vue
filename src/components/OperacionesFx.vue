@@ -87,6 +87,7 @@
                   <select
                     id="tipoDivisasSelect"
                     class="form-control"
+                    :value="currencySelectedId"
                     @change="setCurrenciesOptions($event)">
                     <template v-for="(currency, index) in currenciesOptions">
                       <option
@@ -214,13 +215,27 @@ export default {
         },
       ],
       currenciesSelected: ['USD', 'MXN'],
+      currencySelectedId: '1',
     };
   },
   computed: {
     ...mapState(['currentView']),
   },
+  mounted() {
+    this.setCurrency('4');
+  },
   methods: {
     async onSubmit() {
+      const getHours = new Date().getHours();
+      if (getHours >= 9 && getHours < 18) {
+        if (getHours === 16) {
+          alert('Servicio temporalmente fuera de servicio, intentar a las 5pm por favor');
+        } else {
+          alert('Aceptado');
+        }
+      } else {
+        alert('Fuera de horario');
+      }
       this.$store.dispatch('updatePage', 'operacionVender');
     },
     setCurrenciesOptions(ev) {
@@ -230,6 +245,13 @@ export default {
     },
     setCurrencySelected(ev) {
       this.currencySelected = ev.target.value;
+    },
+    setCurrency(id) {
+      const findId = this.currenciesOptions.find((currency) => currency.id === id);
+      if (findId) {
+        this.currencySelectedId = id;
+        this.setCurrenciesOptions({ target: { value: id } });
+      }
     },
   },
 };
