@@ -41,6 +41,18 @@
     margin: 30px 0;
 }
 
+/* Sidebar */
+.box-sidebar-spot {
+    padding-right: 0;
+    padding-left: 0;
+    margin-top: 1.5rem;
+    @include media-breakpoint-up(xl) { 
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-top: 0;
+    }
+}
+
 .box-spot-mes {
     box-shadow: 0px 1.75px 3.5px rgba(0, 0, 0, 0.15);
     border-radius: 8px;
@@ -122,7 +134,7 @@
     &:focus, &:focus-visible {
         outline: #CCCCCC;
     }
-    @include media-breakpoint-up(sm) { 
+    @include media-breakpoint-up(lg) { 
         width: 110px;
     }
 }
@@ -138,7 +150,7 @@
     &:focus, &:focus-visible {
         outline: #CCCCCC;
     }
-    @include media-breakpoint-up(sm) { 
+    @include media-breakpoint-up(md) { 
         width: 125px;
     }
 }
@@ -155,6 +167,10 @@
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
     height: 40px;
+}
+
+.input-fecha {
+    width: 100%;
 }
 
 /* Page Operacion vender*/
@@ -252,4 +268,31 @@
     font-size: 20px;
     line-height: 24px;
     color: #28A76A;
+}
+
+/* @media (min-width: 992px) and (max-width: 1199.98px) { } */
+
+.select-precio {
+    @media (min-width: 768px) and (max-width: 980px) {
+        width: 80px;
+    }
+}
+.select-fecha {
+    @media (min-width: 768px) and (max-width: 980px) {
+        width: 90px;
+    }
+}
+
+.sidebar-toggled {
+    border:2px solid blue;
+    .box-two-btn {
+        @media (max-width: 500px) {
+            flex-direction: column;
+        }
+        a {
+            @media (max-width: 500px) {
+                margin-bottom: 10px;
+            }
+        }
+    }
 }

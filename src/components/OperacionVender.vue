@@ -1,5 +1,8 @@
 <template>
   <div class="widget-operacion-vender">
+    <h1 class="mb-4 title-widget">
+      Operaciones FX
+    </h1>
     <div class="container container-widget">
       <div class="row">
         <div class="col-md-12 col-lg-8 box-operaciones">
@@ -153,25 +156,7 @@
             </div>
           </form>
         </div>
-        <div class="col-md-12 col-lg-4 box-sidebar-spot mt-4 mt-lg-0">
-          <div class="box-spot-mes">
-            <details open>
-              <summary>FX Spot de noviembre</summary>
-              <ol>
-                <li><span>USD</span> $$3,000,000.00 </li>
-                <li><span>MXN</span> $3,000,000.00</li>
-              </ol>
-            </details>
-          </div>
-          <div class="box-spot-mes">
-            <details>
-              <summary>Línea de pago anticipado</summary>
-              <ol>
-                <li>Lorem ipsum dolor sit amet.</li>
-              </ol>
-            </details>
-          </div>
-        </div>
+        <sidebar />
       </div>
     </div>
     <modal-exitoso
@@ -190,10 +175,13 @@ import { mapState } from 'vuex';
 import { VueEllipseProgress } from 'vue-ellipse-progress';
 import ModalExitoso from './ModalExitoso.vue';
 import ModalTiempo from './ModaTiempo.vue';
+import Sidebar from './Sidebar.vue';
 
 export default {
   name: 'OperacionVender',
-  components: { VueEllipseProgress, ModalExitoso, ModalTiempo },
+  components: {
+    VueEllipseProgress, ModalExitoso, ModalTiempo, Sidebar,
+  },
   data() {
     return {
       progress: 100,
