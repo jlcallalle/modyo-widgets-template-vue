@@ -312,8 +312,8 @@ export default {
     this.setCurrency('4');
   },
   async created() {
-    const responsePolizaPoliza = await this.$store.dispatch('updateServicio');
-    if (responsePolizaPoliza.status === 200 || responsePolizaPoliza.status === 201) {
+    const responseApiServicio = await this.$store.dispatch('updateServicio');
+    if (responseApiServicio.status === 200 || responseApiServicio.status === 201) {
       console.log('servicio ok');
     } else {
       console.log('servicio error');
