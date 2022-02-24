@@ -98,7 +98,7 @@ export default {
       this.$store.dispatch('updatePage', 'operacionVender');
     }, */
     goToOperaciones() {
-      this.$store.dispatch('updatePage', 'operacionVender');
+      this.$store.dispatch('updatePage', 'operacionesFx');
     },
     goToLiquidacion() {
       this.$store.dispatch('updatePage', 'operacionLiquidacion');

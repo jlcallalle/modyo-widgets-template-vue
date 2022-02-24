@@ -1,6 +1,9 @@
 <template>
-  <div class="widget-operaciones-fx">
-    <h1 class="mb-4 title-widget">
+  <div
+    class="widget-operaciones-fx"
+    :class="[solicitarPrecio == false ? 'widget-operaciones-fx' : 'widget-operacion-comprar-vender' ]">
+    <h1
+      class="mb-4 title-widget">
       Operaciones FX
     </h1>
     <div class="container container-widget">
@@ -42,7 +45,6 @@
                 </div>
                 <div
                   v-if="!solicitarPrecio || optionSelected !== 'Vender'"
-                  :class="{'height180': !solicitarPrecio || optionSelected !== 'Vender'}"
                   class="box-rfs">
                   <span>RFS</span>
                 </div>
@@ -67,8 +69,9 @@
                     <span>22.749</span>
                   </div>
                   <button
-                    type="button"
-                    class="btn btn-block btn-operacion">
+                    type="submit"
+                    class="btn btn-block btn-operacion"
+                    @click.prevent="handleOpen">
                     Vender {{ currencySelected }}
                   </button>
                 </div>
@@ -150,7 +153,6 @@
                 </div>
                 <div
                   v-if="!solicitarPrecio || solicitarPrecio && optionSelected === 'Vender'"
-                  :class="{'height180': !solicitarPrecio || optionSelected === 'Vender'}"
                   class="box-rfs">
                   <span>RFS</span>
                 </div>
@@ -175,8 +177,9 @@
                     <span>22.749</span>
                   </div>
                   <button
-                    type="button"
-                    class="btn btn-block btn-operacion">
+                    type="submit"
+                    class="btn btn-block btn-operacion"
+                    @click.prevent="handleOpen">
                     Comprar {{ currencySelected }}
                   </button>
                 </div>
@@ -235,6 +238,10 @@
         <sidebar />
       </div>
     </div>
+    <modal-exitoso
+      v-if="showModal"
+      :open="showModal"
+      @close="handleClose" />
   </div>
 </template>
 
@@ -246,10 +253,13 @@ import { VueEllipseProgress } from 'vue-ellipse-progress';
 // eslint-disable-next-line
 import CurrencyInput from './CurrencyInput.vue';
 import Sidebar from './Sidebar.vue';
+import ModalExitoso from './ModalExitoso.vue';
 
 export default {
   name: 'OperacionesFx',
-  components: { CurrencyInput, VueEllipseProgress, Sidebar },
+  components: {
+    CurrencyInput, VueEllipseProgress, Sidebar, ModalExitoso,
+  },
   data() {
     return {
       progress: 100,
@@ -289,6 +299,7 @@ export default {
       ],
       currenciesSelected: ['USD', 'MXN'],
       currencySelectedId: '1',
+      showModal: false,
     };
   },
   computed: {
@@ -374,6 +385,12 @@ export default {
         this.solicitarPrecio = false;
         clearInterval(this.timmerId);
       }
+    },
+    handleOpen() {
+      this.showModal = true;
+    },
+    handleClose() {
+      this.showModal = false;
     },
   },
 };

@@ -1,5 +1,5 @@
 <template>
-  <div class="widget-operacion-vender">
+  <div class="widget-operacion-comprar-vender">
     <h1 class="mb-4 title-widget">
       Operaciones FX
     </h1>

@@ -43,7 +43,7 @@
               <button
                 type="button"
                 class="btn btn-solicita"
-                @click="goToOperacionConcertada">
+                @click="goToOperacionFx">
                 Aceptar
               </button>
             </div>
@@ -64,7 +64,7 @@ export default {
     };
   },
   methods: {
-    goToOperacionConcertada() {
+    goToOperacionFx() {
       this.$store.dispatch('updatePage', 'operacionConcertada');
     },
   },
