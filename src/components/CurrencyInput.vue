@@ -10,7 +10,9 @@ import { watch } from '@vue/composition-api';
 export default {
   name: 'CurrencyInput',
   props: {
-    modelValue: Number, // Vue 2: value
+    // eslint-disable-next-line vue/require-default-prop
+    value: Number, // Vue 2: value
+    // eslint-disable-next-line vue/require-default-prop
     options: Object,
   },
   setup(props) {
@@ -22,8 +24,9 @@ export default {
       },
     );
     watch(
-      () => props.modelValue, // Vue 2: props.value
+      () => props.value, // Vue 2: props.value
       (value) => {
+        console.log('value', value);
         setValue(value);
       },
     );

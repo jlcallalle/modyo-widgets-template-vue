@@ -18,6 +18,7 @@
                     class="title-group">Operación:</label>
                   <select
                     id="tipoOperacionlSelect"
+                    :disabled="solicitarPrecio"
                     class="form-control">
                     <option value="fx-spot">
                       FX Spot
@@ -39,13 +40,52 @@
                     </option>
                   </select>
                 </div>
-                <div class="box-rfs">
+                <div
+                  v-if="!solicitarPrecio || optionSelected !== 'Vender'"
+                  :class="{'height180': !solicitarPrecio || optionSelected !== 'Vender'}"
+                  class="box-rfs">
                   <span>RFS</span>
                 </div>
-                <div class="box-btn">
-                  <a
-                    href=""
-                    class="btn btn-block btn-outline-operacion">Vender {{ currencySelected }}</a>
+                <div
+                  v-if="!solicitarPrecio"
+                  class="box-btn">
+                  <button
+                    type="button"
+                    class="btn btn-block btn-outline-operacion"
+                    :class="{ 'active': optionSelected === 'Vender' }"
+                    @click="clickOption('Vender')">
+                    Vender {{ currencySelected }}
+                  </button>
+                </div>
+                <div
+                  v-if="solicitarPrecio && optionSelected === 'Vender'"
+                  class="box-vender">
+                  <div class="title-operacion">
+                    Vender {{ currencySelected }}
+                  </div>
+                  <div class="box-precio">
+                    <span>22.749</span>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-block btn-operacion">
+                    Vender {{ currencySelected }}
+                  </button>
+                </div>
+                <div
+                  v-if="solicitarPrecio"
+                  class="box-tiempo mt-4">
+                  <div class="title-tiempo">
+                    Tiempo restante para completar tu operación:
+                  </div>
+                  <div class="box-timer">
+                    <vue-ellipse-progress
+                      color="#A41D36"
+                      :size="90"
+                      :progress="progress">
+                      <span>{{ timeLeft }}</span>
+                    </vue-ellipse-progress>
+                  </div>
                 </div>
                 <div class="box-monto input-group">
                   <div class="group-select">
@@ -55,6 +95,7 @@
                     <select
                       name="select"
                       class="select-precio"
+                      :disabled="solicitarPrecio"
                       @change="setCurrencySelected($event)">
                       <template v-for="(currency, index) in currenciesSelected">
                         <option
@@ -72,13 +113,17 @@
                       Monto en {{ labels[currencySelected] }}
                     </div>
                     <currency-input
+                      id="currencyInput"
                       class="form-control input-precio"
+                      :value="monto"
+                      :disabled="solicitarPrecio"
                       :options="{
                         currency: currencySelected,
                         currencyDisplay: 'narrowSymbol',
                         precision: 2,
                         valueRange: { min: 0 },
-                        hideCurrencySymbolOnFocus: true, }" />
+                        hideCurrencySymbolOnFocus: true, }"
+                      @change="monto = $event" />
                   </div>
                 </div>
               </div>
@@ -90,6 +135,7 @@
                   <select
                     id="tipoDivisasSelect"
                     class="form-control"
+                    :disabled="solicitarPrecio"
                     :value="currencySelectedId"
                     @change="setCurrenciesOptions($event)">
                     <template v-for="(currency, index) in currenciesOptions">
@@ -102,13 +148,42 @@
                     </template>
                   </select>
                 </div>
-                <div class="box-rfs">
+                <div
+                  v-if="!solicitarPrecio || solicitarPrecio && optionSelected === 'Vender'"
+                  :class="{'height180': !solicitarPrecio || optionSelected === 'Vender'}"
+                  class="box-rfs">
                   <span>RFS</span>
                 </div>
-                <div class="box-btn">
-                  <a
-                    href=""
-                    class="btn btn-block btn-outline-operacion active">Comprar {{ currencySelected }}</a>
+                <div
+                  v-if="!solicitarPrecio"
+                  class="box-btn">
+                  <button
+                    type="button"
+                    class="btn btn-block btn-outline-operacion"
+                    :class="{ 'active': optionSelected === 'Comprar' }"
+                    @click="clickOption('Comprar')">
+                    Comprar {{ currencySelected }}
+                  </button>
+                </div>
+                <div
+                  v-if="solicitarPrecio && optionSelected === 'Comprar'"
+                  class="box-vender">
+                  <div class="title-operacion">
+                    Comprar {{ currencySelected }}
+                  </div>
+                  <div class="box-precio">
+                    <span>22.749</span>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-block btn-operacion">
+                    Comprar {{ currencySelected }}
+                  </button>
+                </div>
+                <div
+                  v-if="solicitarPrecio"
+                  class="box-tiempo box-clear mt-4">
+                  2
                 </div>
                 <div class="box-liquidacion input-group">
                   <div class="group-select">
@@ -117,6 +192,7 @@
                     </div>
                     <select
                       name="select"
+                      :disabled="solicitarPrecio"
                       class="select-fecha">
                       <option
                         value="Today"
@@ -133,6 +209,7 @@
                   </div>
                   <div class="box-input-row">
                     <input
+                      :disabled="solicitarPrecio"
                       type="date"
                       value="2022-01-10"
                       class="form-control input-fecha">
@@ -141,13 +218,16 @@
               </div>
             </div>
             <div class="box-two-btn d-flex justify-content-around">
-              <a
-                href="#;"
-                class="btn btn-outline-primary btn-cancelar">Cancelar</a>
+              <button
+                type="button"
+                class="btn btn-outline-primary btn-cancelar"
+                @click="cancelClick()">
+                Cancelar
+              </button>
               <button
                 type="submit"
                 class="btn btn-primary btn-solicita">
-                Solicitar Precio
+                {{ solicitarPrecio ? 'Modificar' : 'Solicitar' }}
               </button>
             </div>
           </form>
@@ -162,15 +242,22 @@
 import { mapState } from 'vuex';
 // import RepositoryFactory from '../repositories/RepositoryFactory';
 // const invexRepository = RepositoryFactory.get('invex');
+import { VueEllipseProgress } from 'vue-ellipse-progress';
+// eslint-disable-next-line
 import CurrencyInput from './CurrencyInput.vue';
 import Sidebar from './Sidebar.vue';
 
 export default {
   name: 'OperacionesFx',
-  components: { CurrencyInput, Sidebar },
+  components: { CurrencyInput, VueEllipseProgress, Sidebar },
   data() {
     return {
+      progress: 100,
+      timeLeft: '00:60',
+      solicitarPrecio: false,
+      optionSelected: 'Comprar',
       monto: 0,
+      timmerId: null,
       currencySelected: 'USD',
       labels: {
         USD: 'Dolares',
@@ -212,17 +299,26 @@ export default {
   },
   methods: {
     async onSubmit() {
-      const getHours = new Date().getHours();
-      if (getHours >= 9 && getHours < 18) {
-        if (getHours === 16) {
-          alert('Servicio temporalmente fuera de servicio, intentar a las 5pm por favor');
-        } else {
-          alert('Aceptado');
-        }
+      if (this.solicitarPrecio) {
+        this.solicitarPrecio = false;
+        clearInterval(this.timmerId);
       } else {
-        alert('Fuera de horario');
+        const getHours = new Date().getHours();
+        if (getHours >= 9 && getHours < 18) {
+          if (getHours === 16) {
+            alert('Servicio temporalmente fuera de servicio, intentar a las 5pm por favor');
+          } else {
+            alert('Aceptado');
+          }
+        } else {
+          alert('Fuera de horario');
+        }
+        this.solicitarPrecio = true;
+        this.startTimer();
       }
-      this.$store.dispatch('updatePage', 'operacionVender');
+    },
+    setMonto(ev) {
+      this.monto = ev;
     },
     setCurrenciesOptions(ev) {
       const auxSelected = this.currenciesOptions.find((currency) => currency.id === ev.target.value);
@@ -240,6 +336,43 @@ export default {
       if (findId) {
         this.currencySelectedId = id;
         this.setCurrenciesOptions({ target: { value: id } });
+      }
+    },
+    clickOption(txt) {
+      if (this.solicitarPrecio) {
+        // Se tiene que redireccionar
+      } else {
+        this.optionSelected = txt;
+      }
+    },
+    startTimer() {
+      let sec = 60;
+      this.progress = 100;
+      this.timeLeft = '00:60';
+      const timer = setInterval(() => {
+        this.timeLeft = `00:${sec < 10 ? '0' : ''}${sec}`;
+        let progressAux = sec * 100;
+        progressAux /= 60;
+        this.progress = progressAux;
+        sec -= 1;
+        if (sec < 0) {
+          clearInterval(timer);
+          if (this.solicitarPrecio) {
+            this.solicitarPrecio = false;
+          }
+        }
+      }, 1000);
+      this.timmerId = timer;
+    },
+    cancelClick() {
+      if (this.solicitarPrecio) {
+        this.progress = 100;
+        this.timeLeft = '00:60';
+        this.setCurrency('4');
+        this.optionSelected = 'Comprar';
+        this.monto = '0';
+        this.solicitarPrecio = false;
+        clearInterval(this.timmerId);
       }
     },
   },
