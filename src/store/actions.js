@@ -1,10 +1,24 @@
 import Repository from '../repositories/RepositoryFactory';
 
 const PostRepository = Repository.get('posts');
+const ApiRepository = Repository.get('api');
 
 export default {
   async updatePage({ commit }, payload) {
     commit('updatePage', payload);
+  },
+  async updateServicio({ commit }, datos) {
+    commit('setLoading', true);
+    try {
+      const response = await ApiRepository.crearServicio(datos);
+      const info = response.data;
+      commit('updateServicio', info);
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
   },
   async getPosts({ commit }) {
     commit('setLoading', true);

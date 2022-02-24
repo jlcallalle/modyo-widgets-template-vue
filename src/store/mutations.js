@@ -10,4 +10,9 @@ export default {
   updatePage(state, payload) {
     state.currentView = payload;
   },
+
+  updateServicio(state, payload) {
+    state.servicio = payload;
+  },
+
 };

@@ -10,9 +10,6 @@
       <div class="row">
         <div class="col-md-12 col-xl-8 box-operaciones">
           <form @submit.prevent="onSubmit">
-            <div v-if="currentView === 'login'">
-              <p>Store CurrentView {{ $store.state.currentView }}</p>
-            </div>
             <div class="row">
               <div class="col-12 col-md-6">
                 <div class="form-group">
@@ -242,6 +239,10 @@
       v-if="showModal"
       :open="showModal"
       @close="handleClose" />
+    <modal-error
+      v-if="showModalError"
+      :open="showModalError"
+      @close="handleCloseError" />
   </div>
 </template>
 
@@ -254,11 +255,12 @@ import { VueEllipseProgress } from 'vue-ellipse-progress';
 import CurrencyInput from './CurrencyInput.vue';
 import Sidebar from './Sidebar.vue';
 import ModalExitoso from './ModalExitoso.vue';
+import ModalError from './ModalError.vue';
 
 export default {
   name: 'OperacionesFx',
   components: {
-    CurrencyInput, VueEllipseProgress, Sidebar, ModalExitoso,
+    CurrencyInput, VueEllipseProgress, Sidebar, ModalExitoso, ModalError,
   },
   data() {
     return {
@@ -300,6 +302,7 @@ export default {
       currenciesSelected: ['USD', 'MXN'],
       currencySelectedId: '1',
       showModal: false,
+      showModalError: false,
     };
   },
   computed: {
@@ -307,6 +310,15 @@ export default {
   },
   mounted() {
     this.setCurrency('4');
+  },
+  async created() {
+    const responsePolizaPoliza = await this.$store.dispatch('updateServicio');
+    if (responsePolizaPoliza.status === 200 || responsePolizaPoliza.status === 201) {
+      console.log('servicio ok');
+    } else {
+      console.log('servicio error');
+      this.showModalError = true;
+    }
   },
   methods: {
     async onSubmit() {
@@ -391,6 +403,12 @@ export default {
     },
     handleClose() {
       this.showModal = false;
+    },
+    handleOpenError() {
+      this.showModalError = true;
+    },
+    handleCloseError() {
+      this.showModalError = false;
     },
   },
 };

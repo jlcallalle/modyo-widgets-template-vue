@@ -1,9 +1,5 @@
-import ApiClient from './clients/ApiClient';
+import { apiClientServicio } from './clients/ApiClient';
 
-const ApiRepository = {
-  summary() {
-    return ApiClient.get('summary');
-  },
+export default {
+  crearServicio: (datos) => apiClientServicio.post('/todos', datos),
 };
-
-export default ApiRepository;
