@@ -50,7 +50,7 @@
                   class="box-btn">
                   <button
                     type="button"
-                    class="btn btn-block btn-outline-operacion"
+                    class="btn btn-block btn-outline-operacion rounded-0"
                     :class="{ 'active': optionSelected === 'Vender' }"
                     @click="clickOption('Vender')">
                     Vender {{ currencySelected }}
@@ -123,6 +123,7 @@
                         precision: 2,
                         valueRange: { min: 0 },
                         hideCurrencySymbolOnFocus: true, }"
+                      @input="cambiarEstado()"
                       @change="monto = $event" />
                   </div>
                 </div>
@@ -158,7 +159,7 @@
                   class="box-btn">
                   <button
                     type="button"
-                    class="btn btn-block btn-outline-operacion"
+                    class="btn btn-block btn-outline-operacion rounded-0"
                     :class="{ 'active': optionSelected === 'Comprar' }"
                     @click="clickOption('Comprar')">
                     Comprar {{ currencySelected }}
@@ -226,8 +227,9 @@
               </button>
               <button
                 type="submit"
+                :disabled="isDisabled"
                 class="btn btn-primary btn-solicita">
-                {{ solicitarPrecio ? 'Modificar' : 'Solicitar' }}
+                {{ solicitarPrecio ? 'Modificar' : 'Solicitar Precio' }}
               </button>
             </div>
           </form>
@@ -303,6 +305,7 @@ export default {
       currencySelectedId: '1',
       showModal: false,
       showModalError: false,
+      isDisabled: true,
     };
   },
   computed: {
@@ -409,6 +412,13 @@ export default {
     },
     handleCloseError() {
       this.showModalError = false;
+    },
+    cambiarEstado() {
+      if (this.monto === 0) {
+        this.isDisabled = false;
+      } else {
+        this.isDisabled = true;
+      }
     },
   },
 };
