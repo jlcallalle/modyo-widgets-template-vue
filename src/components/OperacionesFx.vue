@@ -55,7 +55,7 @@
                   class="box-btn">
                   <button
                     type="button"
-                    class="btn btn-block btn-outline-operacion rounded-0"
+                    class="btn btn-block btn-outline-operacion btn-sm"
                     :class="{ 'active': optionSelected === 'Vender' }"
                     @click="clickOption('Vender')">
                     Vender {{ currencySelected }}
@@ -115,7 +115,7 @@
                   </div>
                   <div class="box-input-row">
                     <div class="title-group">
-                      Monto en {{ labels[currencySelected] }}
+                      Monto <span class="hidden-xs"> en {{ labels[currencySelected] }} </span>
                     </div>
                     <currency-input
                       id="currencyInput"
@@ -169,7 +169,7 @@
                   class="box-btn">
                   <button
                     type="button"
-                    class="btn btn-block btn-outline-operacion rounded-0"
+                    class="btn btn-block btn-outline-operacion btn-sm"
                     :class="{ 'active': optionSelected === 'Comprar' }"
                     @click="clickOption('Comprar')">
                     Comprar {{ currencySelected }}
