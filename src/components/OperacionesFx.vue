@@ -47,6 +47,11 @@
                 </div>
                 <div
                   v-if="!solicitarPrecio"
+                  class="title-actions">
+                  Selecciona una acción
+                </div>
+                <div
+                  v-if="!solicitarPrecio"
                   class="box-btn">
                   <button
                     type="button"
@@ -153,6 +158,11 @@
                   v-if="!solicitarPrecio || solicitarPrecio && optionSelected === 'Vender'"
                   class="box-rfs">
                   <span>RFS</span>
+                </div>
+                <div
+                  v-if="!solicitarPrecio"
+                  class="title-actions invisible">
+                  Selecciona una acción
                 </div>
                 <div
                   v-if="!solicitarPrecio"
@@ -334,7 +344,7 @@ export default {
           if (getHours === 16) {
             alert('Servicio temporalmente fuera de servicio, intentar a las 5pm por favor');
           } else {
-            alert('Aceptado');
+            // alert('Aceptado');
           }
         } else {
           alert('Fuera de horario');
