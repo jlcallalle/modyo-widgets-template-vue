@@ -18,26 +18,18 @@
                     class="title-group">Operación:</label>
                   <select
                     id="tipoOperacionlSelect"
+                    class="form-control"
                     :disabled="solicitarPrecio"
-                    class="form-control">
-                    <option value="fx-spot">
-                      FX Spot
-                    </option>
-                    <option value="fx-forward">
-                      FX Forward
-                    </option>
-                    <option value="fx-block-trade">
-                      FX Block Trade
-                    </option>
-                    <option value="fx-swap">
-                      FX Swap
-                    </option>
-                    <option value="limit-order">
-                      Limit Order
-                    </option>
-                    <option value="market-order">
-                      Market Order
-                    </option>
+                    @change="setOperation($event)">
+                    <template v-for="(operation, index) in operationsOptions">
+                      <option
+                        :id="index"
+                        :key="index"
+                        :selected="operationsSelected === operation.product_code"
+                        :value="operation.product_code">
+                        {{ operation.product_description }}
+                      </option>
+                    </template>
                   </select>
                 </div>
                 <div
@@ -68,7 +60,7 @@
                     Vender {{ currencySelected }}
                   </div>
                   <div class="box-precio">
-                    <span>22.749</span>
+                    <span>{{ currencyValue }} {{ valueComparation }}</span>
                   </div>
                   <button
                     type="submit"
@@ -115,7 +107,7 @@
                   </div>
                   <div class="box-input-row">
                     <div class="title-group">
-                      Monto <span class="hidden-xs"> en {{ labels[currencySelected] }} </span>
+                      Monto <span class="hidden-xs"> en {{ currencySelected }} </span>
                     </div>
                     <currency-input
                       id="currencyInput"
@@ -123,12 +115,12 @@
                       :value="monto"
                       :disabled="solicitarPrecio"
                       :options="{
-                        currency: currencySelected,
+                        // eslint-disable-next-line no-irregular-whitespace
+                        currency: currencySelected || 'USD',
                         currencyDisplay: 'narrowSymbol',
                         precision: 2,
                         valueRange: { min: 0 },
                         hideCurrencySymbolOnFocus: true, }"
-                      @input="cambiarEstado()"
                       @change="monto = $event" />
                   </div>
                 </div>
@@ -148,8 +140,8 @@
                       <option
                         :id="index"
                         :key="index"
-                        :value="currency.id">
-                        {{ currency.firstValue }} \ {{ currency.secondValue }}
+                        :value="index">
+                        {{ currency.ccy1 }} \ {{ currency.ccy2 }}
                       </option>
                     </template>
                   </select>
@@ -182,7 +174,7 @@
                     Comprar {{ currencySelected }}
                   </div>
                   <div class="box-precio">
-                    <span>22.749</span>
+                    <span>{{ currencyValue }} {{ valueComparation }}</span>
                   </div>
                   <button
                     type="submit"
@@ -203,26 +195,24 @@
                     </div>
                     <select
                       name="select"
+                      class="select-fecha"
                       :disabled="solicitarPrecio"
-                      class="select-fecha">
-                      <option
-                        value="Today"
-                        selected>
-                        Today
-                      </option>
-                      <option value="Tomorrow">
-                        Tomorrow
-                      </option>
-                      <option value="SpotNext">
-                        SpotNext
-                      </option>
+                      @change="setCalendar($event)">
+                      <template v-for="(calendarOp, index) in calendarOptions">
+                        <option
+                          :id="index"
+                          :key="index"
+                          :value="calendarOp.date">
+                          {{ calendarOp.Description }}
+                        </option>
+                      </template>
                     </select>
                   </div>
                   <div class="box-input-row">
                     <input
-                      :disabled="solicitarPrecio"
+                      disabled
                       type="date"
-                      value="2022-01-10"
+                      :value="calendarSelected"
                       class="form-control input-fecha">
                   </div>
                 </div>
@@ -237,7 +227,7 @@
               </button>
               <button
                 type="submit"
-                :disabled="isDisabled"
+                :disabled="monto === 0 || monto === '0' || monto === null"
                 class="btn btn-primary btn-solicita">
                 {{ solicitarPrecio ? 'Modificar' : 'Solicitar Precio' }}
               </button>
@@ -260,14 +250,14 @@
 
 <script>
 import { mapState } from 'vuex';
-// import RepositoryFactory from '../repositories/RepositoryFactory';
-// const invexRepository = RepositoryFactory.get('invex');
 import { VueEllipseProgress } from 'vue-ellipse-progress';
-// eslint-disable-next-line
+import RepositoryFactory from '../repositories/RepositoryFactory';
 import CurrencyInput from './CurrencyInput.vue';
 import Sidebar from './Sidebar.vue';
 import ModalExitoso from './ModalExitoso.vue';
 import ModalError from './ModalError.vue';
+
+const invexRepository = RepositoryFactory.get('invex');
 
 export default {
   name: 'OperacionesFx',
@@ -282,47 +272,29 @@ export default {
       optionSelected: 'Comprar',
       monto: 0,
       timmerId: null,
-      currencySelected: 'USD',
-      labels: {
-        USD: 'Dolares',
-        EUR: 'Euros',
-        MXN: 'Pesos Mexicanos',
-        JPY: 'Yenes',
-      },
-      currenciesOptions: [
-        {
-          id: '1',
-          firstValue: 'USD',
-          secondValue: 'MXN',
-        },
-        {
-          id: '2',
-          firstValue: 'EUR',
-          secondValue: 'USD',
-        },
-        {
-          id: '3',
-          firstValue: 'EUR',
-          secondValue: 'MXN',
-        },
-        {
-          id: '4',
-          firstValue: 'USD',
-          secondValue: 'JPY',
-        },
-      ],
-      currenciesSelected: ['USD', 'MXN'],
-      currencySelectedId: '1',
+      currencySelected: '',
+      currenciesOptions: [],
+      operationsOptions: [],
+      currenciesSelected: [],
+      calendarOptions: [],
+      calendarSelected: null,
+      operationsSelected: '',
+      currencySelectedId: 1,
       showModal: false,
       showModalError: false,
       isDisabled: true,
+      currencyValue: 22.749,
+      initCurrencyValue: 22.749,
+      valueComparation: '',
     };
   },
   computed: {
     ...mapState(['currentView']),
   },
   mounted() {
-    this.setCurrency('4');
+    this.getCurrencies();
+    this.getOperations();
+    this.getCalendar();
   },
   async created() {
     const responseApiServicio = await this.$store.dispatch('updateServicio');
@@ -353,19 +325,60 @@ export default {
         this.startTimer();
       }
     },
+    async getOperations() {
+      try {
+        const options = await invexRepository.getOperations();
+        this.operationsOptions = options;
+        if (this.operationsOptions.length > 0) {
+          this.operationsSelected = this.operationsOptions[0].product_code;
+        }
+      } catch (error) {
+        this.showModalError = true;
+      }
+    },
+    async getCurrencies() {
+      try {
+        const divisas = await invexRepository.getCurrencies('1', '2');
+        this.currenciesOptions = divisas.catalogList;
+        this.setCurrenciesOptions({ target: { value: 0 } });
+      } catch (error) {
+        this.showModalError = true;
+      }
+    },
+    async getCalendar() {
+      try {
+        const calendar = await invexRepository.getCalendar();
+        this.calendarOptions = calendar.Message.map((e) => ({
+          ...e,
+          date: `${e.DateValue.slice(0, 4)}-${e.DateValue.slice(4, 6)}-${e.DateValue.slice(6)}`,
+        }));
+        if (this.calendarOptions.length > 0) {
+          // eslint-disable-next-line prefer-destructuring
+          this.calendarSelected = this.calendarOptions[0].date;
+        }
+      } catch (error) {
+        this.showModalError = true;
+      }
+    },
     setMonto(ev) {
       this.monto = ev;
     },
     setCurrenciesOptions(ev) {
-      const auxSelected = this.currenciesOptions.find((currency) => currency.id === ev.target.value);
-      if (auxSelected) {
+      if (this.currenciesOptions.length > ev.target.value) {
+        const auxSelected = this.currenciesOptions[ev.target.value];
         this.currencySelectedId = ev.target.value;
-        this.currenciesSelected = [auxSelected.firstValue, auxSelected.secondValue];
-        this.currencySelected = auxSelected.firstValue;
+        this.currenciesSelected = [auxSelected.ccy1, auxSelected.ccy2];
+        this.currencySelected = auxSelected.ccy1;
       }
     },
     setCurrencySelected(ev) {
       this.currencySelected = ev.target.value;
+    },
+    setOperation(ev) {
+      this.operationsSelected = ev.target.value;
+    },
+    setCalendar(ev) {
+      this.calendarSelected = ev.target.value;
     },
     setCurrency(id) {
       const findId = this.currenciesOptions.find((currency) => currency.id === id);
@@ -391,6 +404,19 @@ export default {
         progressAux /= 60;
         this.progress = progressAux;
         sec -= 1;
+        if (sec < 58) {
+          const newCurrencyValue = (Math.random() * 4) + 20;
+          this.currencyValue = newCurrencyValue.toFixed(3);
+          if (newCurrencyValue > this.initCurrencyValue) {
+            this.valueComparation = '+';
+          }
+          if (newCurrencyValue < this.initCurrencyValue) {
+            this.valueComparation = '-';
+          }
+          if (newCurrencyValue === this.initCurrencyValue) {
+            this.valueComparation = '';
+          }
+        }
         if (sec < 0) {
           clearInterval(timer);
           if (this.solicitarPrecio) {
@@ -422,13 +448,6 @@ export default {
     },
     handleCloseError() {
       this.showModalError = false;
-    },
-    cambiarEstado() {
-      if (this.monto === 0) {
-        this.isDisabled = false;
-      } else {
-        this.isDisabled = true;
-      }
     },
   },
 };
