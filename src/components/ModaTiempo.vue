@@ -37,12 +37,13 @@
                 class="modal-title">
                 Tiempo Concurrido
               </h5>
-              <p>El tiempo  de la operación finalizó.</p>
+              <p>El tiempo de la operación finalizó.</p>
             </div>
             <div class="modal-footer justify-content-center">
               <button
                 type="button"
-                class="btn btn-solicita">
+                class="btn btn-solicita"
+                @click="$emit('close')">
                 Aceptar
               </button>
             </div>
@@ -56,7 +57,13 @@
 <script>
 export default {
   name: 'ModalTiempo',
-  props: ['open'],
+  props:
+    ['open'],
+  data() {
+    return {
+
+    };
+  },
 };
 </script>
 

@@ -245,6 +245,10 @@
       v-if="showModalError"
       :open="showModalError"
       @close="handleCloseError" />
+    <modal-tiempo
+      v-if="showModalTiempo"
+      :open="showModalTiempo"
+      @close="handleCloseTiempo" />
   </div>
 </template>
 
@@ -256,13 +260,14 @@ import CurrencyInput from './CurrencyInput.vue';
 import Sidebar from './Sidebar.vue';
 import ModalExitoso from './ModalExitoso.vue';
 import ModalError from './ModalError.vue';
+import ModalTiempo from './ModaTiempo.vue';
 
 const invexRepository = RepositoryFactory.get('invex');
 
 export default {
   name: 'OperacionesFx',
   components: {
-    CurrencyInput, VueEllipseProgress, Sidebar, ModalExitoso, ModalError,
+    CurrencyInput, VueEllipseProgress, Sidebar, ModalExitoso, ModalError, ModalTiempo,
   },
   data() {
     return {
@@ -282,6 +287,7 @@ export default {
       currencySelectedId: 1,
       showModal: false,
       showModalError: false,
+      showModalTiempo: false,
       isDisabled: true,
       currencyValue: 22.749,
       initCurrencyValue: 22.749,
@@ -420,7 +426,7 @@ export default {
         if (sec < 0) {
           clearInterval(timer);
           if (this.solicitarPrecio) {
-            this.solicitarPrecio = false;
+            this.showModalTiempo = true;
           }
         }
       }, 1000);
@@ -448,6 +454,11 @@ export default {
     },
     handleCloseError() {
       this.showModalError = false;
+    },
+    handleCloseTiempo() {
+      this.solicitarPrecio = false;
+      this.showModalTiempo = false;
+      this.monto = '0';
     },
   },
 };
