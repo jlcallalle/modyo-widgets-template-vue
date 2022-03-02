@@ -32,27 +32,38 @@
                     </template>
                   </select>
                 </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="form-group">
+                  <label
+                    for="tipoDivisasSelect"
+                    class="title-group">Par de divisas:</label>
+                  <select
+                    id="tipoDivisasSelect"
+                    class="form-control"
+                    :disabled="solicitarPrecio"
+                    :value="currencySelectedId"
+                    @change="setCurrenciesOptions($event)">
+                    <template v-for="(currency, index) in currenciesOptions">
+                      <option
+                        :id="index"
+                        :key="index"
+                        :value="index">
+                        {{ currency.ccy1 }} \ {{ currency.ccy2 }}
+                      </option>
+                    </template>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
                 <div
                   v-if="!solicitarPrecio || optionSelected !== 'Vender'"
                   class="box-rfs">
                   <span>RFS</span>
                 </div>
-                <div
-                  v-if="!solicitarPrecio"
-                  class="title-actions">
-                  Selecciona una acción
-                </div>
-                <div
-                  v-if="!solicitarPrecio"
-                  class="box-btn">
-                  <button
-                    type="button"
-                    class="btn btn-block btn-outline-operacion btn-sm"
-                    :class="{ 'active': optionSelected === 'Vender' }"
-                    @click="clickOption('Vender')">
-                    Vender {{ currencySelected }}
-                  </button>
-                </div>
+
                 <div
                   v-if="solicitarPrecio && optionSelected === 'Vender'"
                   class="box-vender">
@@ -69,9 +80,65 @@
                     Vender {{ currencySelected }}
                   </button>
                 </div>
+              </div>
+              <div class="col-6">
+                <div
+                  v-if="!solicitarPrecio || solicitarPrecio && optionSelected === 'Vender'"
+                  class="box-rfs">
+                  <span>RFS</span>
+                </div>
+
+                <div
+                  v-if="solicitarPrecio && optionSelected === 'Comprar'"
+                  class="box-vender">
+                  <div class="title-operacion">
+                    Comprar {{ currencySelected }}
+                  </div>
+                  <div class="box-precio">
+                    <span>{{ currencyValue }} {{ valueComparation }}</span>
+                  </div>
+                  <button
+                    type="submit"
+                    class="btn btn-block btn-operacion"
+                    @click.prevent="handleOpen">
+                    Comprar {{ currencySelected }}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div
+              class="row">
+              <div class="col-12">
+                <div
+                  v-if="!solicitarPrecio"
+                  class="title-actions">
+                  Selecciona una acción
+                </div>
+
+                <div
+                  class="box-btn-operacion">
+                  <button
+                    v-if="!solicitarPrecio"
+                    type="button"
+                    class="btn btn-outline-operacion btn-sm"
+                    :class="{ 'active': optionSelected === 'Vender' }"
+                    @click="clickOption('Vender')">
+                    Vender {{ currencySelected }}
+                  </button>
+
+                  <button
+                    v-if="!solicitarPrecio"
+                    type="button"
+                    class="btn btn-outline-operacion btn-sm"
+                    :class="{ 'active': optionSelected === 'Comprar' }"
+                    @click="clickOption('Comprar')">
+                    Comprar {{ currencySelected }}
+                  </button>
+                </div>
+
                 <div
                   v-if="solicitarPrecio"
-                  class="box-tiempo mt-4">
+                  class="box-tiempo">
                   <div class="title-tiempo">
                     Tiempo restante para completar tu operación:
                   </div>
@@ -84,6 +151,10 @@
                     </vue-ellipse-progress>
                   </div>
                 </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12 col-md-6">
                 <div class="box-monto input-group">
                   <div class="group-select">
                     <div class="title-group">
@@ -125,69 +196,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-12 col-md-6 mt-5 mt-md-0">
-                <div class="form-group">
-                  <label
-                    for="tipoDivisasSelect"
-                    class="title-group">Par de divisas:</label>
-                  <select
-                    id="tipoDivisasSelect"
-                    class="form-control"
-                    :disabled="solicitarPrecio"
-                    :value="currencySelectedId"
-                    @change="setCurrenciesOptions($event)">
-                    <template v-for="(currency, index) in currenciesOptions">
-                      <option
-                        :id="index"
-                        :key="index"
-                        :value="index">
-                        {{ currency.ccy1 }} \ {{ currency.ccy2 }}
-                      </option>
-                    </template>
-                  </select>
-                </div>
-                <div
-                  v-if="!solicitarPrecio || solicitarPrecio && optionSelected === 'Vender'"
-                  class="box-rfs">
-                  <span>RFS</span>
-                </div>
-                <div
-                  v-if="!solicitarPrecio"
-                  class="title-actions invisible">
-                  Selecciona una acción
-                </div>
-                <div
-                  v-if="!solicitarPrecio"
-                  class="box-btn">
-                  <button
-                    type="button"
-                    class="btn btn-block btn-outline-operacion btn-sm"
-                    :class="{ 'active': optionSelected === 'Comprar' }"
-                    @click="clickOption('Comprar')">
-                    Comprar {{ currencySelected }}
-                  </button>
-                </div>
-                <div
-                  v-if="solicitarPrecio && optionSelected === 'Comprar'"
-                  class="box-vender">
-                  <div class="title-operacion">
-                    Comprar {{ currencySelected }}
-                  </div>
-                  <div class="box-precio">
-                    <span>{{ currencyValue }} {{ valueComparation }}</span>
-                  </div>
-                  <button
-                    type="submit"
-                    class="btn btn-block btn-operacion"
-                    @click.prevent="handleOpen">
-                    Comprar {{ currencySelected }}
-                  </button>
-                </div>
-                <div
-                  v-if="solicitarPrecio"
-                  class="box-tiempo box-clear mt-4">
-                  2
-                </div>
+              <div class="col-12 col-md-6">
                 <div class="box-liquidacion input-group">
                   <div class="group-select">
                     <div class="title-group title-fecha">
@@ -218,7 +227,7 @@
                 </div>
               </div>
             </div>
-            <div class="box-two-btn d-flex justify-content-around">
+            <div class="row box-two-btn d-flex justify-content-around">
               <button
                 type="button"
                 class="btn btn-outline-primary btn-cancelar"

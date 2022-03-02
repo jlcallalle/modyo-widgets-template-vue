@@ -7,10 +7,13 @@
     box-shadow: 2.5px 8px 12px rgba(66, 66, 66, 0.1);
     border-radius: 8px;
     background-color: #FFFFFF;
-    padding: 25px 30px 32px 30px;
+    padding: 25px 20px 32px 20px;
    /*  background-image: url(../assets/vista-operacion.jpg);
     background-position: -10px -14px;
     background-repeat: no-repeat; */
+    @include media-breakpoint-up(md) { 
+        padding: 25px 30px 32px 30px;
+    }
 }
 
 .title-group {
@@ -26,8 +29,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 24px;
-    margin-bottom: 30px;
+    margin-top: 15px;
+    margin-bottom: 25px;
+    @include media-breakpoint-up(md) { 
+        margin-top: 8px;
+        margin-bottom: 30px;
+    }
     span {
         color:$grey-dark;
         font-size: 1.5rem;
@@ -36,7 +43,10 @@
 }
 
 .box-btn {
-    margin: 15px 0 30px 0;;
+    margin: 15px 0;;
+    @include media-breakpoint-up(md) { 
+        margin: 15px 0 30px 0;
+    }
 }
 
 /* Sidebar */
@@ -104,13 +114,22 @@
 .box-two-btn {
     max-width: 450px;
     margin: 32px auto 0;
+    flex-direction: column-reverse;
+    align-items: center;
+    @include media-breakpoint-up(md) { 
+        flex-direction: row;
+    }
+    button {
+        margin-bottom: 15px;
+        @include media-breakpoint-up(md) { 
+            margin-bottom: 0;
+        }
+    }
 }
 
 .btn-cancelar, 
 .btn-solicita {
-    @include media-breakpoint-up(sm) { 
-        min-width: 200px;
-    }
+    min-width: 200px;
 }
 
 .box-monto, 
@@ -181,8 +200,11 @@
 }
 
 .box-vender {
-    margin-top: 24px;
+    margin-top: 10px;
     padding: 6px 0;
+    @include media-breakpoint-up(md) { 
+        margin-top: 8px;
+    }
 }
 
 .box-tiempo {
@@ -190,8 +212,12 @@
     height: 105px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    max-width: 300px;
+    margin: 0 auto;
     @include media-breakpoint-up(md) { 
-        justify-content: flex-end;
+        max-width: 350px;
+        left: -73px;
     }
 }
 
@@ -227,6 +253,7 @@
     color:$grey-dark;
     line-height: 20px;
     width: 222px;
+    margin-right: 10px;
     @include media-breakpoint-up(md) { 
         position: relative;
         right: -30px;
@@ -236,11 +263,6 @@
 .box-timer {
     width: 90px;
     height: 90px;
-    @include media-breakpoint-up(md) { 
-        position: absolute;
-        right: -120px;
-        top: 0;
-    }
 }
 
 .timer {
@@ -354,4 +376,19 @@
 .btn-sm {
     padding: 0.35rem 1.25rem;
     border-radius: inherit;
+}
+
+.box-btn-operacion {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    @include media-breakpoint-up(md) { 
+        margin-top: 15px;
+    }
+    .btn {
+        width: 50%;
+        @include media-breakpoint-up(md) { 
+            width: 48%;
+        }
+    }
 }
