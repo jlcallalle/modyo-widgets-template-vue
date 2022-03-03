@@ -68,10 +68,23 @@
     padding: 15px;
     margin-bottom: 18px;
 
+    details[open] summary:after {
+        content: "▲";
+    }
+
     summary {
         color:$grey-dark;
         font-weight: bold;
         font-size: 16px;
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        & ::-webkit-details-marker {
+            display: none
+        }
+        &:after {
+            content: '▼';
+        }
     }
     ol {
         list-style: none;
@@ -190,6 +203,11 @@
     width: 100%;
 }
 
+.icon-calendar {
+    position: absolute;
+    top:7px;
+    right: 5px;
+}
 /* Page Operacion vender*/
 
 .widget-operacion-comprar-vender {
@@ -376,6 +394,9 @@
 .btn-sm {
     padding: 0.35rem 1.25rem;
     border-radius: inherit;
+    @media (max-width: 370px) {
+        padding: 0.35rem 1rem;
+    }
 }
 
 .box-btn-operacion {
