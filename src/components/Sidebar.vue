@@ -4,8 +4,8 @@
       <details open>
         <summary>FX Spot de noviembre</summary>
         <ol>
-          <li><span>USD</span> $$3,000,000.00 </li>
-          <li><span>MXN</span> $3,000,000.00</li>
+          <li><span>USD</span> 3,000,000.00 </li>
+          <li><span>MXN</span> 3,000,000.00</li>
         </ol>
       </details>
     </div>

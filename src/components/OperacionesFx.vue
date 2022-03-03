@@ -49,7 +49,7 @@
                         :id="index"
                         :key="index"
                         :value="index">
-                        {{ currency.ccy1 }} \ {{ currency.ccy2 }}
+                        {{ currency.ccy1 }} / {{ currency.ccy2 }}
                       </option>
                     </template>
                   </select>
@@ -188,7 +188,7 @@
                       :options="{
                         // eslint-disable-next-line no-irregular-whitespace
                         currency: currencySelected || 'USD',
-                        currencyDisplay: 'narrowSymbol',
+                        currencyDisplay: 'hidden',
                         precision: 2,
                         valueRange: { min: 0 },
                         hideCurrencySymbolOnFocus: true, }"
