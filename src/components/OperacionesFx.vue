@@ -200,7 +200,7 @@
                 <div class="box-liquidacion input-group">
                   <div class="group-select">
                     <div class="title-group title-fecha">
-                      Fecha de Liquidación
+                      Fecha de liquidación
                     </div>
                     <select
                       name="select"
