@@ -56,16 +56,18 @@
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div
+              class="row">
               <div class="col-6">
                 <div
-                  v-if="!solicitarPrecio || optionSelected !== 'Vender'"
+                  v-if="!solicitarPrecio || optionSelected !== 'Vender' && optionSelected !== 'TwoWay'"
                   class="box-rfs">
                   <span>RFS</span>
                 </div>
 
                 <div
-                  v-if="solicitarPrecio && optionSelected === 'Vender'"
+                  v-if="solicitarPrecio && optionSelected === 'Vender' ||
+                    solicitarPrecio && optionSelected === 'TwoWay'"
                   class="box-vender">
                   <div class="title-operacion">
                     Vender {{ currencySelected }}
@@ -89,7 +91,8 @@
                 </div>
 
                 <div
-                  v-if="solicitarPrecio && optionSelected === 'Comprar'"
+                  v-if="solicitarPrecio && optionSelected === 'Comprar' ||
+                    solicitarPrecio && optionSelected === 'TwoWay'"
                   class="box-vender">
                   <div class="title-operacion">
                     Comprar {{ currencySelected }}
@@ -124,6 +127,15 @@
                     :class="{ 'active': optionSelected === 'Vender' }"
                     @click="clickOption('Vender')">
                     Vender {{ currencySelected }}
+                  </button>
+
+                  <button
+                    v-if="mostrarTwoWay && !solicitarPrecio"
+                    type="button"
+                    class="btn btn-outline-operacion btn-sm"
+                    :class="{ 'active': mostrarTwoWay == true && optionSelected === 'TwoWay'}"
+                    @click="clickOption('TwoWay')">
+                    Two Way
                   </button>
 
                   <button
@@ -295,6 +307,7 @@ export default {
       progress: 100,
       timeLeft: '00:60',
       solicitarPrecio: false,
+      mostrarTwoWay: false,
       optionSelected: 'Comprar',
       monto: 0,
       timmerId: null,
@@ -322,6 +335,7 @@ export default {
     this.getCurrencies();
     this.getOperations();
     this.getCalendar();
+    this.getValueTwoWay();
   },
   async created() {
     const responseApiServicio = await this.$store.dispatch('updateServicio');
@@ -333,6 +347,13 @@ export default {
     }
   },
   methods: {
+    getValueTwoWay() {
+      if (this.mostrarTwoWay) {
+        this.optionSelected = 'TwoWay';
+      } else {
+        // alert('false');
+      }
+    },
     async onSubmit() {
       if (this.solicitarPrecio) {
         this.solicitarPrecio = false;
