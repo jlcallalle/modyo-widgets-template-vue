@@ -70,7 +70,7 @@
                     solicitarPrecio && optionSelected === 'TwoWay'"
                   class="box-vender">
                   <div class="title-operacion">
-                    Vender {{ currencySelected }}
+                    {{ isBuy ? 'Comprar' : 'Vender' }} {{ currencySelected }}
                   </div>
                   <div class="box-precio">
                     <span>{{ currencyValue }} {{ valueComparation }}</span>
@@ -79,7 +79,7 @@
                     type="submit"
                     class="btn btn-block btn-operacion"
                     @click.prevent="handleOpen">
-                    Vender {{ currencySelected }}
+                    {{ isBuy ? 'Comprar' : 'Vender' }} {{ currencySelected }}
                   </button>
                 </div>
               </div>
@@ -95,7 +95,7 @@
                     solicitarPrecio && optionSelected === 'TwoWay'"
                   class="box-vender">
                   <div class="title-operacion">
-                    Comprar {{ currencySelected }}
+                    {{ isBuy ? 'Vender' : 'Comprar' }} {{ currencySelected }}
                   </div>
                   <div class="box-precio">
                     <span>{{ currencyValue }} {{ valueComparation }}</span>
@@ -104,7 +104,7 @@
                     type="submit"
                     class="btn btn-block btn-operacion"
                     @click.prevent="handleOpen">
-                    Comprar {{ currencySelected }}
+                    {{ isBuy ? 'Vender' : 'Comprar' }} {{ currencySelected }}
                   </button>
                 </div>
               </div>
@@ -126,7 +126,7 @@
                     class="btn btn-outline-operacion btn-sm"
                     :class="{ 'active': optionSelected === 'Vender' }"
                     @click="clickOption('Vender')">
-                    Vender {{ currencySelected }}
+                    {{ isBuy ? 'Comprar' : 'Vender' }} {{ currencySelected }}
                   </button>
 
                   <button
@@ -144,7 +144,7 @@
                     class="btn btn-outline-operacion btn-sm"
                     :class="{ 'active': optionSelected === 'Comprar' }"
                     @click="clickOption('Comprar')">
-                    Comprar {{ currencySelected }}
+                    {{ isBuy ? 'Vender' : 'Comprar' }} {{ currencySelected }}
                   </button>
                 </div>
 
@@ -326,6 +326,7 @@ export default {
       currencyValue: 22.749,
       initCurrencyValue: 22.749,
       valueComparation: '',
+      isBuy: false,
     };
   },
   computed: {
@@ -334,7 +335,6 @@ export default {
   mounted() {
     this.getCurrencies();
     this.getOperations();
-    this.getCalendar();
     this.getValueTwoWay();
   },
   async created() {
@@ -395,6 +395,8 @@ export default {
     },
     async getCalendar() {
       try {
+        const currenciesSelected = this.currenciesSelected.join('/');
+        console.log('currenciesSelected', currenciesSelected);
         const calendar = await invexRepository.getCalendar();
         this.calendarOptions = calendar.Message.map((e) => ({
           ...e,
@@ -417,10 +419,18 @@ export default {
         this.currencySelectedId = ev.target.value;
         this.currenciesSelected = [auxSelected.ccy1, auxSelected.ccy2];
         this.currencySelected = auxSelected.ccy1;
+        this.isBuy = false;
+        this.getCalendar();
       }
     },
     setCurrencySelected(ev) {
       this.currencySelected = ev.target.value;
+      this.isBuy = false;
+      this.currenciesSelected.forEach((e, i) => {
+        if (e === ev.target.value) {
+          this.isBuy = i === 1;
+        }
+      });
     },
     setOperation(ev) {
       this.operationsSelected = ev.target.value;
@@ -476,13 +486,7 @@ export default {
     },
     cancelClick() {
       if (this.solicitarPrecio) {
-        this.progress = 100;
-        this.timeLeft = '00:60';
-        this.setCurrency('4');
-        this.optionSelected = 'Comprar';
-        this.monto = '0';
-        this.solicitarPrecio = false;
-        clearInterval(this.timmerId);
+        window.location.reload();
       }
     },
     handleOpen() {

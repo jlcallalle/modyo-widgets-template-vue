@@ -20,12 +20,20 @@
                       <td>Thu, 02. Dec 2021 15:38:45.968  CDT</td>
                     </tr>
                     <tr>
+                      <td class="spaceTd" />
+                      <td class="spaceTd" />
+                    </tr>
+                    <tr>
                       <td>Requester / Trader</td>
                       <td>INVEXCOMP.TEST / INVEXCOMP.Treasurer 1</td>
                     </tr>
                     <tr>
                       <td>Provider / Trader</td>
                       <td>INVEX.TEST / INVEXMM.AutoDealer</td>
+                    </tr>
+                    <tr>
+                      <td class="spaceTd" />
+                      <td class="spaceTd" />
                     </tr>
                     <tr>
                       <td>Status</td>
@@ -115,5 +123,8 @@ export default {
         font-weight: bold;
         color: #424242;
       }
+  }
+  .spaceTd {
+    height: 49px;
   }
 </style>
