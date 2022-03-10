@@ -8,6 +8,7 @@
               <h2 class="subtitle mb-4">
                 Operación Concertada
               </h2>
+              <!-- <code> {{ crearOperacionConcertada[0] }} </code> -->
               <div class="col-12">
                 <table class="table">
                   <tbody>
@@ -100,6 +101,7 @@ export default {
   },
   computed: {
     ...mapState(['currentView']),
+    ...mapState(['crearOperacionConcertada']),
   },
   methods: {
     /* async onSubmit() {

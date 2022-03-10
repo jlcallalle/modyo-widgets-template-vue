@@ -20,6 +20,19 @@ export default {
       commit('setLoading', false);
     }
   },
+  async updateCrearOperacionConcertada({ commit }, datos) {
+    commit('setLoading', true);
+    try {
+      const response = await ApiRepository.crearOperacion(datos);
+      const infos = response.data;
+      commit('updateCrearOperacionConcertada', infos);
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
+  },
   async getPosts({ commit }) {
     commit('setLoading', true);
     try {

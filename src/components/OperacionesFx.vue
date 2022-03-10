@@ -78,7 +78,7 @@
                   <button
                     type="submit"
                     class="btn btn-block btn-operacion"
-                    @click.prevent="handleOpen">
+                    @click.prevent="eventOperation">
                     {{ isBuy ? 'Comprar' : 'Vender' }} {{ currencySelected }}
                   </button>
                 </div>
@@ -103,7 +103,7 @@
                   <button
                     type="submit"
                     class="btn btn-block btn-operacion"
-                    @click.prevent="handleOpen">
+                    @click.prevent="eventOperation">
                     {{ isBuy ? 'Vender' : 'Comprar' }} {{ currencySelected }}
                   </button>
                 </div>
@@ -327,6 +327,11 @@ export default {
       initCurrencyValue: 22.749,
       valueComparation: '',
       isBuy: false,
+      wsAccount: 'INVEXCOMP.TEST',
+      qrCLOrdID: 'INVEXCOMP.TEST-00020220209124801190',
+      orderType: 'Previously',
+      qPrice: 20.9294,
+      qQuoteID: 'INVEXCOMP.TEST-00020220309124956212-000001',
     };
   },
   computed: {
@@ -489,7 +494,26 @@ export default {
         window.location.reload();
       }
     },
-    handleOpen() {
+    async eventOperation() {
+      const data = {
+        account: this.wsAccount,
+        cLOrdID: this.qrCLOrdID,
+        currency: this.currencySelected,
+        orderQty: this.monto,
+        orderType: this.orderType,
+        price: this.qPrice,
+        quoteID: this.qQuoteID,
+        settlDate: this.calendarSelected,
+        side: this.wsAccount,
+        symbol: this.optionSelected,
+      };
+      console.log('dataConcertacion', data);
+      const responseApiOperacion = await this.$store.dispatch('updateCrearOperacionConcertada', data);
+      if (responseApiOperacion.status === 200 || responseApiOperacion.status === 201) {
+        console.log('operacion ok');
+      } else {
+        console.log('operacion error');
+      }
       this.showModal = true;
     },
     handleClose() {

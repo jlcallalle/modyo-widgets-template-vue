@@ -3,4 +3,5 @@ export default {
   posts: [],
   currentView: 'operacionesFx',
   servicio: null,
+  crearOperacionConcertada: null,
 };

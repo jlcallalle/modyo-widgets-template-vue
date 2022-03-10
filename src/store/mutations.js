@@ -15,4 +15,8 @@ export default {
     state.servicio = payload;
   },
 
+  updateCrearOperacionConcertada(state, payload) {
+    state.crearOperacionConcertada = payload;
+  },
+
 };
