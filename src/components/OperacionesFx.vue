@@ -199,8 +199,9 @@
                       :disabled="solicitarPrecio"
                       :options="{
                         // eslint-disable-next-line no-irregular-whitespace
-                        currency: currencySelected || 'USD',
+                        currency: currencySelected || 'USD',
                         currencyDisplay: 'hidden',
+                        locale: 'en-US',
                         precision: 2,
                         valueRange: { min: 0 },
                         hideCurrencySymbolOnFocus: true, }"
