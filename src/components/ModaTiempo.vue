@@ -35,7 +35,7 @@
               </div>
               <h5
                 class="modal-title">
-                Tiempo Concurrido
+                Tiempo Concluido
               </h5>
               <p>El tiempo de la operación finalizó.</p>
             </div>
