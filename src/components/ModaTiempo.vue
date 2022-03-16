@@ -68,51 +68,5 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.modal-wrapper {
-  height: 100%;
-  .modal-dialog {
-    max-width: 650px;
-    margin: auto;
-    transform: translate3d(0%, 0, 0);
-    transition: all 0.3s linear, right 0.3s ease-out;
-  }
-}
 
-.modal-header {
-    border-bottom: none;
-    padding: 1rem 1rem 0 1rem;
-}
-.modal-title {
-    color: #424242;
-    font-weight: 600;
-    font-size: 24px;
-    line-height: 29px;
-    text-align: center;
-    margin:1.5rem 0 2rem 0;
-}
-.modal-footer {
-    border-top: none;
-    padding-bottom: 2.5rem;
-}
-.modal-mask {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1050;
-    background-color: rgba(0, 0, 0, .5);
-    display: block;
-    transition: all .3s ease;
-}
-button.close {
-  display: flex;
-  align-items: center;
-  opacity: 1;
-  font-weight: normal;
-  font-size: 30px;
-  &:focus {
-    outline: none;
-  }
-}
 </style>
