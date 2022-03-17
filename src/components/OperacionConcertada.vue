@@ -10,62 +10,64 @@
               </h2>
               <!-- <code> {{ crearOperacionConcertada[0] }} </code> -->
               <div class="col-12">
-                <table class="table">
-                  <tbody>
-                    <tr>
-                      <td># Reference</td>
-                      <td>113456032</td>
-                    </tr>
-                    <tr>
-                      <td>Local Date</td>
-                      <td>Thu, 02. Dec 2021 15:38:45.968  CDT</td>
-                    </tr>
-                    <tr>
-                      <td class="spaceTd" />
-                      <td class="spaceTd" />
-                    </tr>
-                    <tr>
-                      <td>Requester / Trader</td>
-                      <td>INVEXCOMP.TEST / INVEXCOMP.Treasurer 1</td>
-                    </tr>
-                    <tr>
-                      <td>Provider / Trader</td>
-                      <td>INVEX.TEST / INVEXMM.AutoDealer</td>
-                    </tr>
-                    <tr>
-                      <td class="spaceTd" />
-                      <td class="spaceTd" />
-                    </tr>
-                    <tr>
-                      <td>Status</td>
-                      <td>Executed</td>
-                    </tr>
-                    <tr class="texto-color">
-                      <td>Product</td>
-                      <td>FX Spot</td>
-                    </tr>
-                    <tr class="texto-color">
-                      <td>Requester Action</td>
-                      <td>I Buy USD / Sell MXN</td>
-                    </tr>
-                    <tr class="texto-color">
-                      <td>Notional Amount</td>
-                      <td>1, 212.00 USD</td>
-                    </tr>
-                    <tr class="texto-color">
-                      <td>Opposite Amount</td>
-                      <td>25, 808.19 MXN</td>
-                    </tr>
-                    <tr class="texto-color">
-                      <td>Effective Date</td>
-                      <td>Spot // Mon, 06 Dec 2021</td>
-                    </tr>
-                    <tr class="texto-color">
-                      <td>Spot Rate</td>
-                      <td>21.29389</td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div class="table-responsive">
+                  <table class="table table-wrap">
+                    <tbody>
+                      <tr>
+                        <td># Reference</td>
+                        <td>113456032</td>
+                      </tr>
+                      <tr>
+                        <td>Local Date</td>
+                        <td>Thu, 02. Dec 2021 15:38:45.968  CDT</td>
+                      </tr>
+                      <tr>
+                        <td class="spaceTd" />
+                        <td class="spaceTd" />
+                      </tr>
+                      <tr>
+                        <td>Requester / Trader</td>
+                        <td>INVEXCOMP.TEST / INVEXCOMP.Treasurer 1</td>
+                      </tr>
+                      <tr>
+                        <td>Provider / Trader</td>
+                        <td>INVEX.TEST / INVEXMM.AutoDealer</td>
+                      </tr>
+                      <tr>
+                        <td class="spaceTd" />
+                        <td class="spaceTd" />
+                      </tr>
+                      <tr>
+                        <td>Status</td>
+                        <td>Executed</td>
+                      </tr>
+                      <tr class="texto-color">
+                        <td>Product</td>
+                        <td>FX Spot</td>
+                      </tr>
+                      <tr class="texto-color">
+                        <td>Requester Action</td>
+                        <td>I Buy USD / Sell MXN</td>
+                      </tr>
+                      <tr class="texto-color">
+                        <td>Notional Amount</td>
+                        <td>1, 212.00 USD</td>
+                      </tr>
+                      <tr class="texto-color">
+                        <td>Opposite Amount</td>
+                        <td>25, 808.19 MXN</td>
+                      </tr>
+                      <tr class="texto-color">
+                        <td>Effective Date</td>
+                        <td>Spot // Mon, 06 Dec 2021</td>
+                      </tr>
+                      <tr class="texto-color">
+                        <td>Spot Rate</td>
+                        <td>21.29389</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
             <div class="box-two-btn d-flex justify-content-around">

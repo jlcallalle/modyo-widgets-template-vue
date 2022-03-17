@@ -463,3 +463,10 @@
       outline: none;
     }
   }
+
+  .table-wrap {
+    @media (max-width: 767px) {
+        word-break: normal;
+        overflow-wrap: anywhere;
+    }
+}
