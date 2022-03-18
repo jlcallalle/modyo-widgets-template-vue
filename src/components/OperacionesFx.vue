@@ -346,9 +346,9 @@ export default {
   async created() {
     const responseApiServicio = await this.$store.dispatch('updateServicio');
     if (responseApiServicio.status === 200 || responseApiServicio.status === 201) {
-      console.log('servicio ok');
+      // console.log('servicio ok');
     } else {
-      console.log('servicio error');
+      // console.log('servicio error');
       this.showModalError = true;
     }
   },
@@ -392,8 +392,9 @@ export default {
     },
     async getCurrencies() {
       try {
-        const divisas = await invexRepository.getCurrencies('1', '2');
-        this.currenciesOptions = divisas.catalogList;
+        const resp = await invexRepository.getCurrencies('1', '2');
+        // eslint-disable-next-line max-len
+        this.currenciesOptions = resp.queryCurrencyPairResponseInterface.body.queryCurrencyPairResponse.return.catalogList;
         this.setCurrenciesOptions({ target: { value: 0 } });
       } catch (error) {
         this.showModalError = true;
@@ -402,8 +403,8 @@ export default {
     async getCalendar() {
       try {
         const currenciesSelected = this.currenciesSelected.join('/');
-        console.log('currenciesSelected', currenciesSelected);
-        const calendar = await invexRepository.getCalendar();
+        // console.log('currenciesSelected', currenciesSelected);
+        const calendar = await invexRepository.getCalendar('INVEXCOM.TEST', currenciesSelected);
         this.calendarOptions = calendar.Message.map((e) => ({
           ...e,
           date: `${e.DateValue.slice(0, 4)}-${e.DateValue.slice(4, 6)}-${e.DateValue.slice(6)}`,
@@ -508,12 +509,12 @@ export default {
         side: this.wsAccount,
         symbol: this.optionSelected,
       };
-      console.log('dataConcertacion', data);
+      // console.log('dataConcertacion', data);
       const responseApiOperacion = await this.$store.dispatch('updateCrearOperacionConcertada', data);
       if (responseApiOperacion.status === 200 || responseApiOperacion.status === 201) {
-        console.log('operacion ok');
+        // console.log('operacion ok');
       } else {
-        console.log('operacion error');
+        // console.log('operacion error');
       }
       this.showModal = true;
     },
