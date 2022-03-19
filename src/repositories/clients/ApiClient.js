@@ -3,7 +3,9 @@ import ModyoProfileClient from './ModyoProfileClient';
 
 const externalApiBase = 'https://herokuapp.com/api/v1';
 const apiServicio = 'https://jsonplaceholder.typicode.com';
+// const apiOperacion = 'http://localhost:3000';
 const apiOperacion = 'http://localhost:3000';
+const apiListaOperacion = 'http://localhost:3000';
 
 const apiClient = axios.create({
   baseURL: externalApiBase,
@@ -25,6 +27,13 @@ const apiClientOperacion = axios.create({
   },
 });
 
+const apiClientListaOperacion = axios.create({
+  baseURL: apiListaOperacion,
+  headers: {
+    'Content-Type': contentType,
+  },
+});
+
 const injectToken = async (config) => {
   try {
     const response = await ModyoProfileClient.get('me');
@@ -40,5 +49,5 @@ apiClient.interceptors.request.use(injectToken);
 
 export default apiClient;
 export {
-  apiClientServicio, apiClientOperacion,
+  apiClientServicio, apiClientOperacion, apiClientListaOperacion,
 };

@@ -19,4 +19,8 @@ export default {
     state.crearOperacionConcertada = payload;
   },
 
+  updateListarOperacionConcertada(state, payload) {
+    state.listarOperacionConcertada = payload;
+  },
+
 };

@@ -4,4 +4,5 @@ export default {
   currentView: 'operacionesFx',
   servicio: null,
   crearOperacionConcertada: null,
+  listarOperacionConcertada: null,
 };

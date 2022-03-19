@@ -8,7 +8,8 @@
               <h2 class="subtitle mb-4">
                 Operación Concertada
               </h2>
-              <!-- <code> {{ crearOperacionConcertada[0] }} </code> -->
+              <code style="display:none"> {{ crearOperacionConcertada }} </code>
+              <code style="display:none">{{ listarOperacionConcertada }}</code>
               <div class="col-12">
                 <div class="table-responsive">
                   <table class="table table-wrap">
@@ -104,6 +105,7 @@ export default {
   computed: {
     ...mapState(['currentView']),
     ...mapState(['crearOperacionConcertada']),
+    ...mapState(['listarOperacionConcertada']),
   },
   methods: {
     /* async onSubmit() {
