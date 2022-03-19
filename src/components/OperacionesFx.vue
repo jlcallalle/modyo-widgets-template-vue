@@ -382,7 +382,14 @@ export default {
     async getOperations() {
       try {
         const options = await invexRepository.getOperations();
-        this.operationsOptions = options;
+        console.log('options', options);
+        const cat = options.operationTypeResponseInterface.body.operationTypeResponse.return.catalogList;
+        console.log('cat', cat);
+        if (!Array.isArray(cat)) {
+          this.operationsOptions.push(cat);
+        }
+        this.operationsOptions = Array.from(cat);
+        console.log('operationsOptions', this.operationsOptions);
         if (this.operationsOptions.length > 0) {
           this.operationsSelected = this.operationsOptions[0].product_code;
         }

@@ -10,11 +10,7 @@ export default {
   },
   // eslint-disable-next-line no-unused-vars
   getOperations(network = 'FX') {
-    const operaciones = [{
-      product_code: 'SPOT',
-      product_description: 'SPOT',
-    }];
-    return new Promise((resolve) => setTimeout(() => resolve(operaciones), 10));
+    return InvexClient.get(`${prefixUrl}/lista-operaciones?network=${network}`);
   },
   // eslint-disable-next-line no-unused-vars
   getCalendar(CustomerID = '', CurrencyPair = 'EUR/USD') {

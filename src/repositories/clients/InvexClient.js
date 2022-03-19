@@ -11,9 +11,13 @@ const invexClient = axios.create({
 
 const injectToken = async (config) => {
   try {
-    const response = await axios.post(`${urltokeninvex}`, {
+    const params = {
       grant_type: 'client_credentials',
-    }, {
+    };
+    const data = Object.keys(params)
+      .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+      .join('&');
+    const response = await axios.post(`${urltokeninvex}`, data, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         Authorization: `Basic ${tokenAuth}`,
