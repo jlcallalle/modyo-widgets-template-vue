@@ -3,7 +3,6 @@ import ModyoProfileClient from './ModyoProfileClient';
 
 const externalApiBase = 'https://herokuapp.com/api/v1';
 const apiServicio = 'https://jsonplaceholder.typicode.com';
-// const apiOperacion = 'http://localhost:3000';
 const apiOperacion = 'http://localhost:3000';
 const apiListaOperacion = 'http://localhost:3000';
 

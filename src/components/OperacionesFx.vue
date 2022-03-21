@@ -6,6 +6,7 @@
       class="mb-4 title-widget">
       Operaciones FX
     </h1>
+    <code style="display:none">{{ servicio }}</code>
     <div class="container container-widget">
       <div class="row">
         <div class="col-md-12 col-xl-8 box-operaciones">
@@ -314,12 +315,10 @@ export default {
       timmerId: null,
       currencySelected: '',
       currenciesOptions: [],
-      operationsOptions: [
-        {
-          productCode: 'SPOT',
-          productDescription: 'SPOT',
-        },
-      ],
+      operationsOptions: [{
+        productCode: 'SPOT',
+        productDescription: 'SPOT',
+      }],
       currenciesSelected: [],
       calendarOptions: [],
       calendarSelected: null,
@@ -342,6 +341,7 @@ export default {
   },
   computed: {
     ...mapState(['currentView']),
+    ...mapState(['servicio']),
   },
   mounted() {
     this.getCurrencies();
@@ -354,7 +354,7 @@ export default {
       // console.log('servicio ok');
     } else {
       // console.log('servicio error');
-      this.showModalError = true;
+      // this.showModalError = true;
     }
   },
   methods: {

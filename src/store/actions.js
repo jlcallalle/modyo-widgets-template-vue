@@ -2,6 +2,7 @@ import Repository from '../repositories/RepositoryFactory';
 
 const PostRepository = Repository.get('posts');
 const ApiRepository = Repository.get('api');
+const JsonPlaceholderRepository = Repository.get('jsonPlaceholder');
 
 export default {
   async updatePage({ commit }, payload) {
@@ -9,7 +10,20 @@ export default {
   },
 
   // Servicio Prueba
-  async updateServicio({ commit }, datos) {
+  async updateServicio({ commit }) {
+    commit('setLoading', true);
+    try {
+      const response = await JsonPlaceholderRepository.getPost();
+      const info = response.data;
+      commit('updateServicio', info);
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
+  },
+  /*  async updateServicio({ commit }, datos) {
     commit('setLoading', true);
     try {
       const response = await ApiRepository.crearServicio(datos);
@@ -21,15 +35,15 @@ export default {
     } finally {
       commit('setLoading', false);
     }
-  },
+  }, */
   // Servicio Listar Operaciones FX
-  async updateListarOperacionConcertada({ commit }, datos) {
+  async updateListarOperaciones({ commit }, datos) {
     commit('setLoading', true);
     try {
       const response = await ApiRepository.listaOperacion(datos);
       // const infos = response.data;
       const infos = response.data.body.operationTypeResponse.return.catalogList;
-      commit('updateListarOperacionConcertada', infos);
+      commit('updateListarOperaciones', infos);
       return response;
     } catch (error) {
       return error;
@@ -57,6 +71,7 @@ export default {
     commit('setLoading', true);
     try {
       const response = await PostRepository.getTop(3);
+      console.log('aaa', response);
       const posts = response.entries.map((entry) => ({
         description: entry.fields.description,
         title: entry.fields.title,

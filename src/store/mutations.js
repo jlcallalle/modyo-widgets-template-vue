@@ -15,12 +15,12 @@ export default {
     state.servicio = payload;
   },
 
-  updateCrearOperacionConcertada(state, payload) {
-    state.crearOperacionConcertada = payload;
+  updateListarOperaciones(state, payload) {
+    state.listarOperacion = payload;
   },
 
-  updateListarOperacionConcertada(state, payload) {
-    state.listarOperacionConcertada = payload;
+  updateCrearOperacionConcertada(state, payload) {
+    state.crearOperacionConcertada = payload;
   },
 
 };
