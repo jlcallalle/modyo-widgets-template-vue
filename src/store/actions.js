@@ -3,6 +3,7 @@ import Repository from '../repositories/RepositoryFactory';
 const PostRepository = Repository.get('posts');
 const ApiRepository = Repository.get('api');
 const JsonPlaceholderRepository = Repository.get('jsonPlaceholder');
+const ListaOperacionesRepository = Repository.get('listaOperaciones');
 
 export default {
   async updatePage({ commit }, payload) {
@@ -23,26 +24,13 @@ export default {
       commit('setLoading', false);
     }
   },
-  /*  async updateServicio({ commit }, datos) {
-    commit('setLoading', true);
-    try {
-      const response = await ApiRepository.crearServicio(datos);
-      const info = response.data;
-      commit('updateServicio', info);
-      return response;
-    } catch (error) {
-      return error;
-    } finally {
-      commit('setLoading', false);
-    }
-  }, */
   // Servicio Listar Operaciones FX
-  async updateListarOperaciones({ commit }, datos) {
+  async updateListarOperaciones({ commit }) {
     commit('setLoading', true);
     try {
-      const response = await ApiRepository.listaOperacion(datos);
-      // const infos = response.data;
-      const infos = response.data.body.operationTypeResponse.return.catalogList;
+      const response = await ListaOperacionesRepository.getListaOpera();
+      const infos = response.data.operationTypeResponseInterface.body.operationTypeResponse.return.catalogList;
+      console.log('lista operaciones', infos);
       commit('updateListarOperaciones', infos);
       return response;
     } catch (error) {

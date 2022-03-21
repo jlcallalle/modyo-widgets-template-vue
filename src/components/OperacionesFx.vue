@@ -6,7 +6,14 @@
       class="mb-4 title-widget">
       Operaciones FX
     </h1>
+    <div
+      v-if="loading"
+      class="invex-loader">
+      <div class="invex-loader_spinner" />
+    </div>
     <code style="display:none">{{ servicio }}</code>
+    <p style="display:none">a {{ listarOperacion }}</p>
+    <p style="display:none">b: {{ operationsOptions }}</p>
     <div class="container container-widget">
       <div class="row">
         <div class="col-md-12 col-xl-8 box-operaciones">
@@ -328,6 +335,7 @@ export default {
       showModalError: false,
       showModalTiempo: false,
       isDisabled: true,
+      // loading: true,
       currencyValue: 22.749,
       initCurrencyValue: 22.749,
       valueComparation: '',
@@ -340,8 +348,10 @@ export default {
     };
   },
   computed: {
+    ...mapState(['loading']),
     ...mapState(['currentView']),
     ...mapState(['servicio']),
+    ...mapState(['listarOperacion']),
   },
   mounted() {
     this.getCurrencies();
@@ -354,6 +364,13 @@ export default {
       // console.log('servicio ok');
     } else {
       // console.log('servicio error');
+      // this.showModalError = true;
+    }
+    const responseApiOperaciones = await this.$store.dispatch('updateListarOperaciones');
+    if (responseApiOperaciones.status === 200 || responseApiOperaciones.status === 201) {
+      console.log('operaciones ok');
+    } else {
+      console.log('operaciones error');
       // this.showModalError = true;
     }
   },
