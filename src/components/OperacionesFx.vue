@@ -25,9 +25,9 @@
                       <option
                         :id="index"
                         :key="index"
-                        :selected="operationsSelected === operation.product_code"
-                        :value="operation.product_code">
-                        {{ operation.product_description }}
+                        :selected="operationsSelected === operation.productCode"
+                        :value="operation.productCode">
+                        {{ operation.productDescription }}
                       </option>
                     </template>
                   </select>
@@ -314,7 +314,12 @@ export default {
       timmerId: null,
       currencySelected: '',
       currenciesOptions: [],
-      operationsOptions: [],
+      operationsOptions: [
+        {
+          productCode: 'SPOT',
+          productDescription: 'SPOT',
+        },
+      ],
       currenciesSelected: [],
       calendarOptions: [],
       calendarSelected: null,
@@ -382,16 +387,12 @@ export default {
     async getOperations() {
       try {
         const options = await invexRepository.getOperations();
-        console.log('options', options);
+        // eslint-disable-next-line no-unused-vars
         const cat = options.operationTypeResponseInterface.body.operationTypeResponse.return.catalogList;
-        console.log('cat', cat);
-        if (!Array.isArray(cat)) {
-          this.operationsOptions.push(cat);
-        }
-        this.operationsOptions = Array.from(cat);
+        // this.operationsOptions = [cat];
         console.log('operationsOptions', this.operationsOptions);
         if (this.operationsOptions.length > 0) {
-          this.operationsSelected = this.operationsOptions[0].product_code;
+          this.operationsSelected = this.operationsOptions[0].productCode;
         }
       } catch (error) {
         this.showModalError = true;
@@ -412,7 +413,9 @@ export default {
         const currenciesSelected = this.currenciesSelected.join('/');
         // console.log('currenciesSelected', currenciesSelected);
         const calendar = await invexRepository.getCalendar('INVEXCOM.TEST', currenciesSelected);
-        this.calendarOptions = calendar.Message.map((e) => ({
+        const calendarList = JSON.parse(calendar.Message);
+        console.log('calendar?', calendar);
+        this.calendarOptions = calendarList.map((e) => ({
           ...e,
           date: `${e.DateValue.slice(0, 4)}-${e.DateValue.slice(4, 6)}-${e.DateValue.slice(6)}`,
         }));

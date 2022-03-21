@@ -153,17 +153,58 @@
 
 <script>
 import { mapState } from 'vuex';
+import RepositoryFactory from '../repositories/RepositoryFactory';
+
+const invexRepository = RepositoryFactory.get('invex');
 
 export default {
   name: 'OperacionLiquidacion',
   data() {
     return {
+      listadoOrigen: [],
+      listadoDestino: [],
     };
   },
   computed: {
     ...mapState(['currentView']),
   },
+  mounted() {
+    this.getListadoOrigen();
+    this.getListadoDestino();
+  },
   methods: {
+    async getListadoOrigen() {
+      const body = {
+        transactionId: '3853-02',
+        requestSystem: 'PORTAL',
+        source: 'PORTALSYS',
+        userId: 'PORTALUSR',
+        branch: '001',
+        sourceUserId: 'PORTALUSR',
+        CustomerNumber: '00004635',
+        Type: 'CE',
+        InternetFolio: '3853',
+        AllowOperate: 'T',
+      };
+      const response = await invexRepository.listaCuentasOrigen(body);
+      this.listadoOrigen = response.cuentas;
+    },
+    async getListadoDestino() {
+      const body = {
+        transactionId: '3853-02',
+        requestSystem: 'PORTAL',
+        source: 'PORTALSYS',
+        userId: 'PORTALUSR',
+        branch: '001',
+        sourceUserId: 'PORTALUSR',
+        CustomerNumber: '00004635',
+        Type: 'CE',
+        InternetFolio: '3853',
+        AllowOperate: 'T',
+      };
+      const response = await invexRepository.listaCuentasDestino(body);
+      this.listadoDestino = response.cuentas;
+    },
   },
 };
 </script>

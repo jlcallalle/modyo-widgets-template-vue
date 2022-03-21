@@ -19,4 +19,19 @@ export default {
       CurrencyPair,
     });
   },
+  getQuote(body) {
+    return InvexClient.post(`${prefixUrl}/quoterequest`, body);
+  },
+  registrarOperacion(body) {
+    return InvexClient.post(`${prefixUrl}/registrar-operacion`, body);
+  },
+  confirmConcertacion(body) {
+    return InvexClient.post(`${prefixUrl}/confirmacion-concertacion`, body);
+  },
+  listaCuentasDestino(body) {
+    return InvexClient.post(`${prefixUrl}/listaCuentasDestino`, body);
+  },
+  listaCuentasOrigen(body) {
+    return InvexClient.post(`${prefixUrl}/lista_cuentas_origen`, body);
+  },
 };
