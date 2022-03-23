@@ -5,4 +5,8 @@ export default {
   servicio: null,
   crearOperacionConcertada: null,
   listarOperacion: null,
+  listaOperaciones: [],
+  listaDivisas: [],
+  calendario: [],
+  quoteRequest: null,
 };

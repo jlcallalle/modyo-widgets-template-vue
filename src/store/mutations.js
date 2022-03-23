@@ -23,4 +23,17 @@ export default {
     state.crearOperacionConcertada = payload;
   },
 
+  // Datos invex
+  setListaOperaciones(state, payload) {
+    state.listaOperaciones = payload;
+  },
+  setListaDivisas(state, payload) {
+    state.listaDivisas = payload;
+  },
+  setCalendario(state, payload) {
+    state.calendario = payload;
+  },
+  setQuoteRequest(state, payload) {
+    state.quoteRequest = payload;
+  },
 };

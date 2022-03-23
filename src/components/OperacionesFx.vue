@@ -297,14 +297,11 @@
 <script>
 import { mapState } from 'vuex';
 import { VueEllipseProgress } from 'vue-ellipse-progress';
-import RepositoryFactory from '../repositories/RepositoryFactory';
 import CurrencyInput from './CurrencyInput.vue';
 import Sidebar from './Sidebar.vue';
 import ModalExitoso from './ModalExitoso.vue';
 import ModalError from './ModalError.vue';
 import ModalTiempo from './ModaTiempo.vue';
-
-const invexRepository = RepositoryFactory.get('invex');
 
 export default {
   name: 'OperacionesFx',
@@ -345,6 +342,7 @@ export default {
       orderType: 'Previously',
       qPrice: 20.9294,
       qQuoteID: 'INVEXCOMP.TEST-00020220309124956212-000001',
+      opSide: 'Buy',
     };
   },
   computed: {
@@ -352,6 +350,8 @@ export default {
     ...mapState(['currentView']),
     ...mapState(['servicio']),
     ...mapState(['listarOperacion']),
+    ...mapState(['listaOperaciones']),
+    ...mapState(['listaDivisas', 'calendario', 'quoteRequest']),
   },
   mounted() {
     this.getCurrencies();
@@ -387,39 +387,63 @@ export default {
         this.solicitarPrecio = false;
         clearInterval(this.timmerId);
       } else {
-        const getHours = new Date().getHours();
-        if (getHours >= 9 && getHours < 18) {
-          if (getHours === 16) {
-            alert('Servicio temporalmente fuera de servicio, intentar a las 5pm por favor');
+        try {
+          const getHours = new Date().getHours();
+          if (getHours >= 9 && getHours < 18) {
+            if (getHours === 16) {
+              alert('Servicio temporalmente fuera de servicio, intentar a las 5pm por favor');
+            } else {
+              // alert('Aceptado');
+            }
           } else {
-            // alert('Aceptado');
+            alert('Fuera de horario');
           }
-        } else {
-          alert('Fuera de horario');
+          let opSide = this.optionSelected === 'Comprar' ? 'Buy' : 'Sell';
+          if (this.isBuy) {
+            opSide = this.optionSelected === 'Comprar' ? 'Sell' : 'Buy';
+          }
+          this.opSide = opSide;
+          const currenciesSelected = this.currenciesSelected.join('/');
+          const tomorrow = `${new Date().getFullYear()}${new Date().getMonth() < 10 ? '0' : ''}${new Date().getMonth() + 1}${new Date().getDate() < 9 ? '0' : ''}${new Date().getDate() + 1}`;
+          const body = {
+            ProductType: 'FX_STD',
+            NoRelatedSym: [{
+              Symbol: currenciesSelected,
+              Side: opSide,
+              OrderQty: this.monto.toString(),
+              SettlDate: tomorrow,
+              Currency: this.currencySelected,
+              Account: 'INVEXCOMP.TEST',
+              OperationName: 'FORWARD',
+            }],
+          };
+          console.log('body????', body);
+          const rsp = await this.$store.dispatch('getQuoteRequest', body);
+          const rspMsg = JSON.parse(rsp.Message);
+          this.currencyValue = rspMsg.BuyPrice;
+          if (this.opSide === 'Sell') {
+            this.currencyValue = rspMsg.SellPrice;
+          }
+          this.initCurrencyValue = this.currencyValue;
+          this.qQuoteID = rspMsg.QuoteReqID;
+          this.solicitarPrecio = true;
+          this.startTimer();
+        } catch (err) {
+          console.log(err);
         }
-        this.solicitarPrecio = true;
-        this.startTimer();
       }
     },
     async getOperations() {
       try {
-        const options = await invexRepository.getOperations();
-        // eslint-disable-next-line no-unused-vars
-        const cat = options.operationTypeResponseInterface.body.operationTypeResponse.return.catalogList;
-        // this.operationsOptions = [cat];
-        console.log('operationsOptions', this.operationsOptions);
-        if (this.operationsOptions.length > 0) {
-          this.operationsSelected = this.operationsOptions[0].productCode;
-        }
+        await this.$store.dispatch('getListaOperaciones');
       } catch (error) {
         this.showModalError = true;
       }
     },
     async getCurrencies() {
       try {
-        const resp = await invexRepository.getCurrencies('1', '2');
-        // eslint-disable-next-line max-len
-        this.currenciesOptions = resp.queryCurrencyPairResponseInterface.body.queryCurrencyPairResponse.return.catalogList;
+        await this.$store.dispatch('getDivisas');
+        this.currenciesOptions = this.listaDivisas;
         this.setCurrenciesOptions({ target: { value: 0 } });
       } catch (error) {
         this.showModalError = true;
@@ -429,13 +453,8 @@ export default {
       try {
         const currenciesSelected = this.currenciesSelected.join('/');
         // console.log('currenciesSelected', currenciesSelected);
-        const calendar = await invexRepository.getCalendar('INVEXCOM.TEST', currenciesSelected);
-        const calendarList = JSON.parse(calendar.Message);
-        console.log('calendar?', calendar);
-        this.calendarOptions = calendarList.map((e) => ({
-          ...e,
-          date: `${e.DateValue.slice(0, 4)}-${e.DateValue.slice(4, 6)}-${e.DateValue.slice(6)}`,
-        }));
+        await this.$store.dispatch('getCalendario', currenciesSelected);
+        this.calendarOptions = this.calendario;
         if (this.calendarOptions.length > 0) {
           // eslint-disable-next-line prefer-destructuring
           this.calendarSelected = this.calendarOptions[0].date;
@@ -486,27 +505,31 @@ export default {
         this.optionSelected = txt;
       }
     },
-    startTimer() {
+    async startTimer() {
       let sec = 60;
       this.progress = 100;
       this.timeLeft = '00:60';
-      const timer = setInterval(() => {
+      const timer = setInterval(async () => {
         this.timeLeft = `00:${sec < 10 ? '0' : ''}${sec}`;
         let progressAux = sec * 100;
         progressAux /= 60;
         this.progress = progressAux;
         sec -= 1;
-        if (sec < 58) {
-          const newCurrencyValue = (Math.random() * 4) + 20;
-          this.currencyValue = newCurrencyValue.toFixed(3);
-          if (newCurrencyValue > this.initCurrencyValue) {
-            this.valueComparation = '+';
-          }
-          if (newCurrencyValue < this.initCurrencyValue) {
-            this.valueComparation = '-';
-          }
-          if (newCurrencyValue === this.initCurrencyValue) {
-            this.valueComparation = '';
+        if (sec % 2 === 0) {
+          const rsp = await this.$store.dispatch('getQuote', { quoteId: this.qQuoteID, opSide: this.opSide });
+          if (rsp.DataIdentifier === 7) {
+            console.log('rsp', rsp);
+            const rspMsg = JSON.parse(rsp.Message);
+            console.log('rspmsg', rspMsg);
+            const newCurrencyValue = this.opSide === 'Buy' ? rspMsg.BuyPrice : rspMsg.SellPrice;
+            if (Number(newCurrencyValue) > Number(this.initCurrencyValue)) {
+              this.valueComparation = '+';
+            } else if (Number(newCurrencyValue) < Number(this.initCurrencyValue)) {
+              this.valueComparation = '-';
+            } else {
+              this.valueComparation = '';
+            }
+            this.currencyValue = newCurrencyValue;
           }
         }
         if (sec < 0) {
