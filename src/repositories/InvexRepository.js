@@ -23,7 +23,6 @@ export default {
     return InvexClient.post(`${prefixUrl}/quoterequest`, body);
   },
   getQuote(quoteId, opSide) {
-    console.log('opSide', opSide);
     return InvexClient.get(
       `${prefixUrl}/quote?QuoteReqID=${quoteId}&OperationSide=${opSide}&OperationName=FORWARD`,
     );

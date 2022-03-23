@@ -152,4 +152,18 @@ export default {
       // commit('setLoading', false);
     }
   },
+
+  async createConcertacion({ commit }, body) {
+    commit('setLoading', true);
+    try {
+      const response = await InvexRepository.confirmConcertacion(body);
+      const infos = JSON.parse(response.Message);
+      commit('setOperacionConcertada', infos);
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
+  },
 };

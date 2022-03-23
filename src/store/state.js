@@ -9,4 +9,5 @@ export default {
   listaDivisas: [],
   calendario: [],
   quoteRequest: null,
+  operacionConcertada: null,
 };

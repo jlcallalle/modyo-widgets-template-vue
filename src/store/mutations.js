@@ -36,4 +36,7 @@ export default {
   setQuoteRequest(state, payload) {
     state.quoteRequest = payload;
   },
+  setOperacionConcertada(state, payload) {
+    state.operacionConcertada = payload;
+  },
 };

@@ -417,7 +417,6 @@ export default {
               OperationName: 'FORWARD',
             }],
           };
-          console.log('body????', body);
           const rsp = await this.$store.dispatch('getQuoteRequest', body);
           const rspMsg = JSON.parse(rsp.Message);
           this.currencyValue = rspMsg.BuyPrice;
@@ -518,9 +517,7 @@ export default {
         if (sec % 2 === 0) {
           const rsp = await this.$store.dispatch('getQuote', { quoteId: this.qQuoteID, opSide: this.opSide });
           if (rsp.DataIdentifier === 7) {
-            console.log('rsp', rsp);
             const rspMsg = JSON.parse(rsp.Message);
-            console.log('rspmsg', rspMsg);
             const newCurrencyValue = this.opSide === 'Buy' ? rspMsg.BuyPrice : rspMsg.SellPrice;
             if (Number(newCurrencyValue) > Number(this.initCurrencyValue)) {
               this.valueComparation = '+';
@@ -547,25 +544,24 @@ export default {
       }
     },
     async eventOperation() {
-      const data = {
-        account: this.wsAccount,
-        cLOrdID: this.qrCLOrdID,
-        currency: this.currencySelected,
-        orderQty: this.monto,
-        orderType: this.orderType,
-        price: this.qPrice,
-        quoteID: this.qQuoteID,
-        settlDate: this.calendarSelected,
-        side: this.wsAccount,
-        symbol: this.optionSelected,
+      const currenciesSelected = this.currenciesSelected.join('/');
+      const tomorrow = `${new Date().getFullYear()}${new Date().getMonth() < 10 ? '0' : ''}${new Date().getMonth() + 1}${new Date().getDate() < 9 ? '0' : ''}${new Date().getDate() + 1}`;
+      const bodyConcertacion = {
+        Account: 'INVEXCOMP.TEST',
+        CLOrdID: 'INVEXCOMP.TEST-00020220209124801190',
+        Currency: this.currencySelected,
+        OrderQty: this.monto.toString(),
+        OrderType: 'Previously',
+        Price: this.currencyValue.toString(),
+        QuoteID: this.qQuoteID,
+        SettlDate: tomorrow,
+        Side: this.opSide,
+        Symbol: currenciesSelected,
       };
       // console.log('dataConcertacion', data);
-      const responseApiOperacion = await this.$store.dispatch('updateCrearOperacionConcertada', data);
-      if (responseApiOperacion.status === 200 || responseApiOperacion.status === 201) {
-        // console.log('operacion ok');
-      } else {
-        // console.log('operacion error');
-      }
+      const responseApiOperacion = await this.$store.dispatch('createConcertacion', bodyConcertacion);
+      // revisar respuesta
+      console.log('responseApiOperacion', responseApiOperacion);
       this.showModal = true;
     },
     handleClose() {
