@@ -11,6 +11,10 @@ export default {
     state.currentView = payload;
   },
 
+  updateClientLogeo(state, payload) {
+    state.mapClientLogeo = payload;
+  },
+
   updateServicio(state, payload) {
     state.servicio = payload;
   },
@@ -23,4 +27,20 @@ export default {
     state.crearOperacionConcertada = payload;
   },
 
+  // Datos invex
+  setListaOperaciones(state, payload) {
+    state.listaOperaciones = payload;
+  },
+  setListaDivisas(state, payload) {
+    state.listaDivisas = payload;
+  },
+  setCalendario(state, payload) {
+    state.calendario = payload;
+  },
+  setQuoteRequest(state, payload) {
+    state.quoteRequest = payload;
+  },
+  setOperacionConcertada(state, payload) {
+    state.operacionConcertada = payload;
+  },
 };

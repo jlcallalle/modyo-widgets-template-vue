@@ -19,8 +19,13 @@ export default {
       CurrencyPair,
     });
   },
-  getQuote(body) {
+  getQuoteRequest(body) {
     return InvexClient.post(`${prefixUrl}/quoterequest`, body);
+  },
+  getQuote(quoteId, opSide) {
+    return InvexClient.get(
+      `${prefixUrl}/quote?QuoteReqID=${quoteId}&OperationSide=${opSide}&OperationName=FORWARD`,
+    );
   },
   registrarOperacion(body) {
     return InvexClient.post(`${prefixUrl}/registrar-operacion`, body);

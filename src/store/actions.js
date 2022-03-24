@@ -1,13 +1,18 @@
 import Repository from '../repositories/RepositoryFactory';
 
 const PostRepository = Repository.get('posts');
-const ApiRepository = Repository.get('api');
+// const ApiRepository = Repository.get('api');
 const JsonPlaceholderRepository = Repository.get('jsonPlaceholder');
 const ListaOperacionesRepository = Repository.get('listaOperaciones');
+const InvexRepository = Repository.get('invex');
 
 export default {
   async updatePage({ commit }, payload) {
     commit('updatePage', payload);
+  },
+
+  async updateClientLogeo({ commit }, payload) {
+    commit('updateClientLogeo', payload);
   },
 
   // Servicio Prueba
@@ -41,12 +46,13 @@ export default {
   },
 
   // Servicio Crear Operacion Concertada
-  async updateCrearOperacionConcertada({ commit }, datos) {
+  async updateCrearOperacionConcertada({ commit }, body) {
     commit('setLoading', true);
     try {
-      const response = await ApiRepository.crearOperacion(datos);
+      const response = await InvexRepository.confirmConcertacion(body);
       // const infos = response.data;
-      const infos = response.data.body.operationTypeResponse.return.catalogList;
+      const infos = JSON.parse(response.Message);
+      console.log('concerta vuex', infos);
       commit('updateCrearOperacionConcertada', infos);
       return response;
     } catch (error) {
@@ -68,6 +74,96 @@ export default {
         imageAlt: entry.fields.covers ? entry.fields.covers[0].alt_text : '',
       }));
       commit('updatePosts', posts);
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
+  },
+
+  // Datos invex
+  async getListaOperaciones({ commit }) {
+    commit('setLoading', true);
+    try {
+      const response = await InvexRepository.getOperations();
+      const infos = response.operationTypeResponseInterface.body.operationTypeResponse.return.catalogList;
+      commit('setListaOperaciones', [infos]);
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
+  },
+
+  async getDivisas({ commit }) {
+    commit('setLoading', true);
+    try {
+      const response = await InvexRepository.getCurrencies();
+      const infos = response.queryCurrencyPairResponseInterface.body.queryCurrencyPairResponse.return.catalogList;
+      commit('setListaDivisas', infos);
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
+  },
+
+  async getCalendario({ commit }, currency) {
+    commit('setLoading', true);
+    try {
+      const response = await InvexRepository.getCalendar('INVEXCOM.TEST', currency);
+      const infos = JSON.parse(response.Message);
+      const cal = infos.map((e) => ({
+        ...e,
+        date: `${e.DateValue.slice(0, 4)}-${e.DateValue.slice(4, 6)}-${e.DateValue.slice(6)}`,
+      }));
+      commit('setCalendario', cal);
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
+  },
+
+  async getQuoteRequest({ commit }, body) {
+    commit('setLoading', true);
+    try {
+      const response = await InvexRepository.getQuoteRequest(body);
+      const infos = JSON.parse(response.Message);
+      commit('setQuoteRequest', infos);
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
+  },
+
+  // eslint-disable-next-line no-empty-pattern
+  async getQuote({}, body) {
+    // commit('setLoading', true);
+    try {
+      const response = await InvexRepository.getQuote(body.quoteId, body.opSide);
+      // const infos = JSON.parse(response.Message);
+      // commit('setQuote', infos);
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      // commit('setLoading', false);
+    }
+  },
+
+  async createConcertacion({ commit }, body) {
+    commit('setLoading', true);
+    try {
+      const response = await InvexRepository.confirmConcertacion(body);
+      const infos = JSON.parse(response.Message);
+      commit('setOperacionConcertada', infos);
       return response;
     } catch (error) {
       return error;
