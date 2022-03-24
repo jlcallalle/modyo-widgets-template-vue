@@ -11,6 +11,10 @@ export default {
     state.currentView = payload;
   },
 
+  updateClientLogeo(state, payload) {
+    state.mapClientLogeo = payload;
+  },
+
   updateServicio(state, payload) {
     state.servicio = payload;
   },

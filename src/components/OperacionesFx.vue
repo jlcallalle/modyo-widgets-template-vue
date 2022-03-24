@@ -11,9 +11,13 @@
       class="invex-loader">
       <div class="invex-loader_spinner" />
     </div>
-    <code style="display:none">{{ servicio }}</code>
-    <p style="display:none">a {{ listarOperacion }}</p>
-    <p style="display:none">b: {{ operationsOptions }}</p>
+    <code style="display:none">{{ mapClientLogeo }}</code>
+    <p style="display:none">
+      a {{ listarOperacion }}
+    </p>
+    <p style="display:none">
+      b: {{ operationsOptions }}
+    </p>
     <div class="container container-widget">
       <div class="row">
         <div class="col-md-12 col-xl-8 box-operaciones">
@@ -27,15 +31,14 @@
                   <select
                     id="tipoOperacionlSelect"
                     class="form-control"
-                    :disabled="solicitarPrecio"
-                    @change="setOperation($event)">
-                    <template v-for="(operation, index) in operationsOptions">
+                    :disabled="solicitarPrecio">
+                    <template v-for="(value, key, index) in listarOperacion">
                       <option
-                        :id="index"
+                        v-if="index === 0"
                         :key="index"
-                        :selected="operationsSelected === operation.productCode"
-                        :value="operation.productCode">
-                        {{ operation.productDescription }}
+                        :value="value"
+                        :selected="index === 0">
+                        {{ value }}
                       </option>
                     </template>
                   </select>
@@ -348,10 +351,15 @@ export default {
   computed: {
     ...mapState(['loading']),
     ...mapState(['currentView']),
+    ...mapState(['mapClientLogeo']),
     ...mapState(['servicio']),
     ...mapState(['listarOperacion']),
     ...mapState(['listaOperaciones']),
-    ...mapState(['listaDivisas', 'calendario', 'quoteRequest']),
+    ...mapState([
+      'listaDivisas',
+      'calendario',
+      'quoteRequest',
+    ]),
   },
   mounted() {
     this.getCurrencies();
@@ -368,9 +376,9 @@ export default {
     }
     const responseApiOperaciones = await this.$store.dispatch('updateListarOperaciones');
     if (responseApiOperaciones.status === 200 || responseApiOperaciones.status === 201) {
-      console.log('operaciones ok');
+      // console.log('operaciones ok');
     } else {
-      console.log('operaciones error');
+      // console.log('operaciones error');
       // this.showModalError = true;
     }
   },
@@ -404,7 +412,6 @@ export default {
           }
           this.opSide = opSide;
           const currenciesSelected = this.currenciesSelected.join('/');
-          console.log('calendarSelected', this.calendarSelected);
           const tomorrow = this.calendarSelected.replace(/-/g, '');
           const body = {
             ProductType: 'FX_STD',
@@ -429,7 +436,7 @@ export default {
           this.solicitarPrecio = true;
           this.startTimer();
         } catch (err) {
-          console.log(err);
+          // console.log(err);
         }
       }
     },
@@ -548,23 +555,26 @@ export default {
       const currenciesSelected = this.currenciesSelected.join('/');
       const tomorrow = this.calendarSelected.replace(/-/g, '');
       const bodyConcertacion = {
-        Account: 'INVEXCOMP.TEST',
-        CLOrdID: 'INVEXCOMP.TEST-00020220209124801190',
+        Account: this.wsAccount,
+        CLOrdID: this.qrCLOrdID,
         Currency: this.currencySelected,
         OrderQty: this.monto.toString(),
-        OrderType: 'Previously',
+        OrderType: this.orderType,
         Price: this.currencyValue.toString(),
-        QuoteID: this.qQuoteID,
+        QuoteID: this.quoteRequest.QuoteID,
         SettlDate: tomorrow,
         Side: this.opSide,
         Symbol: currenciesSelected,
       };
-      // console.log('dataConcertacion', data);
-      // const responseApiOperacion = await this.$store.dispatch('createConcertacion', bodyConcertacion);
-      // revisar respuesta
-      console.log('responseApiOperacion', bodyConcertacion);
       clearInterval(this.timmerId);
-      this.showModal = true;
+      const responseApiConcertacion = await this.$store.dispatch('createConcertacion', bodyConcertacion);
+      if (responseApiConcertacion.DataIdentifier === 9) {
+        this.showModal = true;
+        // console.log('concertacion ok');
+      } else {
+        this.showModalError = true;
+        // console.log('concertacion error');
+      }
     },
     handleClose() {
       this.showModal = false;
