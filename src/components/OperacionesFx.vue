@@ -404,7 +404,8 @@ export default {
           }
           this.opSide = opSide;
           const currenciesSelected = this.currenciesSelected.join('/');
-          const tomorrow = `${new Date().getFullYear()}${new Date().getMonth() < 10 ? '0' : ''}${new Date().getMonth() + 1}${new Date().getDate() < 9 ? '0' : ''}${new Date().getDate() + 1}`;
+          console.log('calendarSelected', this.calendarSelected);
+          const tomorrow = this.calendarSelected.replace(/-/g, '');
           const body = {
             ProductType: 'FX_STD',
             NoRelatedSym: [{
@@ -545,7 +546,7 @@ export default {
     },
     async eventOperation() {
       const currenciesSelected = this.currenciesSelected.join('/');
-      const tomorrow = `${new Date().getFullYear()}${new Date().getMonth() < 10 ? '0' : ''}${new Date().getMonth() + 1}${new Date().getDate() < 9 ? '0' : ''}${new Date().getDate() + 1}`;
+      const tomorrow = this.calendarSelected.replace(/-/g, '');
       const bodyConcertacion = {
         Account: 'INVEXCOMP.TEST',
         CLOrdID: 'INVEXCOMP.TEST-00020220209124801190',
@@ -559,9 +560,10 @@ export default {
         Symbol: currenciesSelected,
       };
       // console.log('dataConcertacion', data);
-      const responseApiOperacion = await this.$store.dispatch('createConcertacion', bodyConcertacion);
+      // const responseApiOperacion = await this.$store.dispatch('createConcertacion', bodyConcertacion);
       // revisar respuesta
-      console.log('responseApiOperacion', responseApiOperacion);
+      console.log('responseApiOperacion', bodyConcertacion);
+      clearInterval(this.timmerId);
       this.showModal = true;
     },
     handleClose() {

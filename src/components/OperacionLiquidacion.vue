@@ -1,5 +1,10 @@
 <template>
   <div class="widget-operacion-liquidación">
+    <div
+      v-if="loading"
+      class="invex-loader">
+      <div class="invex-loader_spinner" />
+    </div>
     <div class="container container-widget">
       <div class="row">
         <div class="col-md-12 col-lg-8 box-operaciones">
@@ -76,18 +81,23 @@
                     for="tipoCuentalSelect">Cuenta de Origen:</label>
                   <select
                     id="tipoCuentalSelect"
-                    class="form-control">
-                    <option value="fx-spot">
-                      MXN INVEX-**********1234
-                    </option>
-                    <option value="fx-forward">
-                      MXN INVEX-**********4321
-                    </option>
+                    class="form-control"
+                    @change="setOrigen($event)">
+                    <template v-for="(origen, index) in listadoOrigen">
+                      <option
+                        :id="index"
+                        :key="index"
+                        :selected="origenSelected === origen.customerAccount"
+                        :value="origen.customerAccount">
+                        {{ `${origen.currency}
+                        ${origen.type}-**********${origen.customerAccount.slice(origen.customerAccount.length - 4)}` }}
+                      </option>
+                    </template>
                   </select>
                 </div>
                 <a
-                  href=""
-                  class="box-alta">
+                  class="box-alta"
+                  @click="getListadoOrigen()">
                   <i class="icon-cruz">
                     <svg
                       width="15"
@@ -109,18 +119,25 @@
                     for="tipoCuentalSelect">Cuenta de Destino:</label>
                   <select
                     id="tipoCuentalSelect"
-                    class="form-control">
-                    <option value="fx-spot">
-                      USD INVEX-**********4567
-                    </option>
-                    <option value="fx-forward">
-                      MXN INVEX-**********7654
-                    </option>
+                    class="form-control"
+                    :disabled="origenSelected === null"
+                    @change="setDestino($event)">
+                    <template v-for="(destino, index) in listadoDestino">
+                      <option
+                        :id="index"
+                        :key="index"
+                        :selected="destinoSelected === destino.BeneficiaryAccount"
+                        :value="destino.BeneficiaryAccount">
+                        {{ `${destino.BeneficiaryBank}-**********
+                        ${destino.BeneficiaryAccount.toString()
+                        .slice(destino.BeneficiaryAccount.toString().length - 4)}` }}
+                      </option>
+                    </template>
                   </select>
                 </div>
                 <a
-                  href=""
-                  class="box-alta">
+                  class="box-alta"
+                  @click="getListadoDestino()">
                   <i class="icon-cruz">
                     <svg
                       width="15"
@@ -153,9 +170,6 @@
 
 <script>
 import { mapState } from 'vuex';
-import RepositoryFactory from '../repositories/RepositoryFactory';
-
-const invexRepository = RepositoryFactory.get('invex');
 
 export default {
   name: 'OperacionLiquidacion',
@@ -163,16 +177,28 @@ export default {
     return {
       listadoOrigen: [],
       listadoDestino: [],
+      origenSelected: null,
+      destinoSelected: null,
+      cuentaOrigen: null,
+      cuentaDestino: null,
     };
   },
   computed: {
-    ...mapState(['currentView']),
+    ...mapState(['currentView', 'loading']),
   },
   mounted() {
     this.getListadoOrigen();
-    this.getListadoDestino();
   },
   methods: {
+    setOrigen(event) {
+      this.origenSelected = event.target.value;
+      this.cuentaOrigen = this.listadoOrigen.find((item) => item.customerAccount === this.origenSelected);
+      this.getListadoDestino();
+    },
+    setDestino(event) {
+      this.destinoSelected = event.target.value;
+      this.cuentaDestino = this.listadoDestino.find((item) => item.BeneficiaryAccount === this.destinoSelected);
+    },
     async getListadoOrigen() {
       const body = {
         transactionId: '3853-02',
@@ -186,24 +212,41 @@ export default {
         InternetFolio: '3853',
         AllowOperate: 'T',
       };
-      const response = await invexRepository.listaCuentasOrigen(body);
-      this.listadoOrigen = response.cuentas;
+      const response = await this.$store.dispatch('getListaOrigen', body);
+      if (Array.isArray(response.cuentas)) {
+        this.listadoOrigen = response.cuentas;
+      } else {
+        this.listadoOrigen = [response.cuentas];
+      }
+      if (this.listadoOrigen.length > 0) {
+        this.setOrigen({ target: { value: this.listadoOrigen[0].customerAccount } });
+      }
     },
     async getListadoDestino() {
       const body = {
-        transactionId: '3853-02',
+        transactionId: '13 - 00003749 - 20210218 11:57:00',
         requestSystem: 'PORTAL',
         source: 'PORTALSYS',
         userId: 'PORTALUSR',
         branch: '001',
         sourceUserId: 'PORTALUSR',
-        CustomerNumber: '00004635',
-        Type: 'CE',
-        InternetFolio: '3853',
-        AllowOperate: 'T',
+        CustomerAccount: '00101011551',
+        SameBank: false,
+        IsBeneficiaryCreditCard: false,
       };
-      const response = await invexRepository.listaCuentasDestino(body);
-      this.listadoDestino = response.cuentas;
+      const response = await this.$store.dispatch('getListaDestino', body);
+      const respAux = JSON.parse(JSON.stringify(response));
+      console.log('response ->', respAux);
+      if (response) {
+        if (Array.isArray(respAux.cuentas)) {
+          this.$set(this, 'listadoDestino', respAux.cuentas);
+        } else {
+          this.$set(this, 'listadoDestino', [respAux.cuentas]);
+        }
+        if (this.listadoDestino.length > 0) {
+          this.setDestino({ target: { value: this.listadoDestino[0].BeneficiaryAccount } });
+        }
+      }
     },
   },
 };

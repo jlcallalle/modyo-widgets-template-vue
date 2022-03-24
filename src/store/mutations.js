@@ -39,4 +39,10 @@ export default {
   setOperacionConcertada(state, payload) {
     state.operacionConcertada = payload;
   },
+  setListaOrigen(state, payload) {
+    state.listaOrigen = payload;
+  },
+  setListaDestino(state, payload) {
+    state.listaDestino = payload;
+  },
 };

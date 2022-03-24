@@ -1,7 +1,7 @@
 export default {
   loading: true,
   posts: [],
-  currentView: 'operacionesFx',
+  currentView: 'operacionLiquidacion',
   servicio: null,
   crearOperacionConcertada: null,
   listarOperacion: null,
@@ -10,4 +10,6 @@ export default {
   calendario: [],
   quoteRequest: null,
   operacionConcertada: null,
+  listaOrigen: [],
+  listaDestino: [],
 };

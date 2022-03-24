@@ -31,7 +31,7 @@ export default {
     try {
       const response = await ListaOperacionesRepository.getListaOpera();
       const infos = response.data.operationTypeResponseInterface.body.operationTypeResponse.return.catalogList;
-      console.log('lista operaciones', infos);
+      // console.log('lista operaciones', infos);
       commit('updateListarOperaciones', infos);
       return response;
     } catch (error) {
@@ -60,7 +60,7 @@ export default {
     commit('setLoading', true);
     try {
       const response = await PostRepository.getTop(3);
-      console.log('aaa', response);
+      // console.log('aaa', response);
       const posts = response.entries.map((entry) => ({
         description: entry.fields.description,
         title: entry.fields.title,
@@ -157,8 +157,42 @@ export default {
     commit('setLoading', true);
     try {
       const response = await InvexRepository.confirmConcertacion(body);
-      const infos = JSON.parse(response.Message);
+      const infos = response.body.operationTypeResponse.return.catalogList;
       commit('setOperacionConcertada', infos);
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
+  },
+
+  async getListaOrigen({ commit }, body) {
+    commit('setLoading', true);
+    try {
+      const response = await InvexRepository.listaCuentasOrigen(body);
+      // console.log('responseListaOrigen', response);
+      if (response) {
+        const infos = response.cuentas;
+        commit('setListaOrigen', infos);
+      }
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
+  },
+
+  async getListaDestino({ commit }, body) {
+    commit('setLoading', true);
+    try {
+      const response = await InvexRepository.listaCuentasDestino(body);
+      // console.log('responseListaDestino', response);
+      if (response) {
+        const infos = response.cuentas;
+        commit('setListaDestino', infos);
+      }
       return response;
     } catch (error) {
       return error;
