@@ -8,6 +8,7 @@
               <h2 class="subtitle mb-4">
                 Operación Concertada
               </h2>
+              <code style="display:none"> macpdeClientLogeo {{ mapClientLogeo }} </code>
               <code style="display:none"> {{ crearOperacionConcertada }} </code>
               <code style="display:none">{{ listarOperacionConcertada }}</code>
               <div class="col-12">
@@ -16,11 +17,13 @@
                     <tbody>
                       <tr>
                         <td># Reference</td>
-                        <td>113456032</td>
+                        <!-- <td>113456032</td> -->
+                        <td>{{ crearOperacionConcertada.OrderID }}</td>
                       </tr>
                       <tr>
                         <td>Local Date</td>
-                        <td>Thu, 02. Dec 2021 15:38:45.968  CDT</td>
+                        <!-- <td>Thu, 02. Dec 2021 15:38:45.968  CDT</td> -->
+                        <td>{{ crearOperacionConcertada.TransactTime }}</td>
                       </tr>
                       <tr>
                         <td class="spaceTd" />
@@ -28,11 +31,13 @@
                       </tr>
                       <tr>
                         <td>Requester / Trader</td>
-                        <td>INVEXCOMP.TEST / INVEXCOMP.Treasurer 1</td>
+                        <!-- <td>INVEXCOMP.TEST / INVEXCOMP.Treasurer 1</td> -->
+                        <td>{{ crearOperacionConcertada.Account }} </td>
                       </tr>
                       <tr>
                         <td>Provider / Trader</td>
-                        <td>INVEX.TEST / INVEXMM.AutoDealer</td>
+                        <!-- <td>INVEX.TEST / INVEXMM.AutoDealer</td> -->
+                        <td>{{ crearOperacionConcertada.SecurityID }} </td>
                       </tr>
                       <tr>
                         <td class="spaceTd" />
@@ -40,31 +45,43 @@
                       </tr>
                       <tr>
                         <td>Status</td>
-                        <td>Executed</td>
+                        <!-- <td>Executed</td> -->
+                        <td>{{ crearOperacionConcertada.OrdStatus }} </td>
                       </tr>
                       <tr class="texto-color">
                         <td>Product</td>
-                        <td>FX Spot</td>
+                        <!-- <td>FX Spot</td> -->
+                        <td> <span v-if="listarOperacion.productCode == 'SPOT'"> FX Spot</span></td>
                       </tr>
                       <tr class="texto-color">
                         <td>Requester Action</td>
-                        <td>I Buy USD / Sell MXN</td>
+                        <td>
+                          I
+                          <span v-if="crearOperacionConcertada.Side== '1'"> Buy </span>
+                          <span v-else-if="crearOperacionConcertada.Side == '2'"> Sell</span>
+                          {{ crearOperacionConcertada.Currency }}
+                        </td>
+                        <!-- <td>I Buy USD / Sell MXN</td> -->
                       </tr>
                       <tr class="texto-color">
                         <td>Notional Amount</td>
-                        <td>1, 212.00 USD</td>
+                        <!-- <td>1, 212.00 USD</td> -->
+                        <td>{{ crearOperacionConcertada.OrderQty }} {{ crearOperacionConcertada.Currency }}</td>
                       </tr>
                       <tr class="texto-color">
                         <td>Opposite Amount</td>
-                        <td>25, 808.19 MXN</td>
+                        <!-- <td>25, 808.19 MXN</td> -->
+                        <td>{{ crearOperacionConcertada.Price }}</td>
                       </tr>
                       <tr class="texto-color">
                         <td>Effective Date</td>
-                        <td>Spot // Mon, 06 Dec 2021</td>
+                        <!-- <td>Spot // Mon, 06 Dec 2021</td> -->
+                        <td>{{ crearOperacionConcertada.SettlDate }}</td>
                       </tr>
                       <tr class="texto-color">
                         <td>Spot Rate</td>
-                        <td>21.29389</td>
+                        <!-- <td>21.29389</td> -->
+                        <td>{{ crearOperacionConcertada.LastPx }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -104,8 +121,10 @@ export default {
   },
   computed: {
     ...mapState(['currentView']),
+    ...mapState(['mapClientLogeo']),
     ...mapState(['crearOperacionConcertada']),
     ...mapState(['listarOperacionConcertada']),
+    ...mapState(['listarOperacion']),
   },
   methods: {
     /* async onSubmit() {

@@ -1,7 +1,7 @@
 import Repository from '../repositories/RepositoryFactory';
 
 const PostRepository = Repository.get('posts');
-const ApiRepository = Repository.get('api');
+// const ApiRepository = Repository.get('api');
 const JsonPlaceholderRepository = Repository.get('jsonPlaceholder');
 const ListaOperacionesRepository = Repository.get('listaOperaciones');
 const InvexRepository = Repository.get('invex');
@@ -9,6 +9,10 @@ const InvexRepository = Repository.get('invex');
 export default {
   async updatePage({ commit }, payload) {
     commit('updatePage', payload);
+  },
+
+  async updateClientLogeo({ commit }, payload) {
+    commit('updateClientLogeo', payload);
   },
 
   // Servicio Prueba
@@ -42,12 +46,13 @@ export default {
   },
 
   // Servicio Crear Operacion Concertada
-  async updateCrearOperacionConcertada({ commit }, datos) {
+  async updateCrearOperacionConcertada({ commit }, body) {
     commit('setLoading', true);
     try {
-      const response = await ApiRepository.crearOperacion(datos);
+      const response = await InvexRepository.confirmConcertacion(body);
       // const infos = response.data;
-      const infos = response.data.body.operationTypeResponse.return.catalogList;
+      const infos = JSON.parse(response.Message);
+      console.log('concerta vuex', infos);
       commit('updateCrearOperacionConcertada', infos);
       return response;
     } catch (error) {
