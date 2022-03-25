@@ -61,7 +61,10 @@
                           I
                           <span v-if="crearOperacionConcertada.Side== '1'"> Buy </span>
                           <span v-else-if="crearOperacionConcertada.Side == '2'"> Sell</span>
-                          {{ crearOperacionConcertada.Currency }}
+                          {{ crearOperacionConcertada.Currency }} //
+                          <span v-if="crearOperacionConcertada.Side== '1'"> Sell </span>
+                          <span v-else-if="crearOperacionConcertada.Side == '2'"> Buy</span>
+                          {{ formatOpositive }}
                         </td>
                         <!-- <td>I Buy USD / Sell MXN</td> -->
                       </tr>
@@ -73,7 +76,8 @@
                       <tr class="texto-color">
                         <td>Opposite Amount</td>
                         <!-- <td>25, 808.19 MXN</td> -->
-                        <td>{{ crearOperacionConcertada.OrderQty * crearOperacionConcertada.Price }}</td>
+                        <!-- eslint-disable-next-line max-len -->
+                        <td>{{ crearOperacionConcertada.OrderQty * crearOperacionConcertada.Price }} {{ formatOpositive }} </td>
                       </tr>
                       <tr class="texto-color">
                         <td>Effective Date</td>
@@ -231,6 +235,9 @@ export default {
     ...mapState(['crearOperacionConcertada']),
     ...mapState(['listarOperacionConcertada']),
     ...mapState(['listarOperacion']),
+    formatOpositive() {
+      return this.$store.state.crearOperacionConcertada.Symbol.split('/')[1];
+    },
   },
   methods: {
     async onSubmit() {
