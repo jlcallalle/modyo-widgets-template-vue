@@ -24,7 +24,7 @@ export default {
   },
   getQuote(quoteId, opSide) {
     return InvexClient.get(
-      `${prefixUrl}/quote?QuoteReqID=${quoteId}&OperationSide=${opSide}&OperationName=FORWARD`,
+      `${prefixUrl}/quote?QuoteReqID=${quoteId}&OperationSide=${opSide}&OperationName=SPOT`,
     );
   },
   registrarOperacion(body) {

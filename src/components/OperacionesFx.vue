@@ -84,7 +84,7 @@
                     {{ isBuy ? 'Comprar' : 'Vender' }} {{ currencySelected }}
                   </div>
                   <div class="box-precio">
-                    <span>{{ currencyValue }} {{ valueComparation }}</span>
+                    <span>{{ currencyValue }}</span>
                   </div>
                   <button
                     type="submit"
@@ -109,7 +109,7 @@
                     {{ isBuy ? 'Vender' : 'Comprar' }} {{ currencySelected }}
                   </div>
                   <div class="box-precio">
-                    <span>{{ currencyValue }} {{ valueComparation }}</span>
+                    <span>{{ currencyValue }}</span>
                   </div>
                   <button
                     type="submit"
@@ -229,12 +229,13 @@
                     <select
                       name="select"
                       class="select-fecha"
-                      :disabled="solicitarPrecio"
+                      disabled
                       @change="setCalendar($event)">
                       <template v-for="(calendarOp, index) in calendarOptions">
                         <option
                           :id="index"
                           :key="index"
+                          :selected="calendarSelected === calendarOp.date"
                           :value="calendarOp.date">
                           {{ calendarOp.Description }}
                         </option>
@@ -422,7 +423,7 @@ export default {
               SettlDate: tomorrow,
               Currency: this.currencySelected,
               Account: 'INVEXCOMP.TEST',
-              OperationName: 'FORWARD',
+              OperationName: 'SPOT',
             }],
           };
           const rsp = await this.$store.dispatch('getQuoteRequest', body);
@@ -451,7 +452,8 @@ export default {
       try {
         await this.$store.dispatch('getDivisas');
         this.currenciesOptions = this.listaDivisas;
-        this.setCurrenciesOptions({ target: { value: 0 } });
+        const findUSD = this.currenciesOptions.findIndex((item) => item.ccy1 === 'USD' && item.ccy2 === 'MXN');
+        this.setCurrenciesOptions({ target: { value: findUSD || 0 } });
       } catch (error) {
         this.showModalError = true;
       }
@@ -462,7 +464,10 @@ export default {
         // console.log('currenciesSelected', currenciesSelected);
         await this.$store.dispatch('getCalendario', currenciesSelected);
         this.calendarOptions = this.calendario;
-        if (this.calendarOptions.length > 0) {
+        const spot = JSON.parse(JSON.stringify(this.calendario)).find((item) => item.Description === 'SPOT');
+        if (spot) {
+          this.calendarSelected = spot.date;
+        } else if (this.calendarOptions.length > 0) {
           // eslint-disable-next-line prefer-destructuring
           this.calendarSelected = this.calendarOptions[0].date;
         }

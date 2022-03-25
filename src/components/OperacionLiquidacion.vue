@@ -236,7 +236,7 @@ export default {
       };
       const response = await this.$store.dispatch('getListaDestino', body);
       const respAux = JSON.parse(JSON.stringify(response));
-      console.log('response ->', respAux);
+      // console.log('response ->', respAux);
       if (response) {
         if (Array.isArray(respAux.cuentas)) {
           this.$set(this, 'listadoDestino', respAux.cuentas);
