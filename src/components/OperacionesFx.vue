@@ -11,7 +11,6 @@
       class="invex-loader">
       <div class="invex-loader_spinner" />
     </div>
-    <code style="display:none">{{ mapClientLogeo }}</code>
     <p style="display:none">
       a {{ listarOperacion }}
     </p>
@@ -128,7 +127,6 @@
                   class="title-actions">
                   Selecciona una acción
                 </div>
-
                 <div
                   class="box-btn-operacion">
                   <button
@@ -316,7 +314,7 @@ export default {
       progress: 100,
       timeLeft: '00:60',
       solicitarPrecio: false,
-      mostrarTwoWay: false,
+      // mostrarTwoWay: false,
       optionSelected: 'Comprar',
       monto: 0,
       timmerId: null,
@@ -360,6 +358,9 @@ export default {
       'calendario',
       'quoteRequest',
     ]),
+    mostrarTwoWay() {
+      return this.$store.state.mapClientLogeo.twoWay;
+    },
   },
   mounted() {
     this.getCurrencies();

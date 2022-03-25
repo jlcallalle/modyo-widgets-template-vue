@@ -13,9 +13,6 @@
               <h2 class="subtitle mb-4">
                 Operación Concertada
               </h2>
-              <code style="display:none"> macpdeClientLogeo {{ mapClientLogeo }} </code>
-              <code style="display:none"> {{ crearOperacionConcertada }} </code>
-              <code style="display:none">{{ listarOperacionConcertada }}</code>
               <div class="col-12">
                 <div class="table-responsive">
                   <table class="table table-wrap">
@@ -76,7 +73,7 @@
                       <tr class="texto-color">
                         <td>Opposite Amount</td>
                         <!-- <td>25, 808.19 MXN</td> -->
-                        <td>{{ crearOperacionConcertada.Price }}</td>
+                        <td>{{ crearOperacionConcertada.OrderQty * crearOperacionConcertada.Price }}</td>
                       </tr>
                       <tr class="texto-color">
                         <td>Effective Date</td>
