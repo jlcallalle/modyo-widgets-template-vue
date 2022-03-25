@@ -25,7 +25,7 @@
                       <tr>
                         <td>Local Date</td>
                         <!-- <td>Thu, 02. Dec 2021 15:38:45.968  CDT</td> -->
-                        <td>{{ crearOperacionConcertada.TransactTime }}</td>
+                        <td>{{ getLocalDate(crearOperacionConcertada.TransactTime) }}</td>
                       </tr>
                       <tr>
                         <td class="spaceTd" />
@@ -78,7 +78,7 @@
                       <tr class="texto-color">
                         <td>Effective Date</td>
                         <!-- <td>Spot // Mon, 06 Dec 2021</td> -->
-                        <td>{{ crearOperacionConcertada.SettlDate }}</td>
+                        <td>Spot // {{ getLocalDate(crearOperacionConcertada.SettlDate, true) }}</td>
                       </tr>
                       <tr class="texto-color">
                         <td>Spot Rate</td>
@@ -250,6 +250,14 @@ export default {
           }
         }
       }
+    },
+    getLocalDate(str, onlyDate = false) {
+      const strDateFormat = `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)} ${str.slice(9)}`;
+      const date = new Date(strDateFormat).toGMTString();
+      if (onlyDate) {
+        return `${date.slice(0, 16)}`;
+      }
+      return date;
     },
     setOrigen(event) {
       this.origenSelected = event.target.value;

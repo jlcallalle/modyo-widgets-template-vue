@@ -20,7 +20,7 @@
     <div class="container container-widget">
       <div class="row">
         <div class="col-md-12 col-xl-8 box-operaciones">
-          <form @submit.prevent="onSubmit">
+          <form @submit.prevent="enterForm">
             <div class="row">
               <div class="col-12 col-md-6">
                 <div class="form-group">
@@ -270,9 +270,10 @@
                 Cancelar
               </button>
               <button
-                type="submit"
+                type="button"
                 :disabled="monto === 0 || monto === '0' || monto === null"
-                class="btn btn-primary btn-solicita">
+                class="btn btn-primary btn-solicita"
+                @click="onSubmit()">
                 {{ solicitarPrecio ? 'Modificar' : 'Solicitar Precio' }}
               </button>
             </div>
@@ -385,6 +386,9 @@ export default {
     }
   },
   methods: {
+    enterForm() {
+      // console.log('enterForm');
+    },
     getValueTwoWay() {
       if (this.mostrarTwoWay) {
         this.optionSelected = 'TwoWay';
