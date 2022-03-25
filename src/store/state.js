@@ -42,6 +42,6 @@ export default {
     },
     user360T: 'INVEXCOMP.TEST',
     portFolio: 'BCA-PRIV',
-    twoWay: 'false',
+    twoWay: false,
   },
 };
