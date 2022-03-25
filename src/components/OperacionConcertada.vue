@@ -71,13 +71,14 @@
                       <tr class="texto-color">
                         <td>Notional Amount</td>
                         <!-- <td>1, 212.00 USD</td> -->
-                        <td>{{ crearOperacionConcertada.OrderQty }} {{ crearOperacionConcertada.Currency }}</td>
+                         <!-- eslint-disable-next-line max-len -->
+                        <td> {{ new Intl.NumberFormat('en-US').format(parseInt(formatMonto)) }} {{ crearOperacionConcertada.Currency }}</td>
                       </tr>
                       <tr class="texto-color">
                         <td>Opposite Amount</td>
                         <!-- <td>25, 808.19 MXN</td> -->
                         <!-- eslint-disable-next-line max-len -->
-                        <td>{{ crearOperacionConcertada.OrderQty * crearOperacionConcertada.Price }} {{ formatOpositive }} </td>
+                        <td>{{ new Intl.NumberFormat('en-US').format(parseInt(formatMontoOppositive)) }} {{ formatOpositive }} </td>
                       </tr>
                       <tr class="texto-color">
                         <td>Effective Date</td>
@@ -237,6 +238,14 @@ export default {
     ...mapState(['listarOperacion']),
     formatOpositive() {
       return this.$store.state.crearOperacionConcertada.Symbol.split('/')[1];
+    },
+    formatMonto() {
+      // return this.$store.state.crearOperacionConcertada.OrderQty.toLocaleString('en-US');
+      return this.$store.state.crearOperacionConcertada.OrderQty;
+    },
+    formatMontoOppositive() {
+      // return this.$store.state.crearOperacionConcertada.OrderQty.toLocaleString('en-US');
+      return this.$store.state.crearOperacionConcertada.OrderQty * this.$store.state.crearOperacionConcertada.Price;
     },
   },
   methods: {
