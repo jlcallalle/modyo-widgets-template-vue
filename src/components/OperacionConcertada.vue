@@ -19,12 +19,10 @@
                     <tbody>
                       <tr>
                         <td># Reference</td>
-                        <!-- <td>113456032</td> -->
                         <td>{{ crearOperacionConcertada.OrderID }}</td>
                       </tr>
                       <tr>
                         <td>Local Date</td>
-                        <!-- <td>Thu, 02. Dec 2021 15:38:45.968  CDT</td> -->
                         <td>{{ getLocalDate(crearOperacionConcertada.TransactTime) }}</td>
                       </tr>
                       <tr>
@@ -33,12 +31,10 @@
                       </tr>
                       <tr>
                         <td>Requester / Trader</td>
-                        <!-- <td>INVEXCOMP.TEST / INVEXCOMP.Treasurer 1</td> -->
                         <td>{{ crearOperacionConcertada.Account }} </td>
                       </tr>
                       <tr>
                         <td>Provider / Trader</td>
-                        <!-- <td>INVEX.TEST / INVEXMM.AutoDealer</td> -->
                         <td>{{ crearOperacionConcertada.SecurityID }} </td>
                       </tr>
                       <tr>
@@ -47,12 +43,10 @@
                       </tr>
                       <tr>
                         <td>Status</td>
-                        <!-- <td>Executed</td> -->
                         <td>{{ crearOperacionConcertada.OrdStatus }} </td>
                       </tr>
                       <tr class="texto-color">
                         <td>Product</td>
-                        <!-- <td>FX Spot</td> -->
                         <td> <span v-if="listarOperacion.productCode == 'SPOT'"> FX Spot</span></td>
                       </tr>
                       <tr class="texto-color">
@@ -70,24 +64,20 @@
                       </tr>
                       <tr class="texto-color">
                         <td>Notional Amount</td>
-                        <!-- <td>1, 212.00 USD</td> -->
                          <!-- eslint-disable-next-line max-len -->
-                        <td> {{ new Intl.NumberFormat('en-US').format(parseInt(formatMonto)) }} {{ crearOperacionConcertada.Currency }}</td>
+                        <td> {{ new Intl.NumberFormat('en-US', {minimumFractionDigits: 2} ).format(parseInt(formatMonto).toFixed(2)) }} {{ crearOperacionConcertada.Currency }}</td>
                       </tr>
                       <tr class="texto-color">
                         <td>Opposite Amount</td>
-                        <!-- <td>25, 808.19 MXN</td> -->
                         <!-- eslint-disable-next-line max-len -->
-                        <td>{{ new Intl.NumberFormat('en-US').format(parseInt(formatMontoOppositive)) }} {{ formatOpositive }} </td>
+                        <td> {{ new Intl.NumberFormat('en-US', {minimumFractionDigits: 2} ).format(parseInt(formatMontoOppositive)) }} {{ formatOpositive }} </td>
                       </tr>
                       <tr class="texto-color">
                         <td>Effective Date</td>
-                        <!-- <td>Spot // Mon, 06 Dec 2021</td> -->
                         <td>Spot // {{ getLocalDate(crearOperacionConcertada.SettlDate, true) }}</td>
                       </tr>
                       <tr class="texto-color">
                         <td>Spot Rate</td>
-                        <!-- <td>21.29389</td> -->
                         <td>{{ crearOperacionConcertada.LastPx }}</td>
                       </tr>
                     </tbody>
