@@ -59,7 +59,7 @@
                         :id="index"
                         :key="index"
                         :value="index">
-                        {{ currency.ccy1 }} / {{ currency.ccy2 }}
+                        {{ currency.Ccy1 }} / {{ currency.Ccy2 }}
                       </option>
                     </template>
                   </select>
@@ -70,20 +70,25 @@
               class="row">
               <div class="col-6">
                 <div
-                  v-if="!solicitarPrecio || optionSelected !== 'Vender' && optionSelected !== 'TwoWay'"
+                  v-if="!solicitarPrecio ||
+                    ( optionSelected !== 'Vender' && optionSelected !== 'TwoWay' ||
+                      !solicitarPrecio && mostrarTwoWay)"
                   class="box-rfs">
                   <span>RFS</span>
                 </div>
 
                 <div
-                  v-if="solicitarPrecio && optionSelected === 'Vender' ||
+                  v-if="solicitarPrecio && (optionSelected === 'Vender' || mostrarTwoWay) ||
                     solicitarPrecio && optionSelected === 'TwoWay'"
                   class="box-vender">
                   <div class="title-operacion">
                     {{ isBuy ? 'Comprar' : 'Vender' }} {{ currencySelected }}
                   </div>
                   <div class="box-precio">
-                    <span>{{ currencyValue }}</span>
+                    <span
+                      :class="{greenValue: valueComparation === '+', redValue: valueComparation === '-'}">
+                      {{ currencyValue }}
+                    </span>
                   </div>
                   <button
                     type="submit"
@@ -95,20 +100,24 @@
               </div>
               <div class="col-6">
                 <div
-                  v-if="!solicitarPrecio || solicitarPrecio && optionSelected === 'Vender'"
+                  v-if="!solicitarPrecio || (solicitarPrecio && optionSelected === 'Vender'
+                    || !solicitarPrecio && mostrarTwoWay)"
                   class="box-rfs">
                   <span>RFS</span>
                 </div>
 
                 <div
-                  v-if="solicitarPrecio && optionSelected === 'Comprar' ||
+                  v-if="solicitarPrecio && (optionSelected === 'Comprar' || mostrarTwoWay) ||
                     solicitarPrecio && optionSelected === 'TwoWay'"
                   class="box-vender">
                   <div class="title-operacion">
                     {{ isBuy ? 'Vender' : 'Comprar' }} {{ currencySelected }}
                   </div>
                   <div class="box-precio">
-                    <span>{{ currencyValue }}</span>
+                    <span
+                      :class="{greenValue: valueComparation === '+', redValue: valueComparation === '-'}">
+                      {{ currencyValue }}
+                    </span>
                   </div>
                   <button
                     type="submit"
@@ -339,6 +348,8 @@ export default {
       currencyValue: 22.749,
       initCurrencyValue: 22.749,
       valueComparation: '',
+      currencyValueTwoWay: 22.749,
+      valueComparationTwoWay: '',
       isBuy: false,
       wsAccount: 'INVEXCOMP.TEST',
       qrCLOrdID: 'INVEXCOMP.TEST-00020220209124801190',
@@ -361,7 +372,8 @@ export default {
       'quoteRequest',
     ]),
     mostrarTwoWay() {
-      return this.$store.state.mapClientLogeo.twoWay;
+      return true;
+      // return this.$store.state.mapClientLogeo.twoWay;
     },
   },
   mounted() {
@@ -416,6 +428,7 @@ export default {
           if (this.isBuy) {
             opSide = this.optionSelected === 'Comprar' ? 'Sell' : 'Buy';
           }
+          this.valueComparation = '';
           this.opSide = opSide;
           const currenciesSelected = this.currenciesSelected.join('/');
           const tomorrow = this.calendarSelected.replace(/-/g, '');
@@ -457,7 +470,7 @@ export default {
       try {
         await this.$store.dispatch('getDivisas');
         this.currenciesOptions = this.listaDivisas;
-        const findUSD = this.currenciesOptions.findIndex((item) => item.ccy1 === 'USD' && item.ccy2 === 'MXN');
+        const findUSD = this.currenciesOptions.findIndex((item) => item.Ccy1 === 'USD' && item.Ccy2 === 'MXN');
         this.setCurrenciesOptions({ target: { value: findUSD || 0 } });
       } catch (error) {
         this.showModalError = true;
@@ -487,8 +500,8 @@ export default {
       if (this.currenciesOptions.length > ev.target.value) {
         const auxSelected = this.currenciesOptions[ev.target.value];
         this.currencySelectedId = ev.target.value;
-        this.currenciesSelected = [auxSelected.ccy1, auxSelected.ccy2];
-        this.currencySelected = auxSelected.ccy1;
+        this.currenciesSelected = [auxSelected.Ccy1, auxSelected.Ccy2];
+        this.currencySelected = auxSelected.Ccy1;
         this.isBuy = false;
         this.getCalendar();
       }
@@ -537,9 +550,9 @@ export default {
           if (rsp.DataIdentifier === 7) {
             const rspMsg = JSON.parse(rsp.Message);
             const newCurrencyValue = this.opSide === 'Buy' ? rspMsg.BuyPrice : rspMsg.SellPrice;
-            if (Number(newCurrencyValue) > Number(this.initCurrencyValue)) {
+            if (Number(newCurrencyValue) > Number(this.currencyValue)) {
               this.valueComparation = '+';
-            } else if (Number(newCurrencyValue) < Number(this.initCurrencyValue)) {
+            } else if (Number(newCurrencyValue) < Number(this.currencyValue)) {
               this.valueComparation = '-';
             } else {
               this.valueComparation = '';
@@ -618,5 +631,12 @@ $brand-invex: #A41D36;
           border-color: $brand-invex;
       }
   }
+}
+.greenValue {
+  color: green;
+}
+
+.redValue {
+  color: red;
 }
 </style>

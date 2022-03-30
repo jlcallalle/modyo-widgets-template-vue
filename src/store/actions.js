@@ -101,7 +101,7 @@ export default {
     commit('setLoading', true);
     try {
       const response = await InvexRepository.getCurrencies();
-      const infos = response.queryCurrencyPairResponseInterface.body.queryCurrencyPairResponse.return.catalogList;
+      const infos = response.CatalogList;
       commit('setListaDivisas', infos);
       return response;
     } catch (error) {
