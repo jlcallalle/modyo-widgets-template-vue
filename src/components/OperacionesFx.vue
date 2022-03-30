@@ -372,8 +372,8 @@ export default {
       'quoteRequest',
     ]),
     mostrarTwoWay() {
-      return true;
-      // return this.$store.state.mapClientLogeo.twoWay;
+      // return true;
+      return this.$store.state.mapClientLogeo.twoWay;
     },
   },
   mounted() {
