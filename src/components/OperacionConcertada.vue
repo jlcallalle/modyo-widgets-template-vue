@@ -53,24 +53,24 @@
                         <td>Requester Action</td>
                         <td>
                           I
-                          <span v-if="crearOperacionConcertada.Side== '1'"> Buy </span>
-                          <span v-else-if="crearOperacionConcertada.Side == '2'"> Sell</span>
-                          {{ crearOperacionConcertada.Currency }} //
-                          <span v-if="crearOperacionConcertada.Side== '1'"> Sell </span>
-                          <span v-else-if="crearOperacionConcertada.Side == '2'"> Buy</span>
-                          {{ formatOpositive }}
+                          <span v-if="tipoOperacion== '1'"> Buy </span>
+                          <span v-else-if="tipoOperacion == '2'"> Sell</span>
+                          <span> {{ currencyDivisa }} // </span>
+                          <span v-if="tipoOperacion== '1'"> Sell </span>
+                          <span v-else-if="tipoOperacion == '2'"> Buy</span>
+                          <span> {{ oppositiveDivisa }} </span>
                         </td>
                         <!-- <td>I Buy USD / Sell MXN</td> -->
                       </tr>
                       <tr class="texto-color">
                         <td>Notional Amount</td>
-                         <!-- eslint-disable-next-line max-len -->
-                        <td> {{ new Intl.NumberFormat('en-US', {minimumFractionDigits: 2} ).format(parseInt(formatMonto).toFixed(2)) }} {{ crearOperacionConcertada.Currency }}</td>
+                        <!-- eslint-disable-next-line max-len -->
+                        <td> {{ new Intl.NumberFormat('en-US', {minimumFractionDigits: 2} ).format(parseInt(formatMonto).toFixed(2)) }}  {{ currencyDivisa }} </td>
                       </tr>
                       <tr class="texto-color">
                         <td>Opposite Amount</td>
                         <!-- eslint-disable-next-line max-len -->
-                        <td> {{ new Intl.NumberFormat('en-US', {minimumFractionDigits: 2} ).format(parseInt(formatMontoOppositive)) }} {{ formatOpositive }} </td>
+                        <td> {{ new Intl.NumberFormat('en-US', {minimumFractionDigits: 2} ).format(parseInt(calculoOpposite)) }} {{ oppositiveDivisa }} </td>
                       </tr>
                       <tr class="texto-color">
                         <td>Effective Date</td>
@@ -226,6 +226,21 @@ export default {
     ...mapState(['crearOperacionConcertada']),
     ...mapState(['listarOperacionConcertada']),
     ...mapState(['listarOperacion']),
+    tipoOperacion() {
+      return this.$store.state.crearOperacionConcertada.Side;
+    },
+    currencyDivisa() {
+      return this.$store.state.crearOperacionConcertada.Currency;
+    },
+    oppositiveDivisa() {
+      const actual = this.$store.state.crearOperacionConcertada.Currency;
+      const valor = this.$store.state.crearOperacionConcertada.Symbol;
+      const separa = valor.split('/');
+      // eslint-disable-next-line
+      const filtrado = separa.filter((separa) => separa !== actual);
+      const resultado = filtrado.toString();
+      return resultado;
+    },
     formatOpositive() {
       return this.$store.state.crearOperacionConcertada.Symbol.split('/')[1];
     },
@@ -236,6 +251,22 @@ export default {
     formatMontoOppositive() {
       // return this.$store.state.crearOperacionConcertada.OrderQty.toLocaleString('en-US');
       return this.$store.state.crearOperacionConcertada.OrderQty * this.$store.state.crearOperacionConcertada.Price;
+    },
+    calculoOpposite() {
+      // return this.$store.state.crearOperacionConcertada.OrderQty * this.$store.state.crearOperacionConcertada.Price;
+      const actual = this.$store.state.crearOperacionConcertada.Currency;
+      const valor = this.$store.state.crearOperacionConcertada.Symbol;
+      const separa = valor.split('/');
+      let total;
+      // eslint-disable-next-line
+      if (separa[0] === actual) {
+        // eslint-disable-next-line
+        total = this.$store.state.crearOperacionConcertada.OrderQty * this.$store.state.crearOperacionConcertada.Price;
+      } else {
+        // eslint-disable-next-line
+        total = this.$store.state.crearOperacionConcertada.OrderQty / this.$store.state.crearOperacionConcertada.Price
+      }
+      return total;
     },
   },
   methods: {
