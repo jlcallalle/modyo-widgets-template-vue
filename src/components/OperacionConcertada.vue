@@ -79,7 +79,9 @@
                 </div>
               </div>
             </div>
-            <div class="box-two-btn d-flex justify-content-around">
+            <div
+              v-if="!mostrarInstrucciones"
+              class="box-two-btn d-flex justify-content-around">
               <a
                 href="#;"
                 class="btn btn-outline-primary btn-cancelar"
@@ -183,7 +185,8 @@
               <div class="box-btn text-center">
                 <button
                   type="submit"
-                  class="btn btn-primary btn-solicita">
+                  class="btn btn-primary btn-solicita"
+                  @click.prevent="evenInstrucciones">
                   Asignar Instrucciones
                 </button>
               </div>
@@ -192,6 +195,10 @@
         </div>
         <sidebar v-if="!mostrarInstrucciones" />
       </div>
+      <modal-confirma
+        v-if="showModal"
+        :open="showModal"
+        @close="handleClose" />
     </div>
   </div>
 </template>
@@ -199,10 +206,11 @@
 <script>
 import { mapState } from 'vuex';
 import Sidebar from './Sidebar.vue';
+import ModalConfirma from './ModalConfirma.vue';
 
 export default {
   name: 'OperacionConcertada',
-  components: { Sidebar },
+  components: { Sidebar, ModalConfirma },
   data() {
     return {
       mostrarInstrucciones: false,
@@ -212,6 +220,7 @@ export default {
       destinoSelected: null,
       cuentaOrigen: null,
       cuentaDestino: null,
+      showModal: false,
     };
   },
   computed: {
@@ -234,9 +243,6 @@ export default {
       const filtrado = separa.filter((separa) => separa !== actual);
       const resultado = filtrado.toString();
       return resultado;
-    },
-    formatOpositive() {
-      return this.$store.state.crearOperacionConcertada.Symbol.split('/')[1];
     },
     formatMonto() {
       // return this.$store.state.crearOperacionConcertada.OrderQty.toLocaleString('en-US');
@@ -269,6 +275,12 @@ export default {
     },
     goToOperaciones() {
       this.$store.dispatch('updatePage', 'operacionesFx');
+    },
+    evenInstrucciones() {
+      this.showModal = true;
+    },
+    handleClose() {
+      this.showModal = false;
     },
     async goToLiquidacion() {
       if (this.mostrarInstrucciones) {
