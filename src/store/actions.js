@@ -52,7 +52,7 @@ export default {
       const response = await InvexRepository.confirmConcertacion(body);
       // const infos = response.data;
       const infos = JSON.parse(response.Message);
-      console.log('concerta vuex', infos);
+      // console.log('concerta vuex', infos);
       commit('updateCrearOperacionConcertada', infos);
       return response;
     } catch (error) {

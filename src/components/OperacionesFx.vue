@@ -253,7 +253,7 @@
                     <input
                       disabled
                       type="text"
-                      :value="calendarSelected"
+                      :value="dateFormat()"
                       class="form-control input-fecha">
                     <i class="icon-calendar">
                       <svg
@@ -612,6 +612,10 @@ export default {
       this.solicitarPrecio = false;
       this.showModalTiempo = false;
       this.monto = '0';
+    },
+    dateFormat() {
+      const dateArr = this.calendarSelected.split('-');
+      return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
     },
   },
 };

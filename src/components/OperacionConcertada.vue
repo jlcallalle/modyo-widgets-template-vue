@@ -52,13 +52,7 @@
                       <tr class="texto-color">
                         <td>Requester Action</td>
                         <td>
-                          I
-                          <span v-if="tipoOperacion== '1'"> Buy </span>
-                          <span v-else-if="tipoOperacion == '2'"> Sell</span>
-                          <span> {{ currencyDivisa }} // </span>
-                          <span v-if="tipoOperacion== '1'"> Sell </span>
-                          <span v-else-if="tipoOperacion == '2'"> Buy</span>
-                          <span> {{ oppositiveDivisa }} </span>
+                          {{ returnTxtOperacion() }}
                         </td>
                         <!-- <td>I Buy USD / Sell MXN</td> -->
                       </tr>
@@ -353,6 +347,17 @@ export default {
           this.setDestino({ target: { value: this.listadoDestino[0].BeneficiaryAccount } });
         }
       }
+    },
+    returnTxtOperacion() {
+      const actual = this.$store.state.crearOperacionConcertada.Currency;
+      const valor = this.$store.state.crearOperacionConcertada.Symbol;
+      const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
+      const separa = valor.split('/');
+      let str = `I ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[0]} // ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[1]}`;
+      if (separa[0] === actual) {
+        str = `I ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[0]} // ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[1]}`;
+      }
+      return str;
     },
   },
 };
