@@ -280,7 +280,7 @@
               </button>
               <button
                 type="button"
-                :disabled="monto === 0 || monto === '0' || monto === null"
+                :disabled="monto === 0 || monto === '0' || monto === null || calendarOptions.length  === 0"
                 class="btn btn-primary btn-solicita"
                 @click="onSubmit()">
                 {{ solicitarPrecio ? 'Modificar' : 'Solicitar Precio' }}
@@ -299,6 +299,10 @@
       v-if="showModalError"
       :open="showModalError"
       @close="handleCloseError" />
+    <modal-horario
+      v-if="showModalHorario"
+      :open="showModalHorario"
+      @close="handleCloseHorario" />
     <modal-tiempo
       v-if="showModalTiempo"
       :open="showModalTiempo"
@@ -314,11 +318,18 @@ import Sidebar from './Sidebar.vue';
 import ModalExitoso from './ModalExitoso.vue';
 import ModalError from './ModalError.vue';
 import ModalTiempo from './ModaTiempo.vue';
+import ModalHorario from './ModalHorario.vue';
 
 export default {
   name: 'OperacionesFx',
   components: {
-    CurrencyInput, VueEllipseProgress, Sidebar, ModalExitoso, ModalError, ModalTiempo,
+    CurrencyInput,
+    VueEllipseProgress,
+    Sidebar,
+    ModalExitoso,
+    ModalError,
+    ModalTiempo,
+    ModalHorario,
   },
   data() {
     return {
@@ -343,6 +354,7 @@ export default {
       showModal: false,
       showModalError: false,
       showModalTiempo: false,
+      showModalHorario: false,
       isDisabled: true,
       // loading: true,
       currencyValue: 22.749,
@@ -382,6 +394,12 @@ export default {
     this.getValueTwoWay();
   },
   async created() {
+    const getHours = new Date().getHours();
+    if (getHours >= 9 && getHours < 18) {
+      if (getHours === 16) {
+        this.showModalHorario = true;
+      }
+    }
     const responseApiServicio = await this.$store.dispatch('updateServicio');
     if (responseApiServicio.status === 200 || responseApiServicio.status === 201) {
       // console.log('servicio ok');
@@ -417,12 +435,12 @@ export default {
           const getHours = new Date().getHours();
           if (getHours >= 9 && getHours < 18) {
             if (getHours === 16) {
-              alert('Servicio temporalmente fuera de servicio, intentar a las 5pm por favor');
+              // alert('Servicio temporalmente fuera de servicio, intentar a las 5pm por favor');
             } else {
               // alert('Aceptado');
             }
           } else {
-            alert('Fuera de horario');
+            // alert('Fuera de horario');
           }
           let opSide = this.optionSelected === 'Comprar' ? 'Buy' : 'Sell';
           if (this.isBuy) {
@@ -612,6 +630,9 @@ export default {
       this.solicitarPrecio = false;
       this.showModalTiempo = false;
       this.monto = '0';
+    },
+    handleCloseHorario() {
+      this.showModalHorario = false;
     },
   },
 };
