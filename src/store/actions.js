@@ -206,4 +206,16 @@ export default {
       commit('setLoading', false);
     }
   },
+  async actualizarOperacion({ commit }, body) {
+    commit('setLoading', true);
+    try {
+      const response = await InvexRepository.actualizarOperacion(body);
+      commit('setActualizacionOperacion', response);
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
+  },
 };

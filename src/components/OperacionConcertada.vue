@@ -59,12 +59,12 @@
                       <tr class="texto-color">
                         <td>Notional Amount</td>
                         <!-- eslint-disable-next-line max-len -->
-                        <td> {{ new Intl.NumberFormat('en-US', {minimumFractionDigits: 2} ).format(parseInt(formatMonto).toFixed(2)) }}  {{ currencyDivisa }} </td>
+                        <td> {{ new Intl.NumberFormat('en-US', {} ).format(formatMonto) }}  {{ currencyDivisa }} </td>
                       </tr>
                       <tr class="texto-color">
                         <td>Opposite Amount</td>
                         <!-- eslint-disable-next-line max-len -->
-                        <td> {{ new Intl.NumberFormat('en-US', {minimumFractionDigits: 2} ).format(parseInt(calculoOpposite)) }} {{ oppositiveDivisa }} </td>
+                        <td> {{ new Intl.NumberFormat('en-US', {} ).format(calculoOpposite()) }} {{ oppositiveDivisa }} </td>
                       </tr>
                       <tr class="texto-color">
                         <td>Effective Date</td>
@@ -155,11 +155,11 @@
                       <option
                         :id="index"
                         :key="index"
-                        :selected="destinoSelected === destino.BeneficiaryAccount"
-                        :value="destino.BeneficiaryAccount">
-                        {{ `${destino.BeneficiaryBank}-**********
-                        ${destino.BeneficiaryAccount.toString()
-                        .slice(destino.BeneficiaryAccount.toString().length - 4)}` }}
+                        :selected="destinoSelected === destino.beneficiaryAccount"
+                        :value="destino.beneficiaryAccount">
+                        {{ `${destino.beneficiaryBank}-**********
+                        ${destino.beneficiaryAccount.toString()
+                        .slice(destino.beneficiaryAccount.toString().length - 4)}` }}
                       </option>
                     </template>
                   </select>
@@ -185,6 +185,7 @@
               <div class="box-btn text-center">
                 <button
                   type="submit"
+                  :disabled="destinoSelected === null || destinoSelected === ''"
                   class="btn btn-primary btn-solicita"
                   @click.prevent="evenInstrucciones">
                   Asignar Instrucciones
@@ -214,6 +215,7 @@ export default {
   data() {
     return {
       mostrarInstrucciones: false,
+      allListadoDestino: [],
       listadoOrigen: [],
       listadoDestino: [],
       origenSelected: null,
@@ -252,6 +254,8 @@ export default {
       // return this.$store.state.crearOperacionConcertada.OrderQty.toLocaleString('en-US');
       return this.$store.state.crearOperacionConcertada.OrderQty * this.$store.state.crearOperacionConcertada.Price;
     },
+  },
+  methods: {
     calculoOpposite() {
       // return this.$store.state.crearOperacionConcertada.OrderQty * this.$store.state.crearOperacionConcertada.Price;
       const actual = this.$store.state.crearOperacionConcertada.Currency;
@@ -261,23 +265,35 @@ export default {
       // eslint-disable-next-line
       if (separa[0] === actual) {
         // eslint-disable-next-line
-        total = this.$store.state.crearOperacionConcertada.OrderQty * this.$store.state.crearOperacionConcertada.Price;
+        total = this.$store.state.crearOperacionConcertada.OrderQty * this.$store.state.crearOperacionConcertada.LastPx;
       } else {
         // eslint-disable-next-line
-        total = this.$store.state.crearOperacionConcertada.OrderQty / this.$store.state.crearOperacionConcertada.Price
+        total = this.$store.state.crearOperacionConcertada.OrderQty / this.$store.state.crearOperacionConcertada.LastPx;
       }
       return total;
     },
-  },
-  methods: {
     async onSubmit() {
       // console.log(this.crearOperacionConcertada);
     },
     goToOperaciones() {
       this.$store.dispatch('updatePage', 'operacionesFx');
     },
-    evenInstrucciones() {
-      this.showModal = true;
+    async evenInstrucciones() {
+      try {
+        const concretadaData = this.$store.state.crearOperacionConcertada;
+        const body = {
+          transactionId: concretadaData.TransactTime,
+          requestSystem: 'FX',
+          orderID: concretadaData.OrderID,
+          debitAccount: '00004635',
+          creditAccount: this.origenSelected,
+          settlAccount: `${this.destinoSelected}`,
+        };
+        await this.$store.dispatch('actualizarOperacion', body);
+        this.showModal = true;
+      } catch (err) {
+        this.showModal = true;
+      }
     },
     handleClose() {
       this.showModal = false;
@@ -335,29 +351,54 @@ export default {
       }
       return response;
     },
+    findCuentaDestino() {
+      this.listadoDestino = [];
+      this.destinoSelected = '';
+      this.cuentaDestino = null;
+      const listadoAux = JSON.parse(JSON.stringify(this.allListadoDestino));
+      const cuentaDestino = listadoAux.find((item) => item.cuentas.customerAccount === this.origenSelected);
+      if (cuentaDestino) {
+        if (cuentaDestino.cuentas.beneficiaryData) {
+          if (Array.isArray(cuentaDestino.cuentas.beneficiaryData.beneficiaryAccount)) {
+            this.listadoDestino = cuentaDestino.cuentas.beneficiaryData.beneficiaryAccount;
+          } else {
+            this.listadoDestino = [cuentaDestino.cuentas.beneficiaryData.beneficiaryAccount];
+          }
+          this.setDestino({ target: { value: this.listadoDestino[0].beneficiaryAccount } });
+        }
+      }
+    },
     async getListadoDestino() {
-      const body = {
-        transactionId: '13 - 00003749 - 20210218 11:57:00',
-        requestSystem: 'PORTAL',
-        source: 'PORTALSYS',
-        userId: 'PORTALUSR',
-        branch: '001',
-        sourceUserId: 'PORTALUSR',
-        CustomerAccount: '00101011551',
-        SameBank: false,
-        IsBeneficiaryCreditCard: false,
-      };
-      const response = await this.$store.dispatch('getListaDestino', body);
-      const respAux = JSON.parse(JSON.stringify(response));
-      if (response) {
-        if (Array.isArray(respAux.cuentas)) {
-          this.$set(this, 'listadoDestino', respAux.cuentas);
-        } else {
-          this.$set(this, 'listadoDestino', [respAux.cuentas]);
+      if (this.allListadoDestino.length === 0) {
+        const body = {
+          transactionId: '3853-02',
+          requestSystem: 'PORTALFX',
+          source: 'FXSYS',
+          userId: 'FXUSR',
+          branch: '001',
+          sourceUserId: 'FXUSR',
+          CustomerNumber: '00004635',
+          Type: 'CE',
+          InternetFolio: '3853',
+          AllowOperate: 'S',
+          Currency: 'MXN',
+          SameBank: false,
+          IsBeneficiaryCreditCard: false,
+        };
+        const response = await this.$store.dispatch('getListaDestino', body);
+        const respAux = JSON.parse(JSON.stringify(response));
+        if (response) {
+          if (Array.isArray(respAux)) {
+            this.$set(this, 'allListadoDestino', respAux);
+          } else {
+            this.$set(this, 'allListadoDestino', [respAux.cuentas]);
+          }
+          if (this.allListadoDestino.length > 0) {
+            this.findCuentaDestino();
+          }
         }
-        if (this.listadoDestino.length > 0) {
-          this.setDestino({ target: { value: this.listadoDestino[0].BeneficiaryAccount } });
-        }
+      } else {
+        this.findCuentaDestino();
       }
     },
     returnTxtOperacion() {

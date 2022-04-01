@@ -49,4 +49,7 @@ export default {
   setListaDestino(state, payload) {
     state.listaDestino = payload;
   },
+  setActualizacionOperacion(state, payload) {
+    state.actualizacionOperacion = payload;
+  },
 };

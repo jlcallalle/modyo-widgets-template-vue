@@ -12,6 +12,7 @@ export default {
   operacionConcertada: null,
   listaOrigen: [],
   listaDestino: [],
+  actualizacionOperacion: null,
   mapClientLogeo: {
     alias: 'f3853',
     CUI: '00007391',

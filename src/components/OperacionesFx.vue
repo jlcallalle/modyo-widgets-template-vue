@@ -431,7 +431,8 @@ export default {
           this.valueComparation = '';
           this.opSide = opSide;
           const currenciesSelected = this.currenciesSelected.join('/');
-          const tomorrow = this.calendarSelected.replace(/-/g, '');
+          // const tomorrow = this.calendarSelected.replace(/-/g, '');
+          const tomorrow = '20220404';
           const body = {
             ProductType: 'FX_STD',
             NoRelatedSym: [{
@@ -576,7 +577,8 @@ export default {
     },
     async eventOperation() {
       const currenciesSelected = this.currenciesSelected.join('/');
-      const tomorrow = this.calendarSelected.replace(/-/g, '');
+      // const tomorrow = this.calendarSelected.replace(/-/g, '');
+      const tomorrow = '20220404';
       const bodyConcertacion = {
         Account: this.wsAccount,
         CLOrdID: this.qrCLOrdID,

@@ -39,4 +39,7 @@ export default {
   listaCuentasOrigen(body) {
     return InvexClient.post(`${prefixUrl}/lista_cuentas_origen`, body);
   },
+  actualizarOperacion(body) {
+    return InvexClient.post(`${prefixUrl}/actualizarOperacion`, body);
+  },
 };
