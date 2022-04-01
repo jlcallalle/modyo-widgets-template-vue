@@ -23,22 +23,22 @@
             <div class="modal-body d-flex flex-column">
               <div class="box-icon-check text-center">
                 <svg
-                  width="60"
-                  height="54"
-                  viewBox="0 0 60 54"
+                  width="70"
+                  height="60"
+                  viewBox="0 0 70 60"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg">
                   <path
-                    d="M0 26.6667C0 34.0333 3.03333 40.6667 7.86667 45.4667L0 53.3333H20V33.3333L12.5333 40.8C8.93333 37.1667 6.66667 32.2 6.66667 26.6667C6.66667 17.9667 12.2333 10.5667 20 7.83333V0.866667C8.5 3.83333 0 14.2333 0 26.6667ZM26.6667 43.3333H33.3333V36.6667H26.6667V43.3333ZM60 0H40V20L47.4667 12.5333C51.0667 16.1667 53.3333 21.1333 53.3333 26.6667C53.3333 35.3667 47.7667 42.7667 40 45.5V52.4667C51.5 49.5 60 39.1 60 26.6667C60 19.3 56.9667 12.6667 52.1333 7.86667L60 0ZM26.6667 30H33.3333V10H26.6667V30Z"
+                    d="M0.263184 60H69.7369L35 0L0.263184 60ZM38.1579 50.5263H31.8421V44.2105H38.1579V50.5263ZM38.1579 37.8947H31.8421V25.2632H38.1579V37.8947Z"
                     fill="#ED002F" />
                 </svg>
               </div>
               <h5
                 class="modal-title text-center">
-                Error de Conexión
+                Disculpas las molestias
               </h5>
-              <p>No se ha podido conectar con el servidor..</p>
-              <p>Por Favor intenta nuevamente.</p>
+              <p>La plataforma se encuentra en mantenimiento.</p>
+              <p>A partir de las 5pm nuestros servicios estarán reanudados. Te invitamos a intentar en este horario.</p>
             </div>
             <div class="modal-footer justify-content-center">
               <button
@@ -57,7 +57,7 @@
 
 <script>
 export default {
-  name: 'ModalError',
+  name: 'ModaHorario',
   props: ['open'],
   data() {
     return {
@@ -71,5 +71,8 @@ export default {
 .modal-body {
     max-width: 500px;
     margin: 0 auto;
+}
+.modal-mask {
+    z-index: 9999;
 }
 </style>
