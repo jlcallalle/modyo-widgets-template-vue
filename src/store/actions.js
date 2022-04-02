@@ -218,4 +218,17 @@ export default {
       commit('setLoading', false);
     }
   },
+  async updateHorario({ commit }) {
+    commit('setLoading', true);
+    try {
+      const response = await InvexRepository.getHorario();
+      const infos = response;
+      commit('setHorario', infos);
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
+  },
 };

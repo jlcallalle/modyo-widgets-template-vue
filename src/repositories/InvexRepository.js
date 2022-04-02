@@ -42,4 +42,7 @@ export default {
   actualizarOperacion(body) {
     return InvexClient.post(`${prefixUrl}/actualizarOperacion`, body);
   },
+  getHorario() {
+    return InvexClient.get(`${prefixUrl}/validate-services`);
+  },
 };

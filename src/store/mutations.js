@@ -52,4 +52,7 @@ export default {
   setActualizacionOperacion(state, payload) {
     state.actualizacionOperacion = payload;
   },
+  setHorario(state, payload) {
+    state.horario = payload;
+  },
 };

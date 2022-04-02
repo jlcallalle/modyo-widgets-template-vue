@@ -378,6 +378,7 @@ export default {
     ...mapState(['servicio']),
     ...mapState(['listarOperacion']),
     ...mapState(['listaOperaciones']),
+    ...mapState(['horario']),
     ...mapState([
       'listaDivisas',
       'calendario',
@@ -392,6 +393,7 @@ export default {
     this.getCurrencies();
     this.getOperations();
     this.getValueTwoWay();
+    this.getHoraRestriccion();
   },
   async created() {
     const getHours = new Date().getHours();
@@ -490,6 +492,17 @@ export default {
         this.currenciesOptions = this.listaDivisas;
         const findUSD = this.currenciesOptions.findIndex((item) => item.Ccy1 === 'USD' && item.Ccy2 === 'MXN');
         this.setCurrenciesOptions({ target: { value: findUSD || 0 } });
+      } catch (error) {
+        this.showModalError = true;
+      }
+    },
+    async getHoraRestriccion() {
+      try {
+        await this.$store.dispatch('updateHorario');
+        const valorActual = this.$store.state.horario.status;
+        if (valorActual === 'offline') {
+          this.showModalHorario = true;
+        }
       } catch (error) {
         this.showModalError = true;
       }
