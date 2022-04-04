@@ -59,12 +59,12 @@
                       <tr class="texto-color">
                         <td>Notional Amount</td>
                         <!-- eslint-disable-next-line max-len -->
-                        <td> {{ new Intl.NumberFormat('en-US', {} ).format(formatMonto) }}  {{ currencyDivisa }} </td>
+                        <td> {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 } ).format(formatMonto) }}  {{ currencyDivisa }} </td>
                       </tr>
                       <tr class="texto-color">
                         <td>Opposite Amount</td>
                         <!-- eslint-disable-next-line max-len -->
-                        <td> {{ new Intl.NumberFormat('en-US', {} ).format(calculoOpposite()) }} {{ oppositiveDivisa }} </td>
+                        <td> {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 } ).format(calculoOpposite()) }} {{ oppositiveDivisa }} </td>
                       </tr>
                       <tr class="texto-color">
                         <td>Effective Date</td>

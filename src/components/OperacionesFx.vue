@@ -280,7 +280,7 @@
               </button>
               <button
                 type="button"
-                :disabled="monto === 0 || monto === '0' || monto === null || calendarOptions.length === 0"
+                :disabled="monto === 0 || monto === '0' || monto === null || calendarOptions.length === 0 || horario.status === 'offline'"
                 class="btn btn-primary btn-solicita"
                 @click="onSubmit()">
                 {{ solicitarPrecio ? 'Modificar' : 'Solicitar Precio' }}
