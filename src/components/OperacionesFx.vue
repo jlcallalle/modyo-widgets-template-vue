@@ -364,7 +364,7 @@ export default {
       valueComparationTwoWay: '',
       isBuy: false,
       wsAccount: 'INVEXCOMP.TEST',
-      qrCLOrdID: 'INVEXCOMP.TEST-00020220209124801190',
+      // qrCLOrdID: 'INVEXCOMP.TEST-00020220209124801190',
       orderType: 'Previously',
       qPrice: 20.9294,
       qQuoteID: 'INVEXCOMP.TEST-00020220309124956212-000001',
@@ -610,7 +610,7 @@ export default {
       const tomorrow = this.calendarSelected.replace(/-/g, '');
       const bodyConcertacion = {
         Account: this.wsAccount,
-        CLOrdID: this.qrCLOrdID,
+        CLOrdID: this.quoteRequest.QuoteReqID,
         Currency: this.currencySelected,
         OrderQty: this.monto.toString(),
         OrderType: this.orderType,

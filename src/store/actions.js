@@ -164,7 +164,7 @@ export default {
       const response = await InvexRepository.confirmConcertacion(body);
       const infos = JSON.parse(response.Message);
       commit('updateCrearOperacionConcertada', infos);
-      commit('setOperacionConcertada', infos);
+      // commit('setOperacionConcertada', infos);
       return response;
     } catch (error) {
       return error;
