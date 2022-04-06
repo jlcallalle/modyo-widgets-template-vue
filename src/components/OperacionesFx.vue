@@ -654,7 +654,6 @@ export default {
     handleCloseTiempo() {
       this.solicitarPrecio = false;
       this.showModalTiempo = false;
-      this.monto = '0';
     },
     dateFormat() {
       if (!this.calendarSelected) return '';
