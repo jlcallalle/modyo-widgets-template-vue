@@ -579,7 +579,6 @@ export default {
         sec -= 1;
         if (sec % 2 === 0) {
           const opName = this.optionSelected === 'Twoway' ? 'Twoway' : this.opSide;
-          console.log('opName', opName);
           const rsp = await this.$store.dispatch('getQuote', { quoteId: this.qQuoteID, opSide: opName });
           if (rsp.DataIdentifier === 7) {
             const rspMsg = JSON.parse(rsp.Message);
@@ -631,6 +630,9 @@ export default {
         SettlDate: tomorrow,
         Side: this.opSide,
         Symbol: currenciesSelected,
+        Product: 'SPOT',
+        TransactionId: 'Request_Insert_01',
+        RequestSystem: 'PORTALFX',
       };
       clearInterval(this.timmerId);
       const responseApiConcertacion = await this.$store.dispatch('createConcertacion', bodyConcertacion);

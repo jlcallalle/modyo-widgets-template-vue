@@ -22,8 +22,12 @@
                         <td>{{ crearOperacionConcertada.OrderID }}</td>
                       </tr>
                       <tr>
+                        <td>Trade Date</td>
+                        <td>{{ getTimeZoneDate(crearOperacionConcertada.TransactTime, true) }}</td>
+                      </tr>
+                      <tr>
                         <td>Local Date</td>
-                        <td>{{ getLocalDate(crearOperacionConcertada.TransactTime) }}</td>
+                        <td>{{ getTimeZoneDate(crearOperacionConcertada.TransactTime, false) }}</td>
                       </tr>
                       <tr>
                         <td class="spaceTd" />
@@ -206,6 +210,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import moment from 'moment-timezone';
 import Sidebar from './Sidebar.vue';
 import ModalConfirma from './ModalConfirma.vue';
 
@@ -316,11 +321,13 @@ export default {
         }
       }
     },
+    getTimeZoneDate(str, isGMT = false) {
+      const strDateFormat = `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)} ${str.slice(9)}`;
+      const dateMoment = moment(strDateFormat, 'YYYY-MM-DD HH:mm:ss').tz(isGMT ? 'Africa/Abidjan' : 'America/Mexico_City').format('ddd, DD. MMM YYYY HH:mm:ss');
+      return `${dateMoment} ${isGMT ? 'GMT' : 'CST'}`;
+    },
     getLocalDate(str, onlyDate = false) {
       const strDateFormat = `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)} ${str.slice(9)}`;
-      // console.log('strDateFormat, ', strDateFormat);
-      // const dateMx = new Date(strDateFormat).toLocaleString('es-US', { timeZone: 'America/Mexico_City' });
-      // console.log('dateMx', dateMx);
       const date = new Date(strDateFormat).toGMTString();
       if (onlyDate) {
         return `${date.slice(0, 16)}`;
@@ -405,7 +412,6 @@ export default {
               }
             });
           }
-          console.log('listadoDestino', this.listadoDestino);
           this.setDestino({ target: { value: this.listadoDestino[0].beneficiaryAccount } });
         }
       }
