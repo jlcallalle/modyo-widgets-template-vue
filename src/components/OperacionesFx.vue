@@ -650,6 +650,7 @@ export default {
     },
     handleCloseError() {
       this.showModalError = false;
+      this.startTimer();
     },
     handleCloseTiempo() {
       this.solicitarPrecio = false;
