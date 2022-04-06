@@ -652,7 +652,7 @@ export default {
     },
     handleCloseError() {
       this.showModalError = false;
-      this.startTimer();
+      this.solicitarPrecio = false;
     },
     handleCloseTiempo() {
       this.solicitarPrecio = false;
