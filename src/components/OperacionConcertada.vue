@@ -285,10 +285,15 @@ export default {
           transactionId: concretadaData.TransactTime,
           requestSystem: 'FX',
           orderID: concretadaData.OrderID,
-          debitAccount: '00004635',
-          creditAccount: this.origenSelected,
+          debitAccount: this.origenSelected,
+          creditAccount: '',
           settlAccount: `${this.destinoSelected}`,
         };
+        this.listadoDestino.forEach((destino) => {
+          if (destino.beneficiaryAccount === this.destinoSelected) {
+            body.creditAccount = `${destino.customerAccount}`;
+          }
+        });
         await this.$store.dispatch('actualizarOperacion', body);
         this.showModal = true;
       } catch (err) {
@@ -306,12 +311,16 @@ export default {
         if (rsp) {
           if (rsp.cuentas.length > 0) {
             this.mostrarInstrucciones = true;
+            this.getListadoDestino();
           }
         }
       }
     },
     getLocalDate(str, onlyDate = false) {
       const strDateFormat = `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)} ${str.slice(9)}`;
+      // console.log('strDateFormat, ', strDateFormat);
+      // const dateMx = new Date(strDateFormat).toLocaleString('es-US', { timeZone: 'America/Mexico_City' });
+      // console.log('dateMx', dateMx);
       const date = new Date(strDateFormat).toGMTString();
       if (onlyDate) {
         return `${date.slice(0, 16)}`;
@@ -321,7 +330,6 @@ export default {
     setOrigen(event) {
       this.origenSelected = event.target.value;
       this.cuentaOrigen = this.listadoOrigen.find((item) => item.customerAccount === this.origenSelected);
-      this.getListadoDestino();
     },
     setDestino(event) {
       this.destinoSelected = event.target.value;
@@ -351,54 +359,55 @@ export default {
       }
       return response;
     },
-    findCuentaDestino() {
-      this.listadoDestino = [];
-      this.destinoSelected = '';
-      this.cuentaDestino = null;
-      const listadoAux = JSON.parse(JSON.stringify(this.allListadoDestino));
-      const cuentaDestino = listadoAux.find((item) => item.cuentas.customerAccount === this.origenSelected);
-      if (cuentaDestino) {
-        if (cuentaDestino.cuentas.beneficiaryData) {
-          if (Array.isArray(cuentaDestino.cuentas.beneficiaryData.beneficiaryAccount)) {
-            this.listadoDestino = cuentaDestino.cuentas.beneficiaryData.beneficiaryAccount;
-          } else {
-            this.listadoDestino = [cuentaDestino.cuentas.beneficiaryData.beneficiaryAccount];
+    async getListadoDestino() {
+      const body = {
+        transactionId: '3853-02',
+        requestSystem: 'PORTALFX',
+        source: 'FXSYS',
+        userId: 'FXUSR',
+        branch: '001',
+        sourceUserId: 'FXUSR',
+        CustomerNumber: '00004635',
+        Type: 'CE',
+        InternetFolio: '3853',
+        AllowOperate: 'S',
+        Currency: 'USD',
+        SameBank: false,
+        IsBeneficiaryCreditCard: false,
+      };
+      const response = await this.$store.dispatch('getListaDestino', body);
+      const respAux = JSON.parse(JSON.stringify(response));
+      if (response) {
+        if (Array.isArray(respAux)) {
+          this.$set(this, 'allListadoDestino', respAux);
+        } else {
+          this.$set(this, 'allListadoDestino', [respAux]);
+        }
+        if (this.allListadoDestino.length > 0) {
+          this.listadoDestino = [];
+          this.destinoSelected = '';
+          this.cuentaDestino = null;
+          const listadoAux = JSON.parse(JSON.stringify(this.allListadoDestino));
+          if (Array.isArray(listadoAux)) {
+            listadoAux.forEach((item) => {
+              if (item.cuentas.beneficiaryData) {
+                if (Array.isArray(item.cuentas.beneficiaryData.beneficiaryAccount)) {
+                  item.cuentas.beneficiaryData.beneficiaryAccount.forEach((item2) => {
+                    const auxPush = { ...item2, customerAccount: item.cuentas.customerAccount };
+                    this.listadoDestino.push(auxPush);
+                  });
+                } else {
+                  this.listadoDestino.push({
+                    ...item.cuentas.beneficiaryData.beneficiaryAccount,
+                    customerAccount: item.cuentas.customerAccount,
+                  });
+                }
+              }
+            });
           }
+          console.log('listadoDestino', this.listadoDestino);
           this.setDestino({ target: { value: this.listadoDestino[0].beneficiaryAccount } });
         }
-      }
-    },
-    async getListadoDestino() {
-      if (this.allListadoDestino.length === 0) {
-        const body = {
-          transactionId: '3853-02',
-          requestSystem: 'PORTALFX',
-          source: 'FXSYS',
-          userId: 'FXUSR',
-          branch: '001',
-          sourceUserId: 'FXUSR',
-          CustomerNumber: '00004635',
-          Type: 'CE',
-          InternetFolio: '3853',
-          AllowOperate: 'S',
-          Currency: 'MXN',
-          SameBank: false,
-          IsBeneficiaryCreditCard: false,
-        };
-        const response = await this.$store.dispatch('getListaDestino', body);
-        const respAux = JSON.parse(JSON.stringify(response));
-        if (response) {
-          if (Array.isArray(respAux)) {
-            this.$set(this, 'allListadoDestino', respAux);
-          } else {
-            this.$set(this, 'allListadoDestino', [respAux.cuentas]);
-          }
-          if (this.allListadoDestino.length > 0) {
-            this.findCuentaDestino();
-          }
-        }
-      } else {
-        this.findCuentaDestino();
       }
     },
     returnTxtOperacion() {

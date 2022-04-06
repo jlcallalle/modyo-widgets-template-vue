@@ -4,7 +4,9 @@
     :class="[solicitarPrecio == false ? 'widget-operaciones-fx' : 'widget-operacion-comprar-vender' ]">
     <h1
       class="mb-4 title-widget">
-      Operaciones FX
+      Operaciones <span @click="changeTwoway">
+        FX
+      </span>
     </h1>
     <div
       v-if="loading"
@@ -71,23 +73,23 @@
               <div class="col-6">
                 <div
                   v-if="!solicitarPrecio ||
-                    ( optionSelected !== 'Vender' && optionSelected !== 'TwoWay' ||
+                    ( optionSelected !== 'Vender' && optionSelected !== 'Twoway' ||
                       !solicitarPrecio && mostrarTwoWay)"
                   class="box-rfs">
                   <span>RFS</span>
                 </div>
 
                 <div
-                  v-if="solicitarPrecio && (optionSelected === 'Vender' || mostrarTwoWay) ||
-                    solicitarPrecio && optionSelected === 'TwoWay'"
+                  v-if="solicitarPrecio && (optionSelected === 'Vender' || optionSelected === 'Twoway')"
                   class="box-vender">
                   <div class="title-operacion">
                     {{ isBuy ? 'Comprar' : 'Vender' }} {{ currencySelected }}
                   </div>
                   <div class="box-precio">
                     <span
-                      :class="{greenValue: valueComparation === '+', redValue: valueComparation === '-'}">
-                      {{ currencyValue }}
+                      :class="{greenValue: isBuy ? valueComparationBuy === '+' : valueComparationSell === '+',
+                               redValue: isBuy ? valueComparationBuy === '-' : valueComparationSell === '-'}">
+                      {{ isBuy ? currencyValueBuy : currencyValueSell }}
                     </span>
                   </div>
                   <button
@@ -107,16 +109,16 @@
                 </div>
 
                 <div
-                  v-if="solicitarPrecio && (optionSelected === 'Comprar' || mostrarTwoWay) ||
-                    solicitarPrecio && optionSelected === 'TwoWay'"
+                  v-if="solicitarPrecio && (optionSelected === 'Comprar' || optionSelected === 'Twoway')"
                   class="box-vender">
                   <div class="title-operacion">
                     {{ isBuy ? 'Vender' : 'Comprar' }} {{ currencySelected }}
                   </div>
                   <div class="box-precio">
                     <span
-                      :class="{greenValue: valueComparation === '+', redValue: valueComparation === '-'}">
-                      {{ currencyValue }}
+                      :class="{greenValue: isBuy ? valueComparationSell === '+' : valueComparationBuy === '+',
+                               redValue: isBuy ? valueComparationSell === '-' : valueComparationBuy === '-'}">
+                      {{ isBuy ? currencyValueSell : currencyValueBuy }}
                     </span>
                   </div>
                   <button
@@ -151,8 +153,8 @@
                     v-if="mostrarTwoWay && !solicitarPrecio"
                     type="button"
                     class="btn btn-outline-operacion btn-sm"
-                    :class="{ 'active': mostrarTwoWay == true && optionSelected === 'TwoWay'}"
-                    @click="clickOption('TwoWay')">
+                    :class="{ 'active': mostrarTwoWay == true && optionSelected === 'Twoway'}"
+                    @click="clickOption('Twoway')">
                     Two Way
                   </button>
 
@@ -336,6 +338,7 @@ export default {
       progress: 100,
       timeLeft: '00:60',
       solicitarPrecio: false,
+      isTwoway: false,
       // mostrarTwoWay: false,
       optionSelected: 'Comprar',
       monto: 0,
@@ -357,11 +360,10 @@ export default {
       showModalHorario: false,
       isDisabled: true,
       // loading: true,
-      currencyValue: 22.749,
-      initCurrencyValue: 22.749,
-      valueComparation: '',
-      currencyValueTwoWay: 22.749,
-      valueComparationTwoWay: '',
+      currencyValueBuy: 22.749,
+      currencyValueSell: 22.749,
+      valueComparationBuy: '',
+      valueComparationSell: '',
       isBuy: false,
       wsAccount: 'INVEXCOMP.TEST',
       // qrCLOrdID: 'INVEXCOMP.TEST-00020220209124801190',
@@ -385,8 +387,8 @@ export default {
       'quoteRequest',
     ]),
     mostrarTwoWay() {
-      // return true;
-      return this.$store.state.mapClientLogeo.twoWay;
+      return this.isTwoway;
+      // return this.$store.state.mapClientLogeo.twoWay;
     },
   },
   mounted() {
@@ -423,7 +425,7 @@ export default {
     },
     getValueTwoWay() {
       if (this.mostrarTwoWay) {
-        this.optionSelected = 'TwoWay';
+        this.optionSelected = 'Twoway';
       } else {
         // alert('false');
       }
@@ -448,15 +450,17 @@ export default {
           if (this.isBuy) {
             opSide = this.optionSelected === 'Comprar' ? 'Sell' : 'Buy';
           }
-          this.valueComparation = '';
+          this.valueComparationSell = '';
+          this.valueComparationBuy = '';
           this.opSide = opSide;
           const currenciesSelected = this.currenciesSelected.join('/');
           const tomorrow = this.calendarSelected.replace(/-/g, '');
+          const sideValue = this.optionSelected === 'Twoway' ? 'Twoway' : opSide;
           const body = {
             ProductType: 'FX_STD',
             NoRelatedSym: [{
               Symbol: currenciesSelected,
-              Side: opSide,
+              Side: sideValue,
               OrderQty: this.monto.toString(),
               SettlDate: tomorrow,
               Currency: this.currencySelected,
@@ -466,11 +470,8 @@ export default {
           };
           const rsp = await this.$store.dispatch('getQuoteRequest', body);
           const rspMsg = JSON.parse(rsp.Message);
-          this.currencyValue = rspMsg.BuyPrice;
-          if (this.opSide === 'Sell') {
-            this.currencyValue = rspMsg.SellPrice;
-          }
-          this.initCurrencyValue = this.currencyValue;
+          this.currencyValueSell = rspMsg.SellPrice;
+          this.currencyValueBuy = rspMsg.BuyPrice;
           this.qQuoteID = rspMsg.QuoteReqID;
           this.solicitarPrecio = true;
           this.startTimer();
@@ -577,18 +578,29 @@ export default {
         this.progress = progressAux;
         sec -= 1;
         if (sec % 2 === 0) {
-          const rsp = await this.$store.dispatch('getQuote', { quoteId: this.qQuoteID, opSide: this.opSide });
+          const opName = this.optionSelected === 'Twoway' ? 'Twoway' : this.opSide;
+          console.log('opName', opName);
+          const rsp = await this.$store.dispatch('getQuote', { quoteId: this.qQuoteID, opSide: opName });
           if (rsp.DataIdentifier === 7) {
             const rspMsg = JSON.parse(rsp.Message);
-            const newCurrencyValue = this.opSide === 'Buy' ? rspMsg.BuyPrice : rspMsg.SellPrice;
-            if (Number(newCurrencyValue) > Number(this.currencyValue)) {
-              this.valueComparation = '+';
-            } else if (Number(newCurrencyValue) < Number(this.currencyValue)) {
-              this.valueComparation = '-';
+            const newCurrencyValueSell = rspMsg.SellPrice;
+            const newCurrencyValueBuy = rspMsg.BuyPrice;
+            if (Number(newCurrencyValueSell) > Number(this.currencyValueSell)) {
+              this.valueComparationSell = '+';
+            } else if (Number(newCurrencyValueSell) < Number(this.currencyValueSell)) {
+              this.valueComparationSell = '-';
             } else {
-              this.valueComparation = '';
+              this.valueComparationSell = '=';
             }
-            this.currencyValue = newCurrencyValue;
+            if (Number(newCurrencyValueBuy) > Number(this.currencyValueBuy)) {
+              this.valueComparationBuy = '+';
+            } else if (Number(newCurrencyValueBuy) < Number(this.currencyValueBuy)) {
+              this.valueComparationBuy = '-';
+            } else {
+              this.valueComparationBuy = '=';
+            }
+            this.currencyValueSell = newCurrencyValueSell;
+            this.currencyValueBuy = newCurrencyValueBuy;
           }
         }
         if (sec < 0) {
@@ -614,7 +626,7 @@ export default {
         Currency: this.currencySelected,
         OrderQty: this.monto.toString(),
         OrderType: this.orderType,
-        Price: this.currencyValue.toString(),
+        Price: this.opSide === 'Buy' ? this.currencyValueBuy : this.currencyValueSell,
         QuoteID: this.quoteRequest.QuoteID,
         SettlDate: tomorrow,
         Side: this.opSide,
@@ -645,11 +657,20 @@ export default {
       this.monto = '0';
     },
     dateFormat() {
+      if (!this.calendarSelected) return '';
       const dateArr = this.calendarSelected.split('-');
       return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
     },
     handleCloseHorario() {
       this.showModalHorario = false;
+    },
+    changeTwoway() {
+      this.isTwoway = !this.isTwoway;
+      if (this.isTwoway) {
+        this.clickOption('Twoway');
+      } else {
+        this.clickOption('Comprar');
+      }
     },
   },
 };
