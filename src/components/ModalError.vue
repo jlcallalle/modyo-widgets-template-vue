@@ -37,8 +37,8 @@
                 class="modal-title text-center">
                 Error de Conexión
               </h5>
-              <p>No se ha podido conectar con el servidor..</p>
-              <p>Por Favor intenta nuevamente.</p>
+              <p>No se ha podido conectar con el servidor.</p>
+              <p>Por favor intenta nuevamente.</p>
             </div>
             <div class="modal-footer justify-content-center">
               <button
