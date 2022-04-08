@@ -26,7 +26,6 @@ export default {
     watch(
       () => props.value, // Vue 2: props.value
       (value) => {
-        console.log('value', value);
         setValue(value);
       },
     );

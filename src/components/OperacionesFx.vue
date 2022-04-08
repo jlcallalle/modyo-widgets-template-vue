@@ -631,7 +631,7 @@ export default {
         Side: this.opSide,
         Symbol: currenciesSelected,
         Product: 'SPOT',
-        TransactionId: 'Request_Insert_01',
+        TransactionId: `Request_Insert_01_${Math.floor(Math.random() * 1000)}`,
         RequestSystem: 'PORTALFX',
       };
       clearInterval(this.timmerId);

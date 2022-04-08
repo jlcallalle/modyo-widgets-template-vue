@@ -84,13 +84,13 @@
               </div>
             </div>
             <div
-              v-if="!mostrarInstrucciones"
               class="box-two-btn d-flex justify-content-around">
               <a
                 href="#;"
                 class="btn btn-outline-primary btn-cancelar"
                 @click="goToOperaciones">Realizar otra operación</a>
               <button
+                v-if="!mostrarInstrucciones"
                 type="submit"
                 class="btn btn-primary btn-solicita"
                 @click="goToLiquidacion">
@@ -204,6 +204,17 @@
         v-if="showModal"
         :open="showModal"
         @close="handleClose" />
+      <custom-modal
+        v-if="customModalProps.open"
+        :open="customModalProps.open"
+        :type="customModalProps.type"
+        :title="customModalProps.title"
+        :message="customModalProps.message"
+        :btn-accept-text="customModalProps.btnAcceptText"
+        :btn-close-text="customModalProps.btnCancelText"
+        :btn-accept-func="customModalProps.btnAcceptFunc"
+        :btn-close-func="customModalProps.btnCancelFunc"
+        @close="closeModal" />
     </div>
   </div>
 </template>
@@ -213,10 +224,11 @@ import { mapState } from 'vuex';
 import moment from 'moment-timezone';
 import Sidebar from './Sidebar.vue';
 import ModalConfirma from './ModalConfirma.vue';
+import CustomModal from './CustomModal.vue';
 
 export default {
   name: 'OperacionConcertada',
-  components: { Sidebar, ModalConfirma },
+  components: { Sidebar, ModalConfirma, CustomModal },
   data() {
     return {
       mostrarInstrucciones: false,
@@ -228,6 +240,14 @@ export default {
       cuentaOrigen: null,
       cuentaDestino: null,
       showModal: false,
+      customModalProps: {
+        title: 'No se han asignado instrucciones',
+        message: '¿Deseas salir sin asignar instrucciones de liquidación a tus operaciones?',
+        type: 'warning',
+        open: false,
+        btnAcceptText: 'Asignar ahora',
+        btnCancelText: 'Asignar despues',
+      },
     };
   },
   computed: {
@@ -261,6 +281,15 @@ export default {
     },
   },
   methods: {
+    closeModal() {
+      this.customModalProps.open = false;
+    },
+    abrirModal() {
+      // eslint-disable-next-line no-return-assign
+      this.customModalProps.btnAcceptFunc = () => this.mostrarInstrucciones = true;
+      this.customModalProps.btnCancelFunc = () => this.$store.dispatch('updatePage', 'operacionesFx');
+      this.customModalProps.open = true;
+    },
     calculoOpposite() {
       // return this.$store.state.crearOperacionConcertada.OrderQty * this.$store.state.crearOperacionConcertada.Price;
       const actual = this.$store.state.crearOperacionConcertada.Currency;
@@ -281,7 +310,15 @@ export default {
       // console.log(this.crearOperacionConcertada);
     },
     goToOperaciones() {
-      this.$store.dispatch('updatePage', 'operacionesFx');
+      // eslint-disable-next-line no-return-assign
+      this.customModalProps.btnAcceptFunc = () => {
+        this.customModalProps.open = false;
+        if (!this.mostrarInstrucciones) {
+          this.goToLiquidacion();
+        }
+      };
+      this.customModalProps.btnCancelFunc = () => this.$store.dispatch('updatePage', 'operacionesFx');
+      this.customModalProps.open = true;
     },
     async evenInstrucciones() {
       try {

@@ -23,6 +23,18 @@
             <div class="modal-body d-flex flex-column text-center">
               <div class="box-icon-check">
                 <svg
+                  v-if="type === 'warning'"
+                  width="70"
+                  height="60"
+                  viewBox="0 0 70 60"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M0.263184 60H69.7369L35 0L0.263184 60ZM38.1579 50.5263H31.8421V44.2105H38.1579V50.5263ZM38.1579 37.8947H31.8421V25.2632H38.1579V37.8947Z"
+                    fill="#B98C00" />
+                </svg>
+                <svg
+                  v-if="type === 'confirm'"
                   width="54"
                   height="53"
                   viewBox="0 0 54 53"
@@ -35,16 +47,22 @@
               </div>
               <h5
                 class="modal-title">
-                Confirmación de instrucciones
+                {{ title }}
               </h5>
-              <p>Se han asignado cuentas a esta operación.</p>
+              <p>{{ message }}</p>
             </div>
             <div class="modal-footer justify-content-center">
               <button
                 type="button"
+                class="btn btn-close-white"
+                @click="btnCloseFunc">
+                {{ btnCloseText }}
+              </button>
+              <button
+                type="button"
                 class="btn btn-solicita"
-                @click="goToHome">
-                Aceptar
+                @click="btnAcceptFunc">
+                {{ btnAcceptText }}
               </button>
             </div>
           </div>
@@ -56,19 +74,43 @@
 
 <script>
 export default {
-  name: 'ModalConfirma',
+  name: 'CustomModal',
   props: {
     open: Boolean,
+    type: {
+      type: String,
+      default: 'warning',
+    },
+    title: {
+      type: String,
+      default: '',
+      required: true,
+    },
+    message: {
+      type: String,
+      default: '',
+    },
+    btnAcceptText: {
+      type: String,
+      default: 'Aceptar',
+    },
+    btnCloseText: {
+      type: String,
+      default: 'Cerrar',
+    },
+    btnAcceptFunc: {
+      type: Function,
+      default: () => {},
+    },
+    btnCloseFunc: {
+      type: Function,
+      default: () => {},
+    },
   },
   data() {
     return {
 
     };
-  },
-  methods: {
-    goToHome() {
-      this.$store.dispatch('updatePage', 'operacionesFx');
-    },
   },
 };
 </script>
