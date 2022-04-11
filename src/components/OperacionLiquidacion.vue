@@ -153,6 +153,13 @@
                   <span>Dar de alta nueva cuenta destino</span>
                 </a>
               </div>
+              <div
+                v-if="listaDestino.length === 0"
+                class="mensaje-cuenta alert alert-warning d-flex align-items-center">
+                <div class="small in-normal ml-2">
+                  No hay cuentas asignadas, por favor seleccionar otra Cuenta  Origen
+                </div>
+              </div>
               <div class="box-btn text-center">
                 <button
                   type="submit"
@@ -185,6 +192,8 @@ export default {
   },
   computed: {
     ...mapState(['currentView', 'loading']),
+    ...mapState(['listaOrigen']),
+    ...mapState(['listaDestino']),
   },
   mounted() {
     this.getListadoOrigen();
