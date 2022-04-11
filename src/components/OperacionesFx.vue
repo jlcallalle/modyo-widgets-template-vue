@@ -369,7 +369,8 @@ export default {
       // qrCLOrdID: 'INVEXCOMP.TEST-00020220209124801190',
       orderType: 'Previously',
       qPrice: 20.9294,
-      qQuoteID: 'INVEXCOMP.TEST-00020220309124956212-000001',
+      qQuoteID: '',
+      qQuoteReqID: '',
       opSide: 'Buy',
     };
   },
@@ -472,7 +473,8 @@ export default {
           const rspMsg = JSON.parse(rsp.Message);
           this.currencyValueSell = rspMsg.SellPrice;
           this.currencyValueBuy = rspMsg.BuyPrice;
-          this.qQuoteID = rspMsg.QuoteReqID;
+          this.qQuoteID = rspMsg.QuoteID;
+          this.qQuoteReqID = rspMsg.QuoteReqID;
           this.solicitarPrecio = true;
           this.startTimer();
         } catch (err) {
@@ -579,9 +581,11 @@ export default {
         sec -= 1;
         if (sec % 2 === 0) {
           const opName = this.optionSelected === 'Twoway' ? 'Twoway' : this.opSide;
-          const rsp = await this.$store.dispatch('getQuote', { quoteId: this.qQuoteID, opSide: opName });
+          const rsp = await this.$store.dispatch('getQuote', { quoteId: this.qQuoteReqID, opSide: opName });
           if (rsp.DataIdentifier === 7) {
             const rspMsg = JSON.parse(rsp.Message);
+            this.qQuoteReqID = rspMsg.QuoteReqID;
+            this.qQuoteID = rspMsg.QuoteID;
             const newCurrencyValueSell = rspMsg.SellPrice;
             const newCurrencyValueBuy = rspMsg.BuyPrice;
             if (Number(newCurrencyValueSell) > Number(this.currencyValueSell)) {
@@ -621,12 +625,12 @@ export default {
       const tomorrow = this.calendarSelected.replace(/-/g, '');
       const bodyConcertacion = {
         Account: this.wsAccount,
-        CLOrdID: this.quoteRequest.QuoteReqID,
+        CLOrdID: this.qQuoteReqID,
         Currency: this.currencySelected,
         OrderQty: this.monto.toString(),
         OrderType: this.orderType,
         Price: this.opSide === 'Buy' ? this.currencyValueBuy : this.currencyValueSell,
-        QuoteID: this.quoteRequest.QuoteID,
+        QuoteID: this.qQuoteID,
         SettlDate: tomorrow,
         Side: this.opSide,
         Symbol: currenciesSelected,
