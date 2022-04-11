@@ -68,7 +68,7 @@
             </div>
           </form>
         </div>
-        <div class="col-md-12 col-lg-4 box-sidebar-spot">
+        <div class="col-md-12 col-xl-4 box-sidebar-spot">
           <div class="box-cuentas-liquidacion">
             <h2 class="mb-4">
               Instrucciones de liquidacion

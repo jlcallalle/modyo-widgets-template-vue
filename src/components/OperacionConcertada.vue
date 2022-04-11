@@ -7,7 +7,7 @@
     </div>
     <div class="container container-widget">
       <div class="row">
-        <div class="col-md-12 col-lg-8 box-operaciones">
+        <div class="col-md-12 col-xl-8 box-operaciones">
           <form @submit.prevent="onSubmit">
             <div class="row">
               <h2 class="subtitle mb-4">
@@ -101,7 +101,7 @@
         </div>
         <div
           v-if="mostrarInstrucciones"
-          class="col-md-12 col-lg-4 box-sidebar-spot">
+          class="col-md-12 col-xl-4 box-sidebar-spot">
           <div class="box-cuentas-liquidacion">
             <h2 class="mb-4">
               Instrucciones de liquidacion
