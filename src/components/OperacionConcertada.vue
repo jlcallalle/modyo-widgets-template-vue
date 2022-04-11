@@ -165,6 +165,17 @@
                     </template>
                   </select>
                 </div>
+                <div
+                  v-for="(destino, index) in listadoDestino"
+                  :key="index">
+                  <div
+                    v-if="listadoDestino.length === 0"
+                    class="mensaje-cuenta alert alert-warning d-flex align-items-center">
+                    <div class="small in-normal ml-2">
+                      No hay cuentas asignadas, por favor seleccionar otra Cuenta  Origen
+                    </div>
+                  </div>
+                </div>
                 <a
                   class="box-alta"
                   @click="getListadoDestino()">
