@@ -158,8 +158,8 @@
                       <option
                         :id="index"
                         :key="index"
-                        :selected="destinoSelected === destino.beneficiaryAccount"
-                        :value="destino.beneficiaryAccount">
+                        :selected="destinoSelected === destino.BeneficiaryAccount"
+                        :value="destino.BeneficiaryAccount">
                         {{ destinoTxt(destino) }}
                       </option>
                     </template>
@@ -339,10 +339,10 @@ export default {
           orderID: concretadaData.OrderID,
           debitAccount: this.origenSelected,
           creditAccount: '',
-          settlAccount: `${this.destinoSelected}`,
+          settlAccount: this.destinoSelected,
         };
         this.listadoDestino.forEach((destino) => {
-          if (destino.beneficiaryAccount === this.destinoSelected) {
+          if (destino.BeneficiaryAccount === this.destinoSelected) {
             body.creditAccount = `${destino.customerAccount}`;
           }
         });
@@ -459,7 +459,7 @@ export default {
               }
             });
           }
-          this.setDestino({ target: { value: this.listadoDestino[0].beneficiaryAccount } });
+          this.setDestino({ target: { value: this.listadoDestino[0].BeneficiaryAccount } });
         }
       }
     },
