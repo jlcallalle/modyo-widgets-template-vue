@@ -169,9 +169,9 @@
                   v-for="(destino, index) in listadoDestino"
                   :key="index">
                   <div
-                    v-if="listadoDestino.length === 0"
+                    v-if="listadoDestino.length === 0 || allListadoDestino.length === 0"
                     class="mensaje-cuenta alert alert-warning d-flex align-items-center">
-                    <div class="small in-normal ml-2">
+                    <div class="small in-normal">
                       No hay cuentas asignadas, por favor seleccionar otra Cuenta  Origen
                     </div>
                   </div>
@@ -264,6 +264,8 @@ export default {
     ...mapState(['crearOperacionConcertada']),
     ...mapState(['listarOperacionConcertada']),
     ...mapState(['listarOperacion']),
+    ...mapState(['listaOrigen']),
+    ...mapState(['listaDestino']),
     tipoOperacion() {
       return this.$store.state.crearOperacionConcertada.Side;
     },
