@@ -292,17 +292,17 @@ export default {
   },
   methods: {
     destinoTxt(destino) {
+      const monedaActual = this.$store.state.crearOperacionConcertada.Currency;
       if (!destino) return '';
       const destinoAux = JSON.parse(JSON.stringify(destino));
       if (!destinoAux.BeneficiaryAccount) return '';
-      return `${destinoAux.BeneficiaryBank}-**********
-                        ${destinoAux.BeneficiaryAccount.toString()
-    .slice(destinoAux.BeneficiaryAccount.toString().length - 4)}`;
+      return `${monedaActual} ${destinoAux.BeneficiaryBank} - **********${destinoAux.BeneficiaryAccount.toString()
+        .slice(destinoAux.BeneficiaryAccount.toString().length - 4)}`;
     },
     origenTxt(origen) {
       if (!origen) return '';
       return `${origen.currency}
-                        ${origen.type}-**********${origen.customerAccount.slice(origen.customerAccount.length - 4)}`;
+                        ${origen.type} - **********${origen.customerAccount.slice(origen.customerAccount.length - 4)}`;
     },
     closeModal() {
       this.customModalProps.open = false;
