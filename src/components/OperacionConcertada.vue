@@ -414,6 +414,7 @@ export default {
         Type: 'CE',
         InternetFolio: '3853',
         AllowOperate: 'T',
+        Currency: 'MXN',
       };
       const response = await this.$store.dispatch('getListaOrigen', body);
       if (Array.isArray(response.cuentas)) {
