@@ -292,11 +292,12 @@ export default {
   },
   methods: {
     destinoTxt(destino) {
-      const monedaActual = this.$store.state.crearOperacionConcertada.Currency;
+      const concretadaData = this.$store.state.crearOperacionConcertada;
+      const separa = concretadaData.Symbol.split('/');
       if (!destino) return '';
       const destinoAux = JSON.parse(JSON.stringify(destino));
       if (!destinoAux.BeneficiaryAccount) return '';
-      return `${monedaActual} ${destinoAux.BeneficiaryBank} - **********${destinoAux.BeneficiaryAccount.toString()
+      return `${separa[1]} ${destinoAux.BeneficiaryBank} - **********${destinoAux.BeneficiaryAccount.toString()
         .slice(destinoAux.BeneficiaryAccount.toString().length - 4)}`;
     },
     origenTxt(origen) {
@@ -347,7 +348,7 @@ export default {
       try {
         const concretadaData = this.$store.state.crearOperacionConcertada;
         const body = {
-          transactionId: concretadaData.TransactTime,
+          transactionId: concretadaData.ClOrdID,
           requestSystem: 'FX',
           orderID: concretadaData.OrderID,
           debitAccount: this.origenSelected,
@@ -374,10 +375,8 @@ export default {
       } else {
         const rsp = await this.getListadoOrigen();
         if (rsp) {
-          if (rsp.cuentas.length > 0) {
-            this.mostrarInstrucciones = true;
-            this.getListadoDestino();
-          }
+          this.mostrarInstrucciones = true;
+          this.getListadoDestino();
         }
       }
     },
@@ -403,8 +402,10 @@ export default {
       this.cuentaDestino = this.listadoDestino.find((item) => item.BeneficiaryAccount === this.destinoSelected);
     },
     async getListadoOrigen() {
+      const concretadaData = this.$store.state.crearOperacionConcertada;
+      const separa = concretadaData.Symbol.split('/');
       const body = {
-        transactionId: '3853-02',
+        transactionId: concretadaData.ClOrdID,
         requestSystem: 'PORTAL',
         source: 'PORTALSYS',
         userId: 'PORTALUSR',
@@ -414,7 +415,7 @@ export default {
         Type: 'CE',
         InternetFolio: '3853',
         AllowOperate: 'T',
-        Currency: 'MXN',
+        Currency: separa[0],
       };
       const response = await this.$store.dispatch('getListaOrigen', body);
       if (Array.isArray(response.cuentas)) {
@@ -425,11 +426,13 @@ export default {
       if (this.listadoOrigen.length > 0) {
         this.setOrigen({ target: { value: this.listadoOrigen[0].customerAccount } });
       }
-      return response;
+      return this.listadoOrigen.length > 0;
     },
     async getListadoDestino() {
+      const concretadaData = this.$store.state.crearOperacionConcertada;
+      const separa = concretadaData.Symbol.split('/');
       const body = {
-        transactionId: '3853-02',
+        transactionId: concretadaData.ClOrdID,
         requestSystem: 'PORTALFX',
         source: 'FXSYS',
         userId: 'FXUSR',
@@ -439,7 +442,7 @@ export default {
         Type: 'CE',
         InternetFolio: '3853',
         AllowOperate: 'S',
-        Currency: 'USD',
+        Currency: separa[1],
         SameBank: false,
         IsBeneficiaryCreditCard: false,
       };
