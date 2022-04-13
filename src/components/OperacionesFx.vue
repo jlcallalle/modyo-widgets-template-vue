@@ -219,7 +219,7 @@
                       :disabled="solicitarPrecio"
                       :options="{
                         // eslint-disable-next-line no-irregular-whitespace
-                        currency: currencySelected || 'USD',
+                        currency: 'USD',
                         currencyDisplay: 'hidden',
                         locale: 'en-US',
                         precision: 2,

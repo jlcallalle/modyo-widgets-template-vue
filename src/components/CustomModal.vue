@@ -52,12 +52,14 @@
               <p>{{ message }}</p>
             </div>
             <div class="modal-footer justify-content-center">
-              <button
-                type="button"
-                class="btn btn-close-white"
-                @click="btnCloseFunc">
-                {{ btnCloseText }}
-              </button>
+              <span v-show="!btnCloseHide">
+                <button
+                  type="button"
+                  class="btn btn-close-white"
+                  @click="btnCloseFunc">
+                  {{ btnCloseText }}
+                </button>
+              </span>
               <button
                 type="button"
                 class="btn btn-solicita"
@@ -105,6 +107,10 @@ export default {
     btnCloseFunc: {
       type: Function,
       default: () => {},
+    },
+    btnCloseHide: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

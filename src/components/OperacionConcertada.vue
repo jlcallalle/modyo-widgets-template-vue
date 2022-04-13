@@ -222,6 +222,7 @@
         :btn-close-text="customModalProps.btnCancelText"
         :btn-accept-func="customModalProps.btnAcceptFunc"
         :btn-close-func="customModalProps.btnCancelFunc"
+        :btn-close-hide="customModalProps.btnCloseHide"
         @close="closeModal" />
     </div>
   </div>
@@ -255,6 +256,7 @@ export default {
         open: false,
         btnAcceptText: 'Asignar ahora',
         btnCancelText: 'Asignar despues',
+        btnCloseHide: false,
       },
     };
   },
@@ -312,6 +314,10 @@ export default {
       // eslint-disable-next-line no-return-assign
       this.customModalProps.btnAcceptFunc = () => this.mostrarInstrucciones = true;
       this.customModalProps.btnCancelFunc = () => this.$store.dispatch('updatePage', 'operacionesFx');
+      this.customModalProps.title = 'No se han asignado instrucciones';
+      this.customModalProps.message = '¿Deseas salir sin asignar instrucciones de liquidación a tus operaciones?';
+      this.customModalProps.btnAcceptText = 'Asignar ahora';
+      this.customModalProps.btnCloseHide = false;
       this.customModalProps.open = true;
     },
     calculoOpposite() {
@@ -342,6 +348,10 @@ export default {
         }
       };
       this.customModalProps.btnCancelFunc = () => this.$store.dispatch('updatePage', 'operacionesFx');
+      this.customModalProps.title = 'No se han asignado instrucciones';
+      this.customModalProps.message = '¿Deseas salir sin asignar instrucciones de liquidación a tus operaciones?';
+      this.customModalProps.btnAcceptText = 'Asignar ahora';
+      this.customModalProps.btnCloseHide = false;
       this.customModalProps.open = true;
     },
     async evenInstrucciones() {
@@ -377,6 +387,16 @@ export default {
         if (rsp) {
           this.mostrarInstrucciones = true;
           this.getListadoDestino();
+        } else {
+          const concretadaData = this.$store.state.crearOperacionConcertada;
+          const separa = concretadaData.Symbol.split('/');
+          const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
+          this.customModalProps.title = 'No se encontraron cuentas origen';
+          this.customModalProps.message = `No cuenta con cuentas origen ${opcion === 1 ? separa[1] : separa[0]} para realizar la operación`;
+          this.customModalProps.btnAcceptText = 'Aceptar';
+          this.customModalProps.btnCloseHide = true;
+          this.customModalProps.btnAcceptFunc = this.closeModal;
+          this.customModalProps.open = true;
         }
       }
     },
@@ -402,35 +422,42 @@ export default {
       this.cuentaDestino = this.listadoDestino.find((item) => item.BeneficiaryAccount === this.destinoSelected);
     },
     async getListadoOrigen() {
-      const concretadaData = this.$store.state.crearOperacionConcertada;
-      const separa = concretadaData.Symbol.split('/');
-      const body = {
-        transactionId: concretadaData.ClOrdID,
-        requestSystem: 'PORTAL',
-        source: 'PORTALSYS',
-        userId: 'PORTALUSR',
-        branch: '001',
-        sourceUserId: 'PORTALUSR',
-        CustomerNumber: '00004635',
-        Type: 'CE',
-        InternetFolio: '3853',
-        AllowOperate: 'T',
-        Currency: separa[0],
-      };
-      const response = await this.$store.dispatch('getListaOrigen', body);
-      if (Array.isArray(response.cuentas)) {
-        this.listadoOrigen = response.cuentas;
-      } else {
-        this.listadoOrigen = [response.cuentas];
+      try {
+        const concretadaData = this.$store.state.crearOperacionConcertada;
+        const separa = concretadaData.Symbol.split('/');
+        const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
+        const body = {
+          transactionId: concretadaData.ClOrdID,
+          requestSystem: 'PORTAL',
+          source: 'PORTALSYS',
+          userId: 'PORTALUSR',
+          branch: '001',
+          sourceUserId: 'PORTALUSR',
+          CustomerNumber: '00004635',
+          Type: 'CE',
+          InternetFolio: '3853',
+          AllowOperate: 'T',
+          Currency: opcion === '1' ? separa[1] : separa[0],
+        };
+        const response = await this.$store.dispatch('getListaOrigen', body);
+        if (!response) return false;
+        if (Array.isArray(response.cuentas)) {
+          this.listadoOrigen = response.cuentas;
+        } else {
+          this.listadoOrigen = [response.cuentas];
+        }
+        if (this.listadoOrigen.length > 0) {
+          this.setOrigen({ target: { value: this.listadoOrigen[0].customerAccount } });
+        }
+        return this.listadoOrigen.length > 0;
+      } catch (e) {
+        return false;
       }
-      if (this.listadoOrigen.length > 0) {
-        this.setOrigen({ target: { value: this.listadoOrigen[0].customerAccount } });
-      }
-      return this.listadoOrigen.length > 0;
     },
     async getListadoDestino() {
       const concretadaData = this.$store.state.crearOperacionConcertada;
       const separa = concretadaData.Symbol.split('/');
+      const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
       const body = {
         transactionId: concretadaData.ClOrdID,
         requestSystem: 'PORTALFX',
@@ -442,7 +469,7 @@ export default {
         Type: 'CE',
         InternetFolio: '3853',
         AllowOperate: 'S',
-        Currency: separa[1],
+        Currency: opcion === '1' ? separa[0] : separa[1],
         SameBank: false,
         IsBeneficiaryCreditCard: false,
       };
