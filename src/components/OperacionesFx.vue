@@ -616,9 +616,7 @@ export default {
       this.timmerId = timer;
     },
     cancelClick() {
-      if (this.solicitarPrecio) {
-        window.location.reload();
-      }
+      window.location.reload();
     },
     async eventOperation() {
       const currenciesSelected = this.currenciesSelected.join('/');
