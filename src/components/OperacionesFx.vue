@@ -238,7 +238,6 @@
                     <select
                       name="select"
                       class="select-fecha"
-                      disabled
                       @change="setCalendar($event)">
                       <template v-for="(calendarOp, index) in calendarOptions">
                         <option
