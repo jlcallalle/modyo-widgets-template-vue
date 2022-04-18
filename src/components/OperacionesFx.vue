@@ -238,6 +238,7 @@
                     <select
                       name="select"
                       class="select-fecha"
+                      :disabled="solicitarPrecio"
                       @change="setCalendar($event)">
                       <template v-for="(calendarOp, index) in calendarOptions">
                         <option
