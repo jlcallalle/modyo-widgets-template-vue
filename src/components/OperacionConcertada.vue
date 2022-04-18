@@ -388,7 +388,7 @@ export default {
           this.getListadoDestino();
         } else {
           this.customModalProps.title = 'No se encontraron cuentas origen';
-          this.customModalProps.message = `No cuenta con cuentas origen ${await this.getLogicCurrencies()} para realizar la operación`;
+          this.customModalProps.message = `No existen cuentas origen registradas para la divisa ${await this.getLogicCurrencies()} para poder realizar la asignación de las cuentas a la operación`;
           this.customModalProps.btnAcceptText = 'Aceptar';
           this.customModalProps.btnCloseHide = true;
           this.customModalProps.btnAcceptFunc = this.closeModal;
@@ -519,7 +519,7 @@ export default {
     },
     async returnMsgDestino() {
       this.customModalProps.title = 'No se encontraron cuentas destino';
-      this.customModalProps.message = `No cuenta con cuentas destino ${this.destinoCurrency} para realizar la operación`;
+      this.customModalProps.message = `No existen cuentas destino registradas para la divisa ${await this.getLogicCurrencies()} para poder realizar la asignación de las cuentas a la operación`;
       this.customModalProps.btnAcceptText = 'Aceptar';
       this.customModalProps.btnCloseHide = true;
       this.customModalProps.btnAcceptFunc = () => {
