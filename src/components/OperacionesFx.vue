@@ -238,6 +238,7 @@
                     <select
                       name="select"
                       class="select-fecha"
+                      disabled
                       @change="setCalendar($event)">
                       <template v-for="(calendarOp, index) in calendarOptions">
                         <option
@@ -320,6 +321,9 @@ import ModalExitoso from './ModalExitoso.vue';
 import ModalError from './ModalError.vue';
 import ModalTiempo from './ModaTiempo.vue';
 import ModalHorario from './ModalHorario.vue';
+import liquidParser from '../liquid/liquidParser';
+
+const segundoPeticiones = liquidParser.parse('{{ vars.segundopeticiones }}');
 
 export default {
   name: 'OperacionesFx',
@@ -570,6 +574,7 @@ export default {
     },
     async startTimer() {
       let sec = 60;
+      const segundosPorPeticion = segundoPeticiones || 2;
       this.progress = 100;
       this.timeLeft = '00:60';
       const timer = setInterval(async () => {
@@ -578,7 +583,7 @@ export default {
         progressAux /= 60;
         this.progress = progressAux;
         sec -= 1;
-        if (sec % 2 === 0) {
+        if (sec % segundosPorPeticion === 0) {
           const opName = this.optionSelected === 'Twoway' ? 'Twoway' : this.opSide;
           const rsp = await this.$store.dispatch('getQuote', { quoteId: this.qQuoteReqID, opSide: opName });
           if (rsp.DataIdentifier === 7) {
