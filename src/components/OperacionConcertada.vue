@@ -241,6 +241,7 @@ export default {
   data() {
     return {
       mostrarInstrucciones: false,
+      destinoCurrency: '',
       allListadoDestino: [],
       listadoOrigen: [],
       listadoDestino: [],
@@ -294,13 +295,10 @@ export default {
   },
   methods: {
     destinoTxt(destino) {
-      const concretadaData = this.$store.state.crearOperacionConcertada;
-      const separa = concretadaData.Symbol.split('/');
       if (!destino) return '';
       const destinoAux = JSON.parse(JSON.stringify(destino));
       if (!destinoAux.BeneficiaryAccount) return '';
-      const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
-      return `${opcion === '1' ? separa[0] : separa[1]} ${destinoAux.BeneficiaryBank} - **********${destinoAux.BeneficiaryAccount.toString()
+      return `${this.destinoCurrency} ${destinoAux.BeneficiaryBank} - **********${destinoAux.BeneficiaryAccount.toString()
         .slice(destinoAux.BeneficiaryAccount.toString().length - 4)}`;
     },
     origenTxt(origen) {
@@ -389,11 +387,8 @@ export default {
           this.mostrarInstrucciones = true;
           this.getListadoDestino();
         } else {
-          const concretadaData = this.$store.state.crearOperacionConcertada;
-          const separa = concretadaData.Symbol.split('/');
-          const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
           this.customModalProps.title = 'No se encontraron cuentas origen';
-          this.customModalProps.message = `No cuenta con cuentas origen ${opcion === '1' ? separa[1] : separa[0]} para realizar la operación`;
+          this.customModalProps.message = `No cuenta con cuentas origen ${await this.getLogicCurrencies()} para realizar la operación`;
           this.customModalProps.btnAcceptText = 'Aceptar';
           this.customModalProps.btnCloseHide = true;
           this.customModalProps.btnAcceptFunc = this.closeModal;
@@ -422,11 +417,21 @@ export default {
       this.destinoSelected = event.target.value;
       this.cuentaDestino = this.listadoDestino.find((item) => item.BeneficiaryAccount === this.destinoSelected);
     },
+    async getLogicCurrencies(destino) {
+      const concretadaData = await this.$store.state.crearOperacionConcertada;
+      const currencyData = concretadaData.Currency;
+      const separa = concretadaData.Symbol.split('/');
+      const opcion = concretadaData.Side; // SELL = "2" / BUY = "1"
+      const contrario = currencyData === separa[0] ? separa[1] : separa[0];
+      if (destino) {
+        this.destinoCurrency = opcion === '1' ? currencyData : contrario;
+        return opcion === '1' ? currencyData : contrario;
+      }
+      return opcion === '1' ? contrario : currencyData;
+    },
     async getListadoOrigen() {
       try {
         const concretadaData = this.$store.state.crearOperacionConcertada;
-        const separa = concretadaData.Symbol.split('/');
-        const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
         const body = {
           transactionId: concretadaData.ClOrdID,
           requestSystem: 'PORTAL',
@@ -438,7 +443,7 @@ export default {
           Type: 'CE',
           InternetFolio: '3853',
           AllowOperate: 'T',
-          Currency: opcion === '1' ? separa[1] : separa[0],
+          Currency: await this.getLogicCurrencies(),
         };
         const response = await this.$store.dispatch('getListaOrigen', body);
         if (!response) return false;
@@ -458,8 +463,6 @@ export default {
     async getListadoDestino() {
       try {
         const concretadaData = this.$store.state.crearOperacionConcertada;
-        const separa = concretadaData.Symbol.split('/');
-        const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
         const body = {
           transactionId: concretadaData.ClOrdID,
           requestSystem: 'PORTALFX',
@@ -471,7 +474,7 @@ export default {
           Type: 'CE',
           InternetFolio: '3853',
           AllowOperate: 'S',
-          Currency: opcion === '1' ? separa[0] : separa[1],
+          Currency: await this.getLogicCurrencies(true),
           SameBank: false,
           IsBeneficiaryCreditCard: false,
         };
@@ -514,12 +517,9 @@ export default {
         this.returnMsgDestino();
       }
     },
-    returnMsgDestino() {
-      const concretadaData = this.$store.state.crearOperacionConcertada;
-      const separa = concretadaData.Symbol.split('/');
-      const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
+    async returnMsgDestino() {
       this.customModalProps.title = 'No se encontraron cuentas destino';
-      this.customModalProps.message = `No cuenta con cuentas destino ${opcion === '1' ? separa[0] : separa[1]} para realizar la operación`;
+      this.customModalProps.message = `No cuenta con cuentas destino ${this.destinoCurrency} para realizar la operación`;
       this.customModalProps.btnAcceptText = 'Aceptar';
       this.customModalProps.btnCloseHide = true;
       this.customModalProps.btnAcceptFunc = () => {
