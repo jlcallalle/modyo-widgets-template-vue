@@ -392,11 +392,11 @@ export default {
       // return this.$store.state.mapClientLogeo.twoWay;
     },
   },
-  mounted() {
-    this.getCurrencies();
-    this.getOperations();
+  async mounted() {
+    await this.getCurrencies();
+    await this.getOperations();
     this.getValueTwoWay();
-    this.getHoraRestriccion();
+    await this.getHoraRestriccion();
   },
   async created() {
     const getHours = new Date().getHours();

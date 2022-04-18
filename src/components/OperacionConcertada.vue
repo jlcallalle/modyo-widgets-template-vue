@@ -299,7 +299,8 @@ export default {
       if (!destino) return '';
       const destinoAux = JSON.parse(JSON.stringify(destino));
       if (!destinoAux.BeneficiaryAccount) return '';
-      return `${separa[1]} ${destinoAux.BeneficiaryBank} - **********${destinoAux.BeneficiaryAccount.toString()
+      const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
+      return `${opcion === '1' ? separa[0] : separa[1]} ${destinoAux.BeneficiaryBank} - **********${destinoAux.BeneficiaryAccount.toString()
         .slice(destinoAux.BeneficiaryAccount.toString().length - 4)}`;
     },
     origenTxt(origen) {
@@ -392,7 +393,7 @@ export default {
           const separa = concretadaData.Symbol.split('/');
           const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
           this.customModalProps.title = 'No se encontraron cuentas origen';
-          this.customModalProps.message = `No cuenta con cuentas origen ${opcion === 1 ? separa[1] : separa[0]} para realizar la operación`;
+          this.customModalProps.message = `No cuenta con cuentas origen ${opcion === '1' ? separa[1] : separa[0]} para realizar la operación`;
           this.customModalProps.btnAcceptText = 'Aceptar';
           this.customModalProps.btnCloseHide = true;
           this.customModalProps.btnAcceptFunc = this.closeModal;
@@ -455,57 +456,77 @@ export default {
       }
     },
     async getListadoDestino() {
+      try {
+        const concretadaData = this.$store.state.crearOperacionConcertada;
+        const separa = concretadaData.Symbol.split('/');
+        const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
+        const body = {
+          transactionId: concretadaData.ClOrdID,
+          requestSystem: 'PORTALFX',
+          source: 'FXSYS',
+          userId: 'FXUSR',
+          branch: '001',
+          sourceUserId: 'FXUSR',
+          CustomerNumber: '00004635',
+          Type: 'CE',
+          InternetFolio: '3853',
+          AllowOperate: 'S',
+          Currency: opcion === '1' ? separa[0] : separa[1],
+          SameBank: false,
+          IsBeneficiaryCreditCard: false,
+        };
+        const response = await this.$store.dispatch('getListaDestino', body);
+        const respAux = JSON.parse(JSON.stringify(response));
+        if (response) {
+          if (Array.isArray(respAux)) {
+            this.$set(this, 'allListadoDestino', respAux);
+          } else {
+            this.$set(this, 'allListadoDestino', [respAux]);
+          }
+          if (this.allListadoDestino.length > 0) {
+            this.listadoDestino = [];
+            this.destinoSelected = '';
+            this.cuentaDestino = null;
+            const listadoAux = JSON.parse(JSON.stringify(this.allListadoDestino));
+            if (Array.isArray(listadoAux)) {
+              listadoAux.forEach((item) => {
+                if (item.cuentas.beneficiaryData) {
+                  if (Array.isArray(item.cuentas.beneficiaryData.beneficiaryAccount)) {
+                    item.cuentas.beneficiaryData.beneficiaryAccount.forEach((item2) => {
+                      const auxPush = { ...item2, customerAccount: item.cuentas.customerAccount };
+                      this.listadoDestino.push(auxPush);
+                    });
+                  } else {
+                    this.listadoDestino.push({
+                      ...item.cuentas.beneficiaryData.beneficiaryAccount,
+                      customerAccount: item.cuentas.customerAccount,
+                    });
+                  }
+                }
+              });
+            }
+            this.setDestino({ target: { value: this.listadoDestino[0].BeneficiaryAccount } });
+          }
+        } else {
+          this.returnMsgDestino();
+        }
+      } catch (e) {
+        this.returnMsgDestino();
+      }
+    },
+    returnMsgDestino() {
       const concretadaData = this.$store.state.crearOperacionConcertada;
       const separa = concretadaData.Symbol.split('/');
       const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
-      const body = {
-        transactionId: concretadaData.ClOrdID,
-        requestSystem: 'PORTALFX',
-        source: 'FXSYS',
-        userId: 'FXUSR',
-        branch: '001',
-        sourceUserId: 'FXUSR',
-        CustomerNumber: '00004635',
-        Type: 'CE',
-        InternetFolio: '3853',
-        AllowOperate: 'S',
-        Currency: opcion === '1' ? separa[0] : separa[1],
-        SameBank: false,
-        IsBeneficiaryCreditCard: false,
+      this.customModalProps.title = 'No se encontraron cuentas destino';
+      this.customModalProps.message = `No cuenta con cuentas destino ${opcion === '1' ? separa[0] : separa[1]} para realizar la operación`;
+      this.customModalProps.btnAcceptText = 'Aceptar';
+      this.customModalProps.btnCloseHide = true;
+      this.customModalProps.btnAcceptFunc = () => {
+        this.mostrarInstrucciones = false;
+        this.closeModal();
       };
-      const response = await this.$store.dispatch('getListaDestino', body);
-      const respAux = JSON.parse(JSON.stringify(response));
-      if (response) {
-        if (Array.isArray(respAux)) {
-          this.$set(this, 'allListadoDestino', respAux);
-        } else {
-          this.$set(this, 'allListadoDestino', [respAux]);
-        }
-        if (this.allListadoDestino.length > 0) {
-          this.listadoDestino = [];
-          this.destinoSelected = '';
-          this.cuentaDestino = null;
-          const listadoAux = JSON.parse(JSON.stringify(this.allListadoDestino));
-          if (Array.isArray(listadoAux)) {
-            listadoAux.forEach((item) => {
-              if (item.cuentas.beneficiaryData) {
-                if (Array.isArray(item.cuentas.beneficiaryData.beneficiaryAccount)) {
-                  item.cuentas.beneficiaryData.beneficiaryAccount.forEach((item2) => {
-                    const auxPush = { ...item2, customerAccount: item.cuentas.customerAccount };
-                    this.listadoDestino.push(auxPush);
-                  });
-                } else {
-                  this.listadoDestino.push({
-                    ...item.cuentas.beneficiaryData.beneficiaryAccount,
-                    customerAccount: item.cuentas.customerAccount,
-                  });
-                }
-              }
-            });
-          }
-          this.setDestino({ target: { value: this.listadoDestino[0].BeneficiaryAccount } });
-        }
-      }
+      this.customModalProps.open = true;
     },
     returnTxtOperacion() {
       const actual = this.$store.state.crearOperacionConcertada.Currency;
