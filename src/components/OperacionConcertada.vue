@@ -398,8 +398,12 @@ export default {
     },
     getTimeZoneDate(str, isGMT = false) {
       const strDateFormat = `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)} ${str.slice(9)}`;
-      const dateMoment = moment(strDateFormat, 'YYYY-MM-DD HH:mm:ss').tz(isGMT ? 'Africa/Abidjan' : 'America/Mexico_City').format('ddd, DD. MMM YYYY HH:mm:ss');
-      return `${dateMoment} ${isGMT ? 'GMT' : 'CST'}`;
+      if (isGMT) {
+        return `${moment(strDateFormat, 'YYYY-MM-DD HH:mm:ss').format('ddd, DD. MMM YYYY HH:mm:ss')} GMT`;
+      }
+      const cloneDate = moment(strDateFormat, 'YYYY-MM-DD HH:mm:ss').tz('Atlantic/Reykjavik', true);
+      const dateMexico = cloneDate.clone().tz('America/Mexico_City').format('ddd, DD. MMM YYYY HH:mm:ss');
+      return `${dateMexico} CDT`;
     },
     getLocalDate(str, onlyDate = false) {
       const strDateFormat = `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)} ${str.slice(9)}`;
