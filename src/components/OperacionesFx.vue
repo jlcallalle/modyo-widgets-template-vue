@@ -13,12 +13,6 @@
       class="invex-loader">
       <div class="invex-loader_spinner" />
     </div>
-    <p style="display:none">
-      a {{ listarOperacion }}
-    </p>
-    <p style="display:none">
-      b: {{ operationsOptions }}
-    </p>
     <div class="container container-widget">
       <div class="row">
         <div class="col-md-12 col-xl-8 box-operaciones">
@@ -35,11 +29,10 @@
                     :disabled="solicitarPrecio">
                     <template v-for="(value, key, index) in listarOperacion">
                       <option
-                        v-if="index === 0"
                         :key="index"
-                        :value="value"
-                        :selected="index === 0">
-                        {{ value }}
+                        :value="value.productCode"
+                        :selected="key === 0">
+                        {{ value.productCode }}
                       </option>
                     </template>
                   </select>
