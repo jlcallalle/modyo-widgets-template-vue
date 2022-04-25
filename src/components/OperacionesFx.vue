@@ -80,9 +80,9 @@
                   </div>
                   <div class="box-precio">
                     <span
-                      :class="{greenValue: isBuy ? valueComparationBuy === '+' : valueComparationSell === '+',
-                               redValue: isBuy ? valueComparationBuy === '-' : valueComparationSell === '-'}">
-                      {{ isBuy ? currencyValueBuy : currencyValueSell }}
+                      :class="{greenValue: valueComparationSell === '+',
+                               redValue: valueComparationSell === '-'}">
+                      {{ currencyValueSell }}
                     </span>
                   </div>
                   <button
@@ -109,9 +109,9 @@
                   </div>
                   <div class="box-precio">
                     <span
-                      :class="{greenValue: isBuy ? valueComparationSell === '+' : valueComparationBuy === '+',
-                               redValue: isBuy ? valueComparationSell === '-' : valueComparationBuy === '-'}">
-                      {{ isBuy ? currencyValueSell : currencyValueBuy }}
+                      :class="{greenValue: valueComparationBuy === '+',
+                               redValue: valueComparationBuy === '-'}">
+                      {{ currencyValueBuy }}
                     </span>
                   </div>
                   <button
@@ -443,10 +443,10 @@ export default {
           } else {
             // alert('Fuera de horario');
           }
-          let opSide = this.optionSelected === 'Comprar' ? 'Buy' : 'Sell';
-          if (this.isBuy) {
-            opSide = this.optionSelected === 'Comprar' ? 'Sell' : 'Buy';
-          }
+          const opSide = this.optionSelected === 'Comprar' ? 'Buy' : 'Sell';
+          // if (this.isBuy) {
+          //   opSide = this.optionSelected === 'Comprar' ? 'Sell' : 'Buy';
+          // }
           this.valueComparationSell = '';
           this.valueComparationBuy = '';
           this.opSide = opSide;
@@ -516,7 +516,6 @@ export default {
         if (spot) {
           this.calendarSelected = spot.date;
         } else if (this.calendarOptions.length > 0) {
-          // eslint-disable-next-line prefer-destructuring
           this.calendarSelected = this.calendarOptions[0].date;
         }
       } catch (error) {
