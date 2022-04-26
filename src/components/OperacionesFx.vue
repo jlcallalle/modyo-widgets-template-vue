@@ -239,7 +239,8 @@
                         <option
                           :id="index"
                           :key="index"
-                          :selected="calendarSelected === calendarOp.date"
+                          :data-tipo="calendarOp.Description"
+                          :selected="calendarSelected === calendarOp.date && operationsSelected === 'SPOT'"
                           :value="calendarOp.date">
                           {{ calendarOp.Description }}
                         </option>
@@ -247,11 +248,30 @@
                     </select>
                   </div>
                   <div class="box-input-row">
-                    <input
-                      disabled
-                      type="text"
-                      :value="dateFormat()"
-                      class="form-control input-fecha">
+                    <div
+                      v-if="operationsSelected === 'SPOT'"
+                      class="wrapp-fecha">
+                      <input
+                        disabled
+                        type="text"
+                        :value="dateFormat()"
+                        class="form-control input-fecha">
+                    </div>
+                    <div
+                      v-else
+                      class="wrapp-fecha">
+                      <date-picker
+                        v-model="dateFormatoCal"
+                        :masks="masks"
+                        :popover="{ visibility: 'click' }">
+                        <template #default="{ inputValue, inputEvents }">
+                          <input
+                            class="form-control input-fecha"
+                            :value="inputValue"
+                            v-on="inputEvents">
+                        </template>
+                      </date-picker>
+                    </div>
                     <i class="icon-calendar">
                       <svg
                         width="24"
@@ -322,6 +342,7 @@
 <script>
 import { mapState } from 'vuex';
 import { VueEllipseProgress } from 'vue-ellipse-progress';
+import DatePicker from 'v-calendar/lib/components/date-picker.umd';
 import CustomModal from './CustomModal.vue';
 import CurrencyInput from './CurrencyInput.vue';
 import Sidebar from './Sidebar.vue';
@@ -351,6 +372,7 @@ export default {
     ModalTiempo,
     ModalHorario,
     CustomModal,
+    DatePicker,
   },
   data() {
     return {
@@ -372,7 +394,7 @@ export default {
       currenciesSelected: [],
       calendarOptions: [],
       calendarSelected: null,
-      operationsSelected: '',
+      operationsSelected: 'SPOT',
       currencySelectedId: 1,
       showModal: false,
       showModalError: false,
@@ -401,6 +423,9 @@ export default {
         btnCancelText: 'Cancelar',
         btnCloseHide: false,
       },
+      masks: {
+        input: 'DD-MM-YYYY',
+      },
     };
   },
   computed: {
@@ -419,6 +444,11 @@ export default {
     mostrarTwoWay() {
       return this.isTwoway;
       // return this.$store.state.mapClientLogeo.twoWay;
+    },
+    dateFormatoCal() {
+      if (!this.calendarSelected) return '';
+      const dateArr = this.calendarSelected.split('-');
+      return `${dateArr}`;
     },
   },
   async mounted() {
@@ -603,6 +633,7 @@ export default {
     },
     seleccionarOperacion(ev) {
       this.operacionSeleccionada = ev.target.value;
+      this.operationsSelected = ev.target.value;
     },
     setCurrencySelected(ev) {
       this.currencySelected = ev.target.value;
