@@ -26,7 +26,9 @@
                   <select
                     id="tipoOperacionlSelect"
                     class="form-control"
-                    :disabled="solicitarPrecio">
+                    :value="operacionSeleccionada"
+                    :disabled="solicitarPrecio"
+                    @change="seleccionarOperacion($event)">
                     <template v-for="(value, key, index) in listarOperacion">
                       <option
                         :key="index"
@@ -302,12 +304,25 @@
       v-if="showModalTiempo"
       :open="showModalTiempo"
       @close="handleCloseTiempo" />
+    <custom-modal
+      v-if="customModalProps.open"
+      :open="customModalProps.open"
+      :type="customModalProps.type"
+      :title="customModalProps.title"
+      :message="customModalProps.message"
+      :btn-accept-text="customModalProps.btnAcceptText"
+      :btn-close-text="customModalProps.btnCancelText"
+      :btn-accept-func="customModalProps.btnAcceptFunc"
+      :btn-close-func="customModalProps.btnCancelFunc"
+      :btn-close-hide="customModalProps.btnCloseHide"
+      @close="closeModal" />
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 import { VueEllipseProgress } from 'vue-ellipse-progress';
+import CustomModal from './CustomModal.vue';
 import CurrencyInput from './CurrencyInput.vue';
 import Sidebar from './Sidebar.vue';
 import ModalExitoso from './ModalExitoso.vue';
@@ -317,6 +332,13 @@ import ModalHorario from './ModalHorario.vue';
 import liquidParser from '../liquid/liquidParser';
 
 const segundoPeticiones = liquidParser.parse('{{ vars.segundopeticiones }}');
+const fechasForwardValidasCambios = [
+  'TODAY',
+  'TOMORROW',
+  'SPOTNEXT',
+  '4 DAYS',
+  '4D',
+];
 
 export default {
   name: 'OperacionesFx',
@@ -328,12 +350,14 @@ export default {
     ModalError,
     ModalTiempo,
     ModalHorario,
+    CustomModal,
   },
   data() {
     return {
       progress: 100,
       timeLeft: '00:60',
       solicitarPrecio: false,
+      operacionSeleccionada: 'SPOT',
       isTwoway: false,
       // mostrarTwoWay: false,
       optionSelected: 'Comprar',
@@ -368,6 +392,15 @@ export default {
       qQuoteID: '',
       qQuoteReqID: '',
       opSide: 'Buy',
+      customModalProps: {
+        title: 'La fecha de liquidación corresponde a un Derivado',
+        message: '¿Deseas continuar con la operación?',
+        type: 'warning',
+        open: false,
+        btnAcceptText: 'Aceptar',
+        btnCancelText: 'Cancelar',
+        btnCloseHide: false,
+      },
     };
   },
   computed: {
@@ -417,6 +450,9 @@ export default {
     }
   },
   methods: {
+    closeModal() {
+      this.customModalProps.open = false;
+    },
     enterForm() {
       // console.log('enterForm');
     },
@@ -427,54 +463,84 @@ export default {
         // alert('false');
       }
     },
+    async onSumbitOperacion() {
+      try {
+        const getHours = new Date().getHours();
+        if (getHours >= 9 && getHours < 18) {
+          if (getHours === 16) {
+            // alert('Servicio temporalmente fuera de servicio, intentar a las 5pm por favor');
+          } else {
+            // alert('Aceptado');
+          }
+        } else {
+          // alert('Fuera de horario');
+        }
+        const opSide = this.optionSelected === 'Comprar' ? 'Buy' : 'Sell';
+        // if (this.isBuy) {
+        //   opSide = this.optionSelected === 'Comprar' ? 'Sell' : 'Buy';
+        // }
+        this.valueComparationSell = '';
+        this.valueComparationBuy = '';
+        this.opSide = opSide;
+        const currenciesSelected = this.currenciesSelected.join('/');
+        const tomorrow = this.calendarSelected.replace(/-/g, '');
+        const sideValue = this.optionSelected === 'Twoway' ? 'Twoway' : opSide;
+        const body = {
+          ProductType: 'FX_STD',
+          NoRelatedSym: [{
+            Symbol: currenciesSelected,
+            Side: sideValue,
+            OrderQty: this.monto.toString(),
+            SettlDate: tomorrow,
+            Currency: this.currencySelected,
+            Account: 'INVEXCOMP.TEST',
+            OperationName: 'SPOT',
+          }],
+        };
+        const rsp = await this.$store.dispatch('getQuoteRequest', body);
+        const rspMsg = JSON.parse(rsp.Message);
+        this.currencyValueSell = rspMsg.SellPrice;
+        this.currencyValueBuy = rspMsg.BuyPrice;
+        this.qQuoteID = rspMsg.QuoteID;
+        this.qQuoteReqID = rspMsg.QuoteReqID;
+        this.solicitarPrecio = true;
+        this.startTimer();
+      } catch (err) {
+        // console.log(err);
+      }
+    },
     async onSubmit() {
       if (this.solicitarPrecio) {
         this.solicitarPrecio = false;
         clearInterval(this.timmerId);
       } else {
-        try {
-          const getHours = new Date().getHours();
-          if (getHours >= 9 && getHours < 18) {
-            if (getHours === 16) {
-              // alert('Servicio temporalmente fuera de servicio, intentar a las 5pm por favor');
+        switch (this.operacionSeleccionada) {
+          case 'SPOT':
+            await this.onSumbitOperacion();
+            break;
+          case 'FORWARD':
+            // eslint-disable-next-line no-case-declarations
+            const fechaSeleccionada = this.calendario.find((item) => item.date === this.calendarSelected);
+            if (fechasForwardValidasCambios.includes(fechaSeleccionada.Description) || fechaSeleccionada.Description === 'SPOT') {
+              await this.onSumbitOperacion();
             } else {
-              // alert('Aceptado');
+              this.customModalProps.open = true;
+              this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
+              this.customModalProps.message = '¿Deseas continuar con la operación?';
+              this.customModalProps.type = 'warning';
+              this.customModalProps.btnAcceptText = 'Aceptar';
+              this.customModalProps.btnCancelText = 'Cancelar';
+              this.customModalProps.btnCloseHide = false;
+              this.customModalProps.btnAcceptFunc = async () => {
+                this.customModalProps.open = false;
+                await this.onSumbitOperacion();
+              };
+              this.customModalProps.btnCancelFunc = this.closeModal;
             }
-          } else {
-            // alert('Fuera de horario');
-          }
-          const opSide = this.optionSelected === 'Comprar' ? 'Buy' : 'Sell';
-          // if (this.isBuy) {
-          //   opSide = this.optionSelected === 'Comprar' ? 'Sell' : 'Buy';
-          // }
-          this.valueComparationSell = '';
-          this.valueComparationBuy = '';
-          this.opSide = opSide;
-          const currenciesSelected = this.currenciesSelected.join('/');
-          const tomorrow = this.calendarSelected.replace(/-/g, '');
-          const sideValue = this.optionSelected === 'Twoway' ? 'Twoway' : opSide;
-          const body = {
-            ProductType: 'FX_STD',
-            NoRelatedSym: [{
-              Symbol: currenciesSelected,
-              Side: sideValue,
-              OrderQty: this.monto.toString(),
-              SettlDate: tomorrow,
-              Currency: this.currencySelected,
-              Account: 'INVEXCOMP.TEST',
-              OperationName: 'SPOT',
-            }],
-          };
-          const rsp = await this.$store.dispatch('getQuoteRequest', body);
-          const rspMsg = JSON.parse(rsp.Message);
-          this.currencyValueSell = rspMsg.SellPrice;
-          this.currencyValueBuy = rspMsg.BuyPrice;
-          this.qQuoteID = rspMsg.QuoteID;
-          this.qQuoteReqID = rspMsg.QuoteReqID;
-          this.solicitarPrecio = true;
-          this.startTimer();
-        } catch (err) {
-          // console.log(err);
+            break;
+          default:
+            await this.onSumbitOperacion();
+            break;
         }
       }
     },
@@ -534,6 +600,9 @@ export default {
         this.isBuy = false;
         this.getCalendar();
       }
+    },
+    seleccionarOperacion(ev) {
+      this.operacionSeleccionada = ev.target.value;
     },
     setCurrencySelected(ev) {
       this.currencySelected = ev.target.value;
