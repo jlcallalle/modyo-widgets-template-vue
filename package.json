@@ -33,6 +33,7 @@
     "moment": "^2.29.2",
     "moment-timezone": "^0.5.34",
     "popper.js": "^1.16.1",
+    "v-calendar": "^2.3.2",
     "vee-validate": "^3.4.5",
     "vue": "^2.6.12",
     "vue-axe": "^2.4.4",
