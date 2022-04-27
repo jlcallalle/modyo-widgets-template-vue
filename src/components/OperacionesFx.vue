@@ -732,6 +732,7 @@ export default {
         TransactionId: this.qQuoteReqID,
         RequestSystem: 'PORTALFX',
       };
+      this.$store.dispatch('updateOperacionSeleccionada', this.operacionSeleccionada);
       clearInterval(this.timmerId);
       const responseApiConcertacion = await this.$store.dispatch('createConcertacion', bodyConcertacion);
       if (responseApiConcertacion.DataIdentifier === 9) {

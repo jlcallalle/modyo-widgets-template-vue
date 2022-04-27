@@ -2,6 +2,7 @@ export default {
   loading: true,
   posts: [],
   currentView: 'operacionesFx',
+  operacionSeleccionada: '',
   servicio: null,
   crearOperacionConcertada: null,
   listarOperacion: null,

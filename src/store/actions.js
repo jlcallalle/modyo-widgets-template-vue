@@ -231,4 +231,7 @@ export default {
       commit('setLoading', false);
     }
   },
+  updateOperacionSeleccionada({ commit }, operacion) {
+    commit('setOperacionSeleccionada', operacion);
+  },
 };

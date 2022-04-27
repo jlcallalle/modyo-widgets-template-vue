@@ -51,7 +51,7 @@
                       </tr>
                       <tr class="texto-color">
                         <td>Product</td>
-                        <td> <span v-if="listarOperacion.productCode == 'SPOT'"> FX Spot</span></td>
+                        <td>{{ getProductTxt() }}</td>
                       </tr>
                       <tr class="texto-color">
                         <td>Requester Action</td>
@@ -269,6 +269,7 @@ export default {
     ...mapState(['listarOperacion']),
     ...mapState(['listaOrigen']),
     ...mapState(['listaDestino']),
+    ...mapState(['operacionSeleccionada']),
     tipoOperacion() {
       return this.$store.state.crearOperacionConcertada.Side;
     },
@@ -294,6 +295,15 @@ export default {
     },
   },
   methods: {
+    getProductTxt() {
+      const tiposProductos = {
+        SPOT: 'FX Spot',
+        FORWARD: 'Forward',
+        SWAP: 'Swap',
+      };
+      if (tiposProductos[this.operacionSeleccionada]) return tiposProductos[this.operacionSeleccionada];
+      return tiposProductos.SPOT;
+    },
     destinoTxt(destino) {
       if (!destino) return '';
       const destinoAux = JSON.parse(JSON.stringify(destino));
@@ -426,7 +436,15 @@ export default {
       const currencyData = concretadaData.Currency;
       const separa = concretadaData.Symbol.split('/');
       const opcion = concretadaData.Side; // SELL = "2" / BUY = "1"
+      const segundaMoneda = currencyData === separa[1];
       const contrario = currencyData === separa[0] ? separa[1] : separa[0];
+      if (segundaMoneda) {
+        if (destino) {
+          this.destinoCurrency = opcion === '2' ? currencyData : contrario;
+          return opcion === '2' ? currencyData : contrario;
+        }
+        return opcion === '2' ? contrario : currencyData;
+      }
       if (destino) {
         this.destinoCurrency = opcion === '1' ? currencyData : contrario;
         return opcion === '1' ? currencyData : contrario;

@@ -55,4 +55,7 @@ export default {
   setHorario(state, payload) {
     state.horario = payload;
   },
+  setOperacionSeleccionada(state, payload) {
+    state.operacionSeleccionada = payload;
+  },
 };
