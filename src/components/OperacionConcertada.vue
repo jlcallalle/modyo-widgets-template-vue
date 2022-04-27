@@ -298,7 +298,7 @@ export default {
     getProductTxt() {
       const tiposProductos = {
         SPOT: 'FX Spot',
-        FORWARD: 'Forward',
+        FORWARD: 'FX Forward',
         SWAP: 'Swap',
       };
       if (tiposProductos[this.operacionSeleccionada]) return tiposProductos[this.operacionSeleccionada];

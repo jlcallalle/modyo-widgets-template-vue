@@ -90,7 +90,7 @@
                   <button
                     type="submit"
                     class="btn btn-block btn-operacion"
-                    @click.prevent="eventOperation">
+                    @click.prevent="eventOperation('Vender')">
                     {{ isBuy ? 'Comprar' : 'Vender' }} {{ currencySelected }}
                   </button>
                 </div>
@@ -119,7 +119,7 @@
                   <button
                     type="submit"
                     class="btn btn-block btn-operacion"
-                    @click.prevent="eventOperation">
+                    @click.prevent="eventOperation('Comprar')">
                     {{ isBuy ? 'Vender' : 'Comprar' }} {{ currencySelected }}
                   </button>
                 </div>
@@ -741,7 +741,12 @@ export default {
     cancelClick() {
       window.location.reload();
     },
-    async eventOperation() {
+    async eventOperation(opcion) {
+      if (this.optionSelected === 'Twoway') {
+        this.optionSelected = opcion;
+        const opSide = opcion === 'Comprar' ? 'Buy' : 'Sell';
+        this.opSide = opSide;
+      }
       const currenciesSelected = this.currenciesSelected.join('/');
       const tomorrow = this.calendarSelected.replace(/-/g, '');
       const bodyConcertacion = {
