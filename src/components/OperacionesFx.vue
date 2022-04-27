@@ -231,6 +231,7 @@
                       Fecha de liquidación
                     </div>
                     <select
+                      id="fecha-calendario"
                       name="select"
                       class="select-fecha"
                       :disabled="solicitarPrecio"
@@ -248,26 +249,29 @@
                     </select>
                   </div>
                   <div class="box-input-row">
-                    <div
-                      v-if="operationsSelected === 'SPOT'"
+                    <!-- <div
                       class="wrapp-fecha">
                       <input
                         disabled
                         type="text"
                         :value="dateFormat()"
                         class="form-control input-fecha">
-                    </div>
+                    </div> -->
                     <div
-                      v-else
                       class="wrapp-fecha">
                       <date-picker
-                        v-model="dateFormatoCal"
+                        :min-date="new Date()"
+                        :disabled-dates="{ weekdays: [1, 7] }"
                         :masks="masks"
-                        :popover="{ visibility: 'click' }">
+                        :model-config="modelConfig"
+                        :value="dateCalendar()"
+                        :popover="{ visibility: 'click' }"
+                        @dayclick="onDayClick">
                         <template #default="{ inputValue, inputEvents }">
                           <input
                             class="form-control input-fecha"
                             :value="inputValue"
+                            :disabled="operationsSelected === 'SPOT'"
                             v-on="inputEvents">
                         </template>
                       </date-picker>
@@ -425,6 +429,11 @@ export default {
       },
       masks: {
         input: 'DD-MM-YYYY',
+        // input: 'YYYY-MM-DD',
+      },
+      modelConfig: {
+        type: 'string',
+        mask: 'YYYY-MM-DD',
       },
     };
   },
@@ -445,10 +454,10 @@ export default {
       return this.isTwoway;
       // return this.$store.state.mapClientLogeo.twoWay;
     },
-    dateFormatoCal() {
+    fechaFormat() {
       if (!this.calendarSelected) return '';
       const dateArr = this.calendarSelected.split('-');
-      return `${dateArr}`;
+      return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
     },
   },
   async mounted() {
@@ -480,6 +489,19 @@ export default {
     }
   },
   methods: {
+    onDayClick(ev) {
+      const fechaCal = ev.id;
+      this.calendarSelected = fechaCal;
+      const dataSpot = this.calendarOptions[2].date;
+      if (fechaCal === dataSpot) {
+        // alert('es spot');
+        // this.operationsSelected = 'SPOT';
+        window.location.reload();
+      } else {
+        const inputFecha = document.getElementById('fecha-calendario');
+        inputFecha.options.length = 0;
+      }
+    },
     closeModal() {
       this.customModalProps.open = false;
     },
@@ -634,6 +656,11 @@ export default {
     seleccionarOperacion(ev) {
       this.operacionSeleccionada = ev.target.value;
       this.operationsSelected = ev.target.value;
+      if (this.operationsSelected === 'SPOT') {
+        this.calendarSelected = this.calendarOptions[2].date;
+      } else if (this.operationsSelected === 'FORWARD') {
+        this.calendarSelected = this.calendarOptions[0].date;
+      }
     },
     setCurrencySelected(ev) {
       this.currencySelected = ev.target.value;
@@ -760,6 +787,10 @@ export default {
       if (!this.calendarSelected) return '';
       const dateArr = this.calendarSelected.split('-');
       return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
+    },
+    dateCalendar() {
+      if (!this.calendarSelected) return '';
+      return `${this.calendarSelected}`;
     },
     handleCloseHorario() {
       this.showModalHorario = false;
