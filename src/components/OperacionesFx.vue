@@ -241,7 +241,7 @@
                           :id="index"
                           :key="index"
                           :data-tipo="calendarOp.Description"
-                          :selected="calendarSelected === calendarOp.date && operationsSelected === 'SPOT'"
+                          :selected="calendarSelected === calendarOp.date"
                           :value="calendarOp.date">
                           {{ calendarOp.Description }}
                         </option>
@@ -398,6 +398,7 @@ export default {
       currenciesSelected: [],
       calendarOptions: [],
       calendarSelected: null,
+      calendarTipoSelected: null,
       operationsSelected: 'SPOT',
       currencySelectedId: 1,
       showModal: false,
@@ -453,6 +454,14 @@ export default {
     mostrarTwoWay() {
       return this.isTwoway;
       // return this.$store.state.mapClientLogeo.twoWay;
+    },
+    tipoFecha() {
+      const tipoFechaSeleccionada = (this.calendario.find((item) => item.date === this.calendarSelected).Description);
+      return tipoFechaSeleccionada;
+    },
+    datoFecha() {
+      const datoFechaSeleccionada = (this.calendario.find((item) => item.date === this.calendarSelected).date);
+      return datoFechaSeleccionada;
     },
     fechaFormat() {
       if (!this.calendarSelected) return '';
@@ -676,6 +685,12 @@ export default {
     },
     setCalendar(ev) {
       this.calendarSelected = ev.target.value;
+      this.calendarTipoSelected = this.tipoFecha;
+      if (this.calendarTipoSelected === 'SPOT') {
+        this.operacionSeleccionada = 'SPOT';
+      } else {
+        this.operacionSeleccionada = 'FORWARD';
+      }
     },
     setCurrency(id) {
       const findId = this.currenciesOptions.find((currency) => currency.id === id);
