@@ -271,7 +271,7 @@
                           <input
                             class="form-control input-fecha"
                             :value="inputValue"
-                            :disabled="operationsSelected === 'SPOT'"
+                            :disabled="operationsSelected === 'SPOT' || solicitarPrecio"
                             v-on="inputEvents">
                         </template>
                       </date-picker>
