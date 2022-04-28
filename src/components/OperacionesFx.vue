@@ -271,7 +271,7 @@
                           <input
                             class="form-control input-fecha"
                             :value="inputValue"
-                            :disabled="operationsSelected === 'SPOT' || solicitarPrecio"
+                            :disabled="operacionSeleccionada === 'SPOT' || solicitarPrecio"
                             v-on="inputEvents">
                         </template>
                       </date-picker>
@@ -384,6 +384,7 @@ export default {
       timeLeft: '00:60',
       solicitarPrecio: false,
       operacionSeleccionada: 'SPOT',
+      operationsSelected: 'SPOT',
       isTwoway: false,
       // mostrarTwoWay: false,
       optionSelected: 'Comprar',
@@ -399,7 +400,6 @@ export default {
       calendarOptions: [],
       calendarSelected: null,
       calendarTipoSelected: null,
-      operationsSelected: 'SPOT',
       currencySelectedId: 1,
       showModal: false,
       showModalError: false,
@@ -503,8 +503,6 @@ export default {
       this.calendarSelected = fechaCal;
       const dataSpot = this.calendarOptions[2].date;
       if (fechaCal === dataSpot) {
-        // alert('es spot');
-        // this.operationsSelected = 'SPOT';
         window.location.reload();
       } else {
         const inputFecha = document.getElementById('fecha-calendario');
@@ -664,10 +662,10 @@ export default {
     },
     seleccionarOperacion(ev) {
       this.operacionSeleccionada = ev.target.value;
-      this.operationsSelected = ev.target.value;
-      if (this.operationsSelected === 'SPOT') {
+      // this.operationsSelected = ev.target.value;
+      if (this.operacionSeleccionada === 'SPOT') {
         this.calendarSelected = this.calendarOptions[2].date;
-      } else if (this.operationsSelected === 'FORWARD') {
+      } else if (this.operacionSeleccionada === 'FORWARD') {
         this.calendarSelected = this.calendarOptions[0].date;
       }
     },
