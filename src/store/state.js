@@ -3,6 +3,7 @@ export default {
   posts: [],
   currentView: 'operacionesFx',
   operacionSeleccionada: '',
+  fechaCatalogoSeleccionada: '',
   servicio: null,
   crearOperacionConcertada: null,
   listarOperacion: null,

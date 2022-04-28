@@ -234,4 +234,7 @@ export default {
   updateOperacionSeleccionada({ commit }, operacion) {
     commit('setOperacionSeleccionada', operacion);
   },
+  updateFechaCatalogoSeleccionada({ commit }, fecha) {
+    commit('setFechaCatalogoSeleccionada', fecha);
+  },
 };

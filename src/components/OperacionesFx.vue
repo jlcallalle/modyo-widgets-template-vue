@@ -707,10 +707,10 @@ export default {
       }
     },
     async startTimer() {
-      let sec = 60;
+      let sec = 59;
       const segundosPorPeticion = segundoPeticiones || 2;
       this.progress = 100;
-      this.timeLeft = '00:60';
+      this.timeLeft = '00:59';
       const timer = setInterval(async () => {
         this.timeLeft = `00:${sec < 10 ? '0' : ''}${sec}`;
         let progressAux = sec * 100;
@@ -779,6 +779,7 @@ export default {
         TransactionId: this.qQuoteReqID,
         RequestSystem: 'PORTALFX',
       };
+      this.$store.dispatch('updateFechaCatalogoSeleccionada', this.calendarTipoSelected);
       this.$store.dispatch('updateOperacionSeleccionada', this.operacionSeleccionada);
       clearInterval(this.timmerId);
       const responseApiConcertacion = await this.$store.dispatch('createConcertacion', bodyConcertacion);

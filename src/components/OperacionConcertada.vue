@@ -73,7 +73,7 @@
                       <tr class="texto-color">
                         <td>Effective Date</td>
                         <td>
-                          {{ getProductTypeTxt() }} // {{ getLocalDate(crearOperacionConcertada.SettlDate, true) }}
+                          {{ getFechaSeleccionada() }} // {{ getLocalDate(crearOperacionConcertada.SettlDate, true) }}
                         </td>
                       </tr>
                       <tr class="texto-color">
@@ -272,6 +272,7 @@ export default {
     ...mapState(['listaOrigen']),
     ...mapState(['listaDestino']),
     ...mapState(['operacionSeleccionada']),
+    ...mapState(['fechaCatalogoSeleccionada']),
     tipoOperacion() {
       return this.$store.state.crearOperacionConcertada.Side;
     },
@@ -297,6 +298,10 @@ export default {
     },
   },
   methods: {
+    getFechaSeleccionada() {
+      if (this.$store.state.fechaCatalogoSeleccionada) return this.$store.state.fechaCatalogoSeleccionada;
+      return this.getProductTxt();
+    },
     getProductTxt() {
       const tiposProductos = {
         SPOT: 'FX Spot',

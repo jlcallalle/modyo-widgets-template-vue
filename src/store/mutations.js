@@ -58,4 +58,7 @@ export default {
   setOperacionSeleccionada(state, payload) {
     state.operacionSeleccionada = payload;
   },
+  setFechaCatalogoSeleccionada(state, payload) {
+    state.fechaCatalogoSeleccionada = payload;
+  },
 };
