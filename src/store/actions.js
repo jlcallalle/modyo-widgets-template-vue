@@ -147,7 +147,7 @@ export default {
   async getQuote({}, body) {
     // commit('setLoading', true);
     try {
-      const response = await InvexRepository.getQuote(body.quoteId, body.opSide);
+      const response = await InvexRepository.getQuote(body.quoteId, body.opSide, body.operationName);
       // const infos = JSON.parse(response.Message);
       // commit('setQuote', infos);
       return response;

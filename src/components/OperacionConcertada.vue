@@ -72,10 +72,12 @@
                       </tr>
                       <tr class="texto-color">
                         <td>Effective Date</td>
-                        <td>Spot // {{ getLocalDate(crearOperacionConcertada.SettlDate, true) }}</td>
+                        <td>
+                          {{ getProductTypeTxt() }} // {{ getLocalDate(crearOperacionConcertada.SettlDate, true) }}
+                        </td>
                       </tr>
                       <tr class="texto-color">
-                        <td>Spot Rate</td>
+                        <td>{{ getProductTypeTxt() }} Rate</td>
                         <td>{{ crearOperacionConcertada.LastPx }}</td>
                       </tr>
                     </tbody>
@@ -299,6 +301,15 @@ export default {
       const tiposProductos = {
         SPOT: 'FX Spot',
         FORWARD: 'FX Forward',
+        SWAP: 'Swap',
+      };
+      if (tiposProductos[this.operacionSeleccionada]) return tiposProductos[this.operacionSeleccionada];
+      return tiposProductos.SPOT;
+    },
+    getProductTypeTxt() {
+      const tiposProductos = {
+        SPOT: 'Spot',
+        FORWARD: 'Forward',
         SWAP: 'Swap',
       };
       if (tiposProductos[this.operacionSeleccionada]) return tiposProductos[this.operacionSeleccionada];

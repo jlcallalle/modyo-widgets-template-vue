@@ -555,7 +555,7 @@ export default {
             SettlDate: tomorrow,
             Currency: this.currencySelected,
             Account: 'INVEXCOMP.TEST',
-            OperationName: 'SPOT',
+            OperationName: this.operacionSeleccionada,
           }],
         };
         const rsp = await this.$store.dispatch('getQuoteRequest', body);
@@ -719,7 +719,7 @@ export default {
         sec -= 1;
         if (sec % segundosPorPeticion === 0) {
           const opName = this.optionSelected === 'Twoway' ? 'Twoway' : this.opSide;
-          const rsp = await this.$store.dispatch('getQuote', { quoteId: this.qQuoteReqID, opSide: opName });
+          const rsp = await this.$store.dispatch('getQuote', { quoteId: this.qQuoteReqID, opSide: opName, operationName: this.operacionSeleccionada });
           if (rsp.DataIdentifier === 7) {
             const rspMsg = JSON.parse(rsp.Message);
             this.qQuoteReqID = rspMsg.QuoteReqID;
@@ -775,7 +775,7 @@ export default {
         SettlDate: tomorrow,
         Side: this.opSide,
         Symbol: currenciesSelected,
-        Product: 'SPOT',
+        Product: this.operacionSeleccionada,
         TransactionId: this.qQuoteReqID,
         RequestSystem: 'PORTALFX',
       };
