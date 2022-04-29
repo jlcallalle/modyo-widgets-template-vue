@@ -15,6 +15,7 @@ export default {
   listaOrigen: [],
   listaDestino: [],
   actualizacionOperacion: null,
+  tokenSeguridad: null,
   horario: null,
   mapClientLogeo: {
     alias: 'f3853',

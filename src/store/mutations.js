@@ -61,4 +61,7 @@ export default {
   setFechaCatalogoSeleccionada(state, payload) {
     state.fechaCatalogoSeleccionada = payload;
   },
+  setTokenSeguridad(state, payload) {
+    state.tokenSeguridad = payload;
+  },
 };

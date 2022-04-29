@@ -237,4 +237,13 @@ export default {
   updateFechaCatalogoSeleccionada({ commit }, fecha) {
     commit('setFechaCatalogoSeleccionada', fecha);
   },
+  async generarTokenSeguridad({ commit }, body) {
+    try {
+      const data = await InvexRepository.generarTokenSeguridad(body);
+      commit('setTokenSeguridad', data);
+      return data;
+    } catch (error) {
+      return error;
+    }
+  },
 };

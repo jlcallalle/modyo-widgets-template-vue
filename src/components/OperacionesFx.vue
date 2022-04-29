@@ -474,6 +474,10 @@ export default {
     await this.getOperations();
     this.getValueTwoWay();
     await this.getHoraRestriccion();
+    await this.$store.dispatch('generarTokenSeguridad', {
+      CUI: this.mapClientLogeo.CUI,
+      internetFolio: this.mapClientLogeo.internetFolio,
+    });
   },
   async created() {
     const getHours = new Date().getHours();
@@ -557,6 +561,8 @@ export default {
           }],
         };
         const rsp = await this.$store.dispatch('getQuoteRequest', body);
+        // eslint-disable-next-line no-console
+        console.log('se consumio el quote request', new Date().getSeconds());
         const rspMsg = JSON.parse(rsp.Message);
         this.currencyValueSell = rspMsg.SellPrice;
         this.currencyValueBuy = rspMsg.BuyPrice;
@@ -780,7 +786,11 @@ export default {
       this.$store.dispatch('updateFechaCatalogoSeleccionada', this.calendarTipoSelected);
       this.$store.dispatch('updateOperacionSeleccionada', this.operacionSeleccionada);
       clearInterval(this.timmerId);
+      // eslint-disable-next-line no-console
+      console.log('se empezo a consumir el create concertacion', new Date().getSeconds());
       const responseApiConcertacion = await this.$store.dispatch('createConcertacion', bodyConcertacion);
+      // eslint-disable-next-line no-console
+      console.log('finalizo el consumo del create concertacion', new Date().getSeconds());
       if (responseApiConcertacion.DataIdentifier === 9) {
         this.showModal = true;
         // console.log('concertacion ok');

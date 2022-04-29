@@ -45,4 +45,7 @@ export default {
   getHorario() {
     return InvexClient.get(`${prefixUrl}/validate-services`);
   },
+  generarTokenSeguridad(body) {
+    return InvexClient.post(`${prefixUrl}/generaTokenSeguridad`, body);
+  },
 };
