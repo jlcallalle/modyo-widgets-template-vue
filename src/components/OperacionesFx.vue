@@ -180,7 +180,9 @@
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div
+              v-if="operacionSeleccionada !== 'SWAP'"
+              class="row">
               <div class="col-12 col-md-6">
                 <div class="box-monto input-group">
                   <div class="group-select">
@@ -229,6 +231,234 @@
                   <div class="group-select">
                     <div class="title-group title-fecha">
                       Fecha de liquidación
+                    </div>
+                    <select
+                      id="fecha-calendario"
+                      name="select"
+                      class="select-fecha"
+                      :disabled="solicitarPrecio"
+                      @change="setCalendar($event)">
+                      <template v-for="(calendarOp, index) in calendarOptions">
+                        <option
+                          :id="index"
+                          :key="index"
+                          :data-tipo="calendarOp.Description"
+                          :selected="calendarSelected === calendarOp.date"
+                          :value="calendarOp.date">
+                          {{ calendarOp.Description }}
+                        </option>
+                      </template>
+                    </select>
+                  </div>
+                  <div class="box-input-row">
+                    <!-- <div
+                      class="wrapp-fecha">
+                      <input
+                        disabled
+                        type="text"
+                        :value="dateFormat()"
+                        class="form-control input-fecha">
+                    </div> -->
+                    <div
+                      class="wrapp-fecha">
+                      <date-picker
+                        :min-date="new Date()"
+                        :disabled-dates="{ weekdays: [1, 7] }"
+                        :masks="masks"
+                        :model-config="modelConfig"
+                        :value="dateCalendar()"
+                        :popover="{ visibility: 'click' }"
+                        @dayclick="onDayClick">
+                        <template #default="{ inputValue, inputEvents }">
+                          <input
+                            class="form-control input-fecha"
+                            :value="inputValue"
+                            :disabled="operacionSeleccionada === 'SPOT' || solicitarPrecio"
+                            v-on="inputEvents">
+                        </template>
+                      </date-picker>
+                    </div>
+                    <i class="icon-calendar">
+                      <svg
+                        width="24"
+                        height="25"
+                        viewBox="0 0 24 25"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M16 13.5H13C12.45 13.5 12 13.95 12 14.5V17.5C12 18.05 12.45 18.5 13 18.5H16C16.55 18.5 17 18.05 17 17.5V14.5C17 13.95 16.55 13.5 16 13.5ZM16 3.5V4.5H8V3.5C8 2.95 7.55 2.5 7 2.5C6.45 2.5 6 2.95 6 3.5V4.5H5C3.89 4.5 3.01 5.4 3.01 6.5L3 20.5C3 21.6 3.89 22.5 5 22.5H19C20.1 22.5 21 21.6 21 20.5V6.5C21 5.4 20.1 4.5 19 4.5H18V3.5C18 2.95 17.55 2.5 17 2.5C16.45 2.5 16 2.95 16 3.5ZM18 20.5H6C5.45 20.5 5 20.05 5 19.5V9.5H19V19.5C19 20.05 18.55 20.5 18 20.5Z"
+                          fill="#424242" />
+                      </svg>
+                    </i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              v-if="operacionSeleccionada === 'SWAP'"
+              class="row">
+              <div class="col-12 col-md-6">
+                <div class="box-monto input-group">
+                  <div class="group-select">
+                    <div class="title-group">
+                      Divisa
+                    </div>
+                    <select
+                      name="select"
+                      class="select-precio"
+                      :disabled="solicitarPrecio"
+                      @change="setCurrencySelected($event)">
+                      <template v-for="(currency, index) in currenciesSelected">
+                        <option
+                          :id="index"
+                          :key="index"
+                          :selected="currencySelected === currency"
+                          :value="currency">
+                          {{ currency }}
+                        </option>
+                      </template>
+                    </select>
+                  </div>
+                  <div class="box-input-row">
+                    <div class="title-group">
+                      Pata Corta <span class="hidden-xs"> en {{ currencySelected }} </span>
+                    </div>
+                    <currency-input
+                      id="currencyInput"
+                      class="form-control input-precio"
+                      :value="montoPataCorta"
+                      :disabled="solicitarPrecio"
+                      :options="{
+                        // eslint-disable-next-line no-irregular-whitespace
+                        currency: 'USD',
+                        currencyDisplay: 'hidden',
+                        locale: 'en-US',
+                        precision: 2,
+                        valueRange: { min: 0 },
+                        hideCurrencySymbolOnFocus: true, }"
+                      @change="montoPataCorta = $event" />
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="box-liquidacion input-group">
+                  <div class="group-select">
+                    <div class="title-group title-fecha">
+                      Fecha de liquidación (Pata Corta)
+                    </div>
+                    <select
+                      id="fecha-calendario"
+                      name="select"
+                      class="select-fecha"
+                      :disabled="solicitarPrecio"
+                      @change="setCalendar($event)">
+                      <template v-for="(calendarOp, index) in calendarOptions">
+                        <option
+                          :id="index"
+                          :key="index"
+                          :data-tipo="calendarOp.Description"
+                          :selected="calendarSelected === calendarOp.date"
+                          :value="calendarOp.date">
+                          {{ calendarOp.Description }}
+                        </option>
+                      </template>
+                    </select>
+                  </div>
+                  <div class="box-input-row">
+                    <!-- <div
+                      class="wrapp-fecha">
+                      <input
+                        disabled
+                        type="text"
+                        :value="dateFormat()"
+                        class="form-control input-fecha">
+                    </div> -->
+                    <div
+                      class="wrapp-fecha">
+                      <date-picker
+                        :min-date="new Date()"
+                        :disabled-dates="{ weekdays: [1, 7] }"
+                        :masks="masks"
+                        :model-config="modelConfig"
+                        :value="dateCalendar()"
+                        :popover="{ visibility: 'click' }"
+                        @dayclick="onDayClick">
+                        <template #default="{ inputValue, inputEvents }">
+                          <input
+                            class="form-control input-fecha"
+                            :value="inputValue"
+                            :disabled="operacionSeleccionada === 'SPOT' || solicitarPrecio"
+                            v-on="inputEvents">
+                        </template>
+                      </date-picker>
+                    </div>
+                    <i class="icon-calendar">
+                      <svg
+                        width="24"
+                        height="25"
+                        viewBox="0 0 24 25"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M16 13.5H13C12.45 13.5 12 13.95 12 14.5V17.5C12 18.05 12.45 18.5 13 18.5H16C16.55 18.5 17 18.05 17 17.5V14.5C17 13.95 16.55 13.5 16 13.5ZM16 3.5V4.5H8V3.5C8 2.95 7.55 2.5 7 2.5C6.45 2.5 6 2.95 6 3.5V4.5H5C3.89 4.5 3.01 5.4 3.01 6.5L3 20.5C3 21.6 3.89 22.5 5 22.5H19C20.1 22.5 21 21.6 21 20.5V6.5C21 5.4 20.1 4.5 19 4.5H18V3.5C18 2.95 17.55 2.5 17 2.5C16.45 2.5 16 2.95 16 3.5ZM18 20.5H6C5.45 20.5 5 20.05 5 19.5V9.5H19V19.5C19 20.05 18.55 20.5 18 20.5Z"
+                          fill="#424242" />
+                      </svg>
+                    </i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              v-if="operacionSeleccionada === 'SWAP'"
+              class="row">
+              <div class="col-12 col-md-6">
+                <div class="box-monto input-group">
+                  <div class="group-select">
+                    <div class="title-group">
+                      Divisa
+                    </div>
+                    <select
+                      name="select"
+                      class="select-precio"
+                      :disabled="solicitarPrecio"
+                      @change="setCurrencySelected($event)">
+                      <template v-for="(currency, index) in currenciesSelected">
+                        <option
+                          :id="index"
+                          :key="index"
+                          :selected="currencySelected === currency"
+                          :value="currency">
+                          {{ currency }}
+                        </option>
+                      </template>
+                    </select>
+                  </div>
+                  <div class="box-input-row">
+                    <div class="title-group">
+                      Pata larga <span class="hidden-xs"> en {{ currencySelected }} </span>
+                    </div>
+                    <currency-input
+                      id="currencyInput"
+                      class="form-control input-precio"
+                      :value="montoPataLarga"
+                      :disabled="solicitarPrecio"
+                      :options="{
+                        // eslint-disable-next-line no-irregular-whitespace
+                        currency: 'USD',
+                        currencyDisplay: 'hidden',
+                        locale: 'en-US',
+                        precision: 2,
+                        valueRange: { min: 0 },
+                        hideCurrencySymbolOnFocus: true, }"
+                      @change="montoPataLarga = $event" />
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="box-liquidacion input-group">
+                  <div class="group-select">
+                    <div class="title-group title-fecha">
+                      Fecha Liquidación (Pata Larga)
                     </div>
                     <select
                       id="fecha-calendario"
@@ -355,7 +585,9 @@ import ModalError from './ModalError.vue';
 import ModalTiempo from './ModaTiempo.vue';
 import ModalHorario from './ModalHorario.vue';
 import liquidParser from '../liquid/liquidParser';
+import Repository from '../repositories/RepositoryFactory';
 
+const InvexRepository = Repository.get('invex');
 const segundoPeticiones = liquidParser.parse('{{ vars.segundopeticiones }}');
 const fechasForwardValidasCambios = [
   'TODAY',
@@ -389,6 +621,8 @@ export default {
       // mostrarTwoWay: false,
       optionSelected: 'Comprar',
       monto: 0,
+      montoPataCorta: 0,
+      montoPataLarga: 0,
       timmerId: null,
       currencySelected: '',
       currenciesOptions: [],
@@ -400,6 +634,8 @@ export default {
       calendarOptions: [],
       calendarSelected: null,
       calendarTipoSelected: null,
+      calendarTipoPataCorta: null,
+      calendarTipoPataLarga: null,
       currencySelectedId: 1,
       showModal: false,
       showModalError: false,
@@ -560,10 +796,13 @@ export default {
             OperationName: this.operacionSeleccionada,
           }],
         };
-        const rsp = await this.$store.dispatch('getQuoteRequest', body);
+        this.$store.dispatch('setLoading', true);
+        const quoteRequest = await InvexRepository.getQuoteRequest(body);
+        this.$store.dispatch('setLoading', false);
         // eslint-disable-next-line no-console
-        console.log('se consumio el quote request', new Date().getSeconds());
-        const rspMsg = JSON.parse(rsp.Message);
+        console.log('se consumio el quote request', new Date());
+        const rspMsg = JSON.parse(quoteRequest.Message);
+        this.$store.dispatch('setQuoteRequest', rspMsg);
         this.currencyValueSell = rspMsg.SellPrice;
         this.currencyValueBuy = rspMsg.BuyPrice;
         this.qQuoteID = rspMsg.QuoteID;
@@ -656,6 +895,12 @@ export default {
     setMonto(ev) {
       this.monto = ev;
     },
+    setMontoPataCorta(ev) {
+      this.montoPataCorta = ev;
+    },
+    setMontoPataLarga(ev) {
+      this.montoPataLarga = ev;
+    },
     setCurrenciesOptions(ev) {
       if (this.currenciesOptions.length > ev.target.value) {
         const auxSelected = this.currenciesOptions[ev.target.value];
@@ -711,11 +956,15 @@ export default {
       }
     },
     async startTimer() {
+      // eslint-disable-next-line no-console
+      console.log('entro a timmer', new Date());
       let sec = 59;
       const segundosPorPeticion = segundoPeticiones || 2;
       this.progress = 100;
       this.timeLeft = '00:59';
       const timer = setInterval(async () => {
+        // eslint-disable-next-line no-console
+        console.log('en intervarl', new Date());
         this.timeLeft = `00:${sec < 10 ? '0' : ''}${sec}`;
         let progressAux = sec * 100;
         progressAux /= 60;
@@ -787,10 +1036,10 @@ export default {
       this.$store.dispatch('updateOperacionSeleccionada', this.operacionSeleccionada);
       clearInterval(this.timmerId);
       // eslint-disable-next-line no-console
-      console.log('se empezo a consumir el create concertacion', new Date().getSeconds());
+      console.log('se empezo a consumir el create concertacion', new Date());
       const responseApiConcertacion = await this.$store.dispatch('createConcertacion', bodyConcertacion);
       // eslint-disable-next-line no-console
-      console.log('finalizo el consumo del create concertacion', new Date().getSeconds());
+      console.log('finalizo el consumo del create concertacion', new Date());
       if (responseApiConcertacion.DataIdentifier === 9) {
         this.showModal = true;
         // console.log('concertacion ok');

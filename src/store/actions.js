@@ -143,6 +143,10 @@ export default {
     }
   },
 
+  setQuoteRequest({ commit }, body) {
+    commit('setQuoteRequest', body);
+  },
+
   // eslint-disable-next-line no-empty-pattern
   async getQuote({}, body) {
     // commit('setLoading', true);
@@ -245,5 +249,8 @@ export default {
     } catch (error) {
       return error;
     }
+  },
+  setLoading({ commit }, loading) {
+    commit('setLoading', loading);
   },
 };
