@@ -11,7 +11,7 @@ export default {
   name: 'CurrencyInput',
   props: {
     // eslint-disable-next-line vue/require-default-prop
-    value: Number, // Vue 2: value
+    value: [Number, String], // Vue 2: value
     // eslint-disable-next-line vue/require-default-prop
     options: Object,
   },

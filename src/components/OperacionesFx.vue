@@ -211,6 +211,7 @@
                     </div>
                     <currency-input
                       id="currencyInput"
+                      ref="dataInput"
                       class="form-control input-precio"
                       :value="monto"
                       :disabled="solicitarPrecio"
@@ -1007,7 +1008,12 @@ export default {
       this.timmerId = timer;
     },
     cancelClick() {
-      window.location.reload();
+      if (this.operacionSeleccionada === 'FORWARD') {
+        this.solicitarPrecio = false;
+        this.monto = '0';
+      } else {
+        window.location.reload();
+      }
     },
     async eventOperation(opcion) {
       if (this.optionSelected === 'Twoway') {
