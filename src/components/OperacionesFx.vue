@@ -590,13 +590,13 @@ import Repository from '../repositories/RepositoryFactory';
 
 const InvexRepository = Repository.get('invex');
 const segundoPeticiones = liquidParser.parse('{{ vars.segundopeticiones }}');
-const fechasForwardValidasCambios = [
+/* const fechasForwardValidasCambios = [
   'TODAY',
   'TOMORROW',
   'SPOTNEXT',
   '4 DAYS',
   '4D',
-];
+]; */
 
 export default {
   name: 'OperacionesFx',
@@ -634,6 +634,7 @@ export default {
       currenciesSelected: [],
       calendarOptions: [],
       calendarSelected: null,
+      calendarActive: false,
       calendarTipoSelected: null,
       calendarTipoPataCorta: null,
       calendarTipoPataLarga: null,
@@ -702,6 +703,14 @@ export default {
       const datoFechaSeleccionada = (this.calendario.find((item) => item.date === this.calendarSelected).date);
       return datoFechaSeleccionada;
     },
+    datoFechaSpot() {
+      const datoFechaSeleccionada = (this.calendario.find((item) => item.Description === 'SPOT').date);
+      return datoFechaSeleccionada;
+    },
+    datoFechaToday() {
+      const datoFechaSeleccionada = (this.calendario.find((item) => item.Description === 'TODAY').date);
+      return datoFechaSeleccionada;
+    },
     fechaFormat() {
       if (!this.calendarSelected) return '';
       const dateArr = this.calendarSelected.split('-');
@@ -741,15 +750,23 @@ export default {
     }
   },
   methods: {
+    add() {
+      this.calendarOptions.unshift({
+        DateValue: '', Description: '',
+      });
+    },
+    remove() {
+      this.calendarOptions.splice(0, 1);
+    },
     onDayClick(ev) {
+      this.calendarActive = true;
       const fechaCal = ev.id;
       this.calendarSelected = fechaCal;
-      const dataSpot = this.calendarOptions[2].date;
+      const dataSpot = this.datoFechaSpot;
       if (fechaCal === dataSpot) {
         window.location.reload();
-      } else {
-        const inputFecha = document.getElementById('fecha-calendario');
-        inputFecha.options.length = 0;
+      } else if (this.calendarOptions.length === 27) {
+        this.add();
       }
     },
     deshabilitarBotonSubmit() {
@@ -833,46 +850,6 @@ export default {
           case 'SPOT':
             await this.onSumbitOperacion();
             break;
-          case 'FORWARD':
-            // eslint-disable-next-line no-case-declarations
-            if (fechasForwardValidasCambios.includes(fechaSeleccionada.Description) || fechaSeleccionada.Description === 'SPOT') {
-              await this.onSumbitOperacion();
-            } else {
-              this.customModalProps.open = true;
-              this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
-              this.customModalProps.message = '¿Deseas continuar con la operación?';
-              this.customModalProps.type = 'warning';
-              this.customModalProps.btnAcceptText = 'Aceptar';
-              this.customModalProps.btnCancelText = 'Cancelar';
-              this.customModalProps.btnCloseHide = false;
-              this.customModalProps.btnAcceptFunc = async () => {
-                this.customModalProps.open = false;
-                await this.onSumbitOperacion();
-              };
-              this.customModalProps.btnCancelFunc = this.closeModal;
-            }
-            break;
-          case 'SWAP':
-            // eslint-disable-next-line no-case-declarations
-            fechaSeleccionada = this.calendario.find((item) => item.date === this.calendarTipoPataCorta);
-            console.log('fechaSeleccionada', fechaSeleccionada);
-            if (fechasForwardValidasCambios.includes(fechaSeleccionada.Description) || fechaSeleccionada.Description === 'SPOT') {
-              // await this.onSumbitOperacion();
-            } else {
-              this.customModalProps.open = true;
-              this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
-              this.customModalProps.message = '¿Deseas continuar con la operación?';
-              this.customModalProps.type = 'warning';
-              this.customModalProps.btnAcceptText = 'Aceptar';
-              this.customModalProps.btnCancelText = 'Cancelar';
-              this.customModalProps.btnCloseHide = false;
-              this.customModalProps.btnAcceptFunc = async () => {
-                this.customModalProps.open = false;
-                await this.onSumbitOperacion();
-              };
-              this.customModalProps.btnCancelFunc = this.closeModal;
-            }
-            break;
           default:
             await this.onSumbitOperacion();
             break;
@@ -944,11 +921,13 @@ export default {
     },
     seleccionarOperacion(ev) {
       this.operacionSeleccionada = ev.target.value;
-      // this.operationsSelected = ev.target.value;
       if (this.operacionSeleccionada === 'SPOT') {
-        this.calendarSelected = this.calendarOptions[2].date;
+        this.calendarSelected = this.datoFechaSpot;
+        if (this.calendarActive === true) {
+          this.remove();
+        }
       } else if (this.operacionSeleccionada === 'FORWARD') {
-        this.calendarSelected = this.calendarOptions[0].date;
+        this.calendarSelected = this.datoFechaToday;
       }
     },
     setCurrencySelected(ev) {
