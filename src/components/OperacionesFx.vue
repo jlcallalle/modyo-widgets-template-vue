@@ -634,6 +634,7 @@ export default {
       currenciesSelected: [],
       calendarOptions: [],
       calendarSelected: null,
+      calendarActive: false,
       calendarTipoSelected: null,
       calendarTipoPataCorta: null,
       calendarTipoPataLarga: null,
@@ -700,6 +701,14 @@ export default {
       const datoFechaSeleccionada = (this.calendario.find((item) => item.date === this.calendarSelected).date);
       return datoFechaSeleccionada;
     },
+    datoFechaSpot() {
+      const datoFechaSeleccionada = (this.calendario.find((item) => item.Description === 'SPOT').date);
+      return datoFechaSeleccionada;
+    },
+    datoFechaToday() {
+      const datoFechaSeleccionada = (this.calendario.find((item) => item.Description === 'TODAY').date);
+      return datoFechaSeleccionada;
+    },
     fechaFormat() {
       if (!this.calendarSelected) return '';
       const dateArr = this.calendarSelected.split('-');
@@ -739,15 +748,23 @@ export default {
     }
   },
   methods: {
+    add() {
+      this.calendarOptions.unshift({
+        DateValue: '', Description: '',
+      });
+    },
+    remove() {
+      this.calendarOptions.splice(0, 1);
+    },
     onDayClick(ev) {
+      this.calendarActive = true;
       const fechaCal = ev.id;
       this.calendarSelected = fechaCal;
-      const dataSpot = this.calendarOptions[2].date;
+      const dataSpot = this.datoFechaSpot;
       if (fechaCal === dataSpot) {
         window.location.reload();
-      } else {
-        const inputFecha = document.getElementById('fecha-calendario');
-        inputFecha.options.length = 0;
+      } else if (this.calendarOptions.length === 27) {
+        this.add();
       }
     },
     closeModal() {
@@ -914,11 +931,13 @@ export default {
     },
     seleccionarOperacion(ev) {
       this.operacionSeleccionada = ev.target.value;
-      // this.operationsSelected = ev.target.value;
       if (this.operacionSeleccionada === 'SPOT') {
-        this.calendarSelected = this.calendarOptions[2].date;
+        this.calendarSelected = this.datoFechaSpot;
+        if (this.calendarActive === true) {
+          this.remove();
+        }
       } else if (this.operacionSeleccionada === 'FORWARD') {
-        this.calendarSelected = this.calendarOptions[0].date;
+        this.calendarSelected = this.datoFechaToday;
       }
     },
     setCurrencySelected(ev) {
