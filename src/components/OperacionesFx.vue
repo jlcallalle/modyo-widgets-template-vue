@@ -298,6 +298,9 @@
             <div
               v-if="operacionSeleccionada === 'SWAP'"
               class="row">
+              <div class="col-12 col-md-12 marginPata">
+                <p>Pata corta</p>
+              </div>
               <div class="col-12 col-md-6">
                 <div class="box-monto input-group">
                   <div class="group-select">
@@ -322,7 +325,7 @@
                   </div>
                   <div class="box-input-row">
                     <div class="title-group">
-                      Pata Corta <span class="hidden-xs"> en {{ currencySelected }} </span>
+                      Monto en <span class="hidden-xs"> en {{ currencySelected }} </span>
                     </div>
                     <currency-input
                       id="currencyInput"
@@ -345,7 +348,7 @@
                 <div class="box-liquidacion input-group">
                   <div class="group-select">
                     <div class="title-group title-fecha">
-                      Fecha de liquidación (Pata Corta)
+                      Fecha de liquidación
                     </div>
                     <select
                       id="fecha-calendario"
@@ -381,9 +384,9 @@
                         :disabled-dates="{ weekdays: [1, 7] }"
                         :masks="masks"
                         :model-config="modelConfig"
-                        :value="dateCalendar()"
+                        :value="dateCalendarPataCorta()"
                         :popover="{ visibility: 'click' }"
-                        @dayclick="onDayClick">
+                        @dayclick="onDayClickPataCorta">
                         <template #default="{ inputValue, inputEvents }">
                           <input
                             class="form-control input-fecha"
@@ -412,6 +415,9 @@
             <div
               v-if="operacionSeleccionada === 'SWAP'"
               class="row">
+              <div class="col-12 col-md-12 marginPata">
+                <p>Pata larga</p>
+              </div>
               <div class="col-12 col-md-6">
                 <div class="box-monto input-group">
                   <div class="group-select">
@@ -436,7 +442,7 @@
                   </div>
                   <div class="box-input-row">
                     <div class="title-group">
-                      Pata larga <span class="hidden-xs"> en {{ currencySelected }} </span>
+                      Monto en <span class="hidden-xs"> en {{ currencySelected }} </span>
                     </div>
                     <currency-input
                       id="currencyInput"
@@ -459,7 +465,7 @@
                 <div class="box-liquidacion input-group">
                   <div class="group-select">
                     <div class="title-group title-fecha">
-                      Fecha Liquidación (Pata Larga)
+                      Fecha de liquidación
                     </div>
                     <select
                       id="fecha-calendario"
@@ -495,12 +501,14 @@
                         :disabled-dates="{ weekdays: [1, 7] }"
                         :masks="masks"
                         :model-config="modelConfig"
-                        :value="dateCalendar()"
+                        :class="{'redValue': !fechaSwapValida}"
+                        :value="dateCalendarPataLarga()"
                         :popover="{ visibility: 'click' }"
-                        @dayclick="onDayClick">
+                        @dayclick="onDayClickPataLarga">
                         <template #default="{ inputValue, inputEvents }">
                           <input
                             class="form-control input-fecha"
+                            :class="{'redValue': !fechaSwapValida}"
                             :value="inputValue"
                             :disabled="operacionSeleccionada === 'SPOT' || solicitarPrecio"
                             v-on="inputEvents">
@@ -656,6 +664,7 @@ export default {
       // qrCLOrdID: 'INVEXCOMP.TEST-00020220209124801190',
       orderType: 'Previously',
       qPrice: 20.9294,
+      fechaSwapValida: true,
       qQuoteID: '',
       qQuoteReqID: '',
       opSide: 'Buy',
@@ -709,6 +718,10 @@ export default {
     },
     datoFechaToday() {
       const datoFechaSeleccionada = (this.calendario.find((item) => item.Description === 'TODAY').date);
+      return datoFechaSeleccionada;
+    },
+    datoFechaTomorrow() {
+      const datoFechaSeleccionada = (this.calendario.find((item) => item.Description === 'TOMORROW').date);
       return datoFechaSeleccionada;
     },
     fechaFormat() {
@@ -769,8 +782,26 @@ export default {
         this.add();
       }
     },
+    onDayClickPataCorta(ev) {
+      this.calendarActive = true;
+      const fechaCal = ev.id;
+      this.calendarTipoPataCorta = fechaCal;
+      if (this.calendarOptions.length === 27) {
+        this.add();
+      }
+      this.condicionFechasSwap();
+    },
+    onDayClickPataLarga(ev) {
+      this.calendarActive = true;
+      const fechaCal = ev.id;
+      this.calendarTipoPataLarga = fechaCal;
+      if (this.calendarOptions.length === 27) {
+        this.add();
+      }
+      this.condicionFechasSwap();
+    },
     deshabilitarBotonSubmit() {
-      if (this.calendarOptions.length === 0 || this.horario.status === 'offline') return true;
+      if (this.calendarOptions.length === 0 || this.horario.status === 'offline' || !this.fechaSwapValida) return true;
       if (this.operacionSeleccionada === 'SWAP') {
         return this.montoPataCorta === 0 || this.montoPataCorta === '0' || this.montoPataCorta === null || this.montoPataLarga === 0 || this.montoPataLarga === '0' || this.montoPataLarga === null;
       }
@@ -845,7 +876,6 @@ export default {
         this.solicitarPrecio = false;
         clearInterval(this.timmerId);
       } else {
-        let fechaSeleccionada = this.calendario.find((item) => item.date === this.calendarSelected);
         switch (this.operacionSeleccionada) {
           case 'SPOT':
             await this.onSumbitOperacion();
@@ -920,6 +950,7 @@ export default {
       }
     },
     seleccionarOperacion(ev) {
+      this.fechaSwapValida = true;
       this.operacionSeleccionada = ev.target.value;
       if (this.operacionSeleccionada === 'SPOT') {
         this.calendarSelected = this.datoFechaSpot;
@@ -928,6 +959,9 @@ export default {
         }
       } else if (this.operacionSeleccionada === 'FORWARD') {
         this.calendarSelected = this.datoFechaToday;
+      } else if (this.operacionSeleccionada === 'SWAP') {
+        this.calendarTipoPataCorta = this.datoFechaToday;
+        this.calendarTipoPataLarga = this.datoFechaTomorrow;
       }
     },
     setCurrencySelected(ev) {
@@ -944,9 +978,18 @@ export default {
     },
     setCalendarPataCorta(ev) {
       this.calendarTipoPataCorta = ev.target.value;
+      this.condicionFechasSwap();
     },
     setCalendarPataLarga(ev) {
       this.calendarTipoPataLarga = ev.target.value;
+      this.condicionFechasSwap();
+    },
+    condicionFechasSwap() {
+      if (new Date(this.calendarTipoPataCorta) >= new Date(this.calendarTipoPataLarga)) {
+        this.fechaSwapValida = false;
+      } else {
+        this.fechaSwapValida = true;
+      }
     },
     setCalendar(ev) {
       this.calendarSelected = ev.target.value;
@@ -1092,6 +1135,14 @@ export default {
       if (!this.calendarSelected) return '';
       return `${this.calendarSelected}`;
     },
+    dateCalendarPataCorta() {
+      if (!this.calendarSelected) return '';
+      return `${this.calendarTipoPataCorta}`;
+    },
+    dateCalendarPataLarga() {
+      if (!this.calendarSelected) return '';
+      return `${this.calendarTipoPataLarga}`;
+    },
     handleCloseHorario() {
       this.showModalHorario = false;
     },
@@ -1128,5 +1179,10 @@ $brand-invex: #A41D36;
 
 .redValue {
   color: red;
+}
+.marginPata {
+  margin-top: 1em;
+  margin-bottom: -2em;
+  font-weight: 500;
 }
 </style>
