@@ -352,13 +352,13 @@
                       name="select"
                       class="select-fecha"
                       :disabled="solicitarPrecio"
-                      @change="setCalendar($event)">
+                      @change="setCalendarPataCorta($event)">
                       <template v-for="(calendarOp, index) in calendarOptions">
                         <option
                           :id="index"
                           :key="index"
                           :data-tipo="calendarOp.Description"
-                          :selected="calendarSelected === calendarOp.date"
+                          :selected="calendarTipoPataCorta === calendarOp.date"
                           :value="calendarOp.date">
                           {{ calendarOp.Description }}
                         </option>
@@ -466,13 +466,13 @@
                       name="select"
                       class="select-fecha"
                       :disabled="solicitarPrecio"
-                      @change="setCalendar($event)">
+                      @change="setCalendarPataLarga($event)">
                       <template v-for="(calendarOp, index) in calendarOptions">
                         <option
                           :id="index"
                           :key="index"
                           :data-tipo="calendarOp.Description"
-                          :selected="calendarSelected === calendarOp.date"
+                          :selected="calendarTipoPataLarga === calendarOp.date"
                           :value="calendarOp.date">
                           {{ calendarOp.Description }}
                         </option>
@@ -532,7 +532,7 @@
               </button>
               <button
                 type="button"
-                :disabled="monto === 0 || monto === '0' || monto === null || calendarOptions.length === 0 || horario.status === 'offline'"
+                :disabled="deshabilitarBotonSubmit()"
                 class="btn btn-primary btn-solicita"
                 @click="onSubmit()">
                 {{ solicitarPrecio ? 'Modificar' : 'Solicitar Precio' }}
@@ -637,6 +637,8 @@ export default {
       calendarTipoSelected: null,
       calendarTipoPataCorta: null,
       calendarTipoPataLarga: null,
+      calendarFechaPataCorta: null,
+      calendarFechaPataLarga: null,
       currencySelectedId: 1,
       showModal: false,
       showModalError: false,
@@ -750,6 +752,13 @@ export default {
         inputFecha.options.length = 0;
       }
     },
+    deshabilitarBotonSubmit() {
+      if (this.calendarOptions.length === 0 || this.horario.status === 'offline') return true;
+      if (this.operacionSeleccionada === 'SWAP') {
+        return this.montoPataCorta === 0 || this.montoPataCorta === '0' || this.montoPataCorta === null || this.montoPataLarga === 0 || this.montoPataLarga === '0' || this.montoPataLarga === null;
+      }
+      return this.monto === 0 || this.monto === '0' || this.monto === null;
+    },
     closeModal() {
       this.customModalProps.open = false;
     },
@@ -819,15 +828,36 @@ export default {
         this.solicitarPrecio = false;
         clearInterval(this.timmerId);
       } else {
+        let fechaSeleccionada = this.calendario.find((item) => item.date === this.calendarSelected);
         switch (this.operacionSeleccionada) {
           case 'SPOT':
             await this.onSumbitOperacion();
             break;
           case 'FORWARD':
             // eslint-disable-next-line no-case-declarations
-            const fechaSeleccionada = this.calendario.find((item) => item.date === this.calendarSelected);
             if (fechasForwardValidasCambios.includes(fechaSeleccionada.Description) || fechaSeleccionada.Description === 'SPOT') {
               await this.onSumbitOperacion();
+            } else {
+              this.customModalProps.open = true;
+              this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
+              this.customModalProps.message = '¿Deseas continuar con la operación?';
+              this.customModalProps.type = 'warning';
+              this.customModalProps.btnAcceptText = 'Aceptar';
+              this.customModalProps.btnCancelText = 'Cancelar';
+              this.customModalProps.btnCloseHide = false;
+              this.customModalProps.btnAcceptFunc = async () => {
+                this.customModalProps.open = false;
+                await this.onSumbitOperacion();
+              };
+              this.customModalProps.btnCancelFunc = this.closeModal;
+            }
+            break;
+          case 'SWAP':
+            // eslint-disable-next-line no-case-declarations
+            fechaSeleccionada = this.calendario.find((item) => item.date === this.calendarTipoPataCorta);
+            console.log('fechaSeleccionada', fechaSeleccionada);
+            if (fechasForwardValidasCambios.includes(fechaSeleccionada.Description) || fechaSeleccionada.Description === 'SPOT') {
+              // await this.onSumbitOperacion();
             } else {
               this.customModalProps.open = true;
               this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
@@ -932,6 +962,12 @@ export default {
     },
     setOperation(ev) {
       this.operationsSelected = ev.target.value;
+    },
+    setCalendarPataCorta(ev) {
+      this.calendarTipoPataCorta = ev.target.value;
+    },
+    setCalendarPataLarga(ev) {
+      this.calendarTipoPataLarga = ev.target.value;
     },
     setCalendar(ev) {
       this.calendarSelected = ev.target.value;
