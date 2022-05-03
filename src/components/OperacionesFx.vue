@@ -590,13 +590,13 @@ import Repository from '../repositories/RepositoryFactory';
 
 const InvexRepository = Repository.get('invex');
 const segundoPeticiones = liquidParser.parse('{{ vars.segundopeticiones }}');
-const fechasForwardValidasCambios = [
+/* const fechasForwardValidasCambios = [
   'TODAY',
   'TOMORROW',
   'SPOTNEXT',
   '4 DAYS',
   '4D',
-];
+]; */
 
 export default {
   name: 'OperacionesFx',
@@ -839,26 +839,6 @@ export default {
         switch (this.operacionSeleccionada) {
           case 'SPOT':
             await this.onSumbitOperacion();
-            break;
-          case 'FORWARD':
-            // eslint-disable-next-line no-case-declarations
-            const fechaSeleccionada = this.calendario.find((item) => item.date === this.calendarSelected);
-            if (fechasForwardValidasCambios.includes(fechaSeleccionada.Description) || fechaSeleccionada.Description === 'SPOT') {
-              await this.onSumbitOperacion();
-            } else {
-              this.customModalProps.open = true;
-              this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
-              this.customModalProps.message = '¿Deseas continuar con la operación?';
-              this.customModalProps.type = 'warning';
-              this.customModalProps.btnAcceptText = 'Aceptar';
-              this.customModalProps.btnCancelText = 'Cancelar';
-              this.customModalProps.btnCloseHide = false;
-              this.customModalProps.btnAcceptFunc = async () => {
-                this.customModalProps.open = false;
-                await this.onSumbitOperacion();
-              };
-              this.customModalProps.btnCancelFunc = this.closeModal;
-            }
             break;
           default:
             await this.onSumbitOperacion();
