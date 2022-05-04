@@ -695,6 +695,7 @@ export default {
     ...mapState(['listarOperacion']),
     ...mapState(['listaOperaciones']),
     ...mapState(['horario']),
+    ...mapState(['recuperaFecha']),
     ...mapState([
       'listaDivisas',
       'calendario',
@@ -880,6 +881,21 @@ export default {
           case 'SPOT':
             await this.onSumbitOperacion();
             break;
+          case 'FORWARD':
+            await this.getRecuperaFecha();
+            if (this.recuperaFecha.data.result === 'TRUE') {
+              this.customModalProps.open = true;
+              this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
+              this.customModalProps.message = '¿Deseas continuar con la operación?';
+              this.customModalProps.type = 'warning';
+              this.customModalProps.btnAcceptText = 'Aceptar';
+              this.customModalProps.btnCancelText = 'Cancelar';
+              this.customModalProps.btnCloseHide = false;
+              this.customModalProps.btnAcceptFunc = this.closeModal;
+            } else {
+              await this.onSumbitOperacion();
+            }
+            break;
           default:
             await this.onSumbitOperacion();
             break;
@@ -910,6 +926,16 @@ export default {
         if (valorActual === 'offline') {
           this.showModalHorario = true;
         }
+      } catch (error) {
+        this.showModalError = true;
+      }
+    },
+    async getRecuperaFecha() {
+      const bodyFecha = {
+        fecha: this.calendarSelected,
+      };
+      try {
+        await this.$store.dispatch('recuperaFecha', bodyFecha);
       } catch (error) {
         this.showModalError = true;
       }

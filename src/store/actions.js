@@ -250,6 +250,15 @@ export default {
       return error;
     }
   },
+  async recuperaFecha({ commit }, body) {
+    try {
+      const data = await InvexRepository.recuperaFecha(body);
+      commit('setRecuperaFecha', data);
+      return data;
+    } catch (error) {
+      return error;
+    }
+  },
   setLoading({ commit }, loading) {
     commit('setLoading', loading);
   },

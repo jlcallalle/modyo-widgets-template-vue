@@ -48,4 +48,7 @@ export default {
   generarTokenSeguridad(body) {
     return InvexClient.post(`${prefixUrl}/generaTokenSeguridad`, body);
   },
+  recuperaFecha(body) {
+    return InvexClient.post(`${prefixUrl}/recuperaFecha`, body);
+  },
 };

@@ -64,4 +64,7 @@ export default {
   setTokenSeguridad(state, payload) {
     state.tokenSeguridad = payload;
   },
+  setRecuperaFecha(state, payload) {
+    state.recuperaFecha = payload;
+  },
 };
