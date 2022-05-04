@@ -73,7 +73,9 @@
                       <tr class="texto-color">
                         <td>Effective Date</td>
                         <td>
-                          {{ getFechaSeleccionada() }} // {{ getLocalDate(crearOperacionConcertada.SettlDate, true) }}
+                          {{ getFechaSeleccionada() }}
+                          {{ getFechaSeleccionada() && '//' }}
+                          {{ getLocalDate(crearOperacionConcertada.SettlDate, true) }}
                         </td>
                       </tr>
                       <tr class="texto-color">
@@ -300,7 +302,7 @@ export default {
   methods: {
     getFechaSeleccionada() {
       if (this.$store.state.fechaCatalogoSeleccionada) return this.$store.state.fechaCatalogoSeleccionada;
-      return this.getProductTxt();
+      return '';
     },
     getProductTxt() {
       const tiposProductos = {
