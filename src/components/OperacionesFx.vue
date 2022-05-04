@@ -778,7 +778,7 @@ export default {
       this.calendarSelected = fechaCal;
       const dataSpot = this.datoFechaSpot;
       if (fechaCal === dataSpot) {
-        window.location.reload();
+        this.seleccionarOperacion({ target: { value: 'SPOT' } });
       } else if (this.calendarOptions.length === 27) {
         this.add();
       }
@@ -891,7 +891,11 @@ export default {
               this.customModalProps.btnAcceptText = 'Aceptar';
               this.customModalProps.btnCancelText = 'Cancelar';
               this.customModalProps.btnCloseHide = false;
-              this.customModalProps.btnAcceptFunc = this.closeModal;
+              this.customModalProps.btnCancelFunc = this.closeModal;
+              this.customModalProps.btnAcceptFunc = () => {
+                this.closeModal();
+                this.onSumbitOperacion();
+              };
             } else {
               await this.onSumbitOperacion();
             }
