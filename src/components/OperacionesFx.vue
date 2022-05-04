@@ -1026,6 +1026,9 @@ export default {
       this.calendarTipoSelected = this.tipoFecha;
       if (this.calendarTipoSelected === 'SPOT') {
         this.operacionSeleccionada = 'SPOT';
+        if (this.calendarActive) {
+          this.remove();
+        }
       } else {
         this.operacionSeleccionada = 'FORWARD';
       }
