@@ -908,10 +908,7 @@ export default {
               this.customModalProps.btnCancelText = 'Cancelar';
               this.customModalProps.btnCloseHide = false;
               this.customModalProps.btnCancelFunc = this.closeModal;
-              this.customModalProps.btnAcceptFunc = () => {
-                this.closeModal();
-                this.onSumbitOperacion();
-              };
+              this.customModalProps.btnAcceptFunc = this.closeModal;
             } else {
               await this.onSumbitOperacion();
             }
