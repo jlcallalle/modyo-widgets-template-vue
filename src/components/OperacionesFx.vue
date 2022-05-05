@@ -1120,6 +1120,7 @@ export default {
     },
     cancelClick() {
       if (this.operacionSeleccionada === 'FORWARD') {
+        clearInterval(this.timmerId);
         this.solicitarPrecio = false;
         this.monto = '0';
       } else {
