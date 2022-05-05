@@ -2,7 +2,7 @@ export default {
   loading: true,
   posts: [],
   currentView: 'operacionesFx',
-  operacionSeleccionada: '',
+  operacionSeleccionada: 'SPOT',
   fechaCatalogoSeleccionada: '',
   servicio: null,
   crearOperacionConcertada: null,
