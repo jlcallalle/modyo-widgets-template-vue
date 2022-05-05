@@ -786,7 +786,7 @@ export default {
       });
     },
     remove() {
-      this.calendarOptions.splice(0, 1);
+      this.calendarOptions = this.calendarOptions.filter((item) => item.Description);
     },
     onDayClick(ev) {
       this.calendarActive = true;
@@ -1049,6 +1049,7 @@ export default {
         }
       } else {
         this.$store.dispatch('updateOperacionSeleccionada', 'FORWARD');
+        this.remove();
         // this.operacionSeleccionada = 'FORWARD';
       }
     },
