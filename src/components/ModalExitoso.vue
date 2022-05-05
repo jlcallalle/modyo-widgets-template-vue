@@ -12,6 +12,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <button
+                v-if="showCloseButton"
                 type="button"
                 class="close"
                 data-dismiss="modal"
@@ -57,7 +58,10 @@
 <script>
 export default {
   name: 'ModalExitoso',
-  props: ['open'],
+  props: {
+    open: Boolean,
+    showCloseButton: Boolean,
+  },
   data() {
     return {
 
