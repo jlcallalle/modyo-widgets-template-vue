@@ -554,6 +554,7 @@
     <modal-exitoso
       v-if="showModal"
       :open="showModal"
+      :show-close-button="false"
       @close="handleClose" />
     <modal-error
       v-if="showModalError"
