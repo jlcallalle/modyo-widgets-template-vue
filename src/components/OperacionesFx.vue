@@ -624,7 +624,7 @@ export default {
       progress: 100,
       timeLeft: '00:60',
       solicitarPrecio: false,
-      operacionSeleccionada: 'SPOT',
+      // operacionSeleccionada: 'SPOT',
       operationsSelected: 'SPOT',
       isTwoway: false,
       // mostrarTwoWay: false,
@@ -700,6 +700,7 @@ export default {
       'listaDivisas',
       'calendario',
       'quoteRequest',
+      'operacionSeleccionada',
     ]),
     mostrarTwoWay() {
       return this.isTwoway;
@@ -981,7 +982,8 @@ export default {
     },
     seleccionarOperacion(ev) {
       this.fechaSwapValida = true;
-      this.operacionSeleccionada = ev.target.value;
+      this.$store.dispatch('updateOperacionSeleccionada', ev.target.value);
+      // this.operacionSeleccionada = ev.target.value;
       if (this.operacionSeleccionada === 'SPOT') {
         this.calendarSelected = this.datoFechaSpot;
         if (this.calendarActive === true) {
@@ -1025,12 +1027,14 @@ export default {
       this.calendarSelected = ev.target.value;
       this.calendarTipoSelected = this.tipoFecha;
       if (this.calendarTipoSelected === 'SPOT') {
-        this.operacionSeleccionada = 'SPOT';
+        // this.operacionSeleccionada = 'SPOT';
+        this.$store.dispatch('updateOperacionSeleccionada', 'SPOT');
         if (this.calendarActive) {
           this.remove();
         }
       } else {
-        this.operacionSeleccionada = 'FORWARD';
+        this.$store.dispatch('updateOperacionSeleccionada', 'FORWARD');
+        // this.operacionSeleccionada = 'FORWARD';
       }
     },
     setCurrency(id) {
