@@ -964,6 +964,9 @@ export default {
         } else if (this.calendarOptions.length > 0) {
           this.calendarSelected = this.calendarOptions[0].date;
         }
+        if (this.operacionSeleccionada === 'FORWARD') {
+          this.calendarSelected = this.calendarOptions[0].date;
+        }
       } catch (error) {
         this.showModalError = true;
       }
