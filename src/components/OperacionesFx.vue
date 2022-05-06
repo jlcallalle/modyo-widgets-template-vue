@@ -9,10 +9,7 @@
       </span>
     </h1>
     <p style="display:none">
-      tipoTwoWay: {{ tipoTwoWay }} - {{ typeof(tipoTwoWay) }}
-    </p>
-    <p style="display:none">
-      isTwoway: {{ isTwoway }} - {{ typeof(isTwoway) }}
+      dataTwoWay: {{ dataTwoWay }}
     </p>
     <div
       v-if="loading"
@@ -628,15 +625,13 @@ export default {
   },
   data() {
     return {
-      tipoTwoWay: null,
-      tipoInvex: null,
+      dataTwoWay: null,
       progress: 100,
       timeLeft: '00:60',
       solicitarPrecio: false,
       // operacionSeleccionada: 'SPOT',
       operationsSelected: 'SPOT',
-      isTwoway: null,
-      // isTwoway: false,
+      isTwoway: false,
       // mostrarTwoWay: false,
       optionSelected: 'Comprar',
       monto: 0,
@@ -753,11 +748,11 @@ export default {
     });
   },
   async created() {
-    const dataInvex = localStorage.getItem('data-invex');
-    const dataTwoWay = localStorage.getItem('data-twoWay');
-    this.tipoInvex = dataInvex;
-    this.tipoTwoWay = (dataTwoWay === 'true');
-    this.isTwoway = (dataTwoWay === 'true');
+    const dataSesion = sessionStorage.getItem('data-test');
+    this.dataTwoWay = (dataSesion === 'true');
+    if (sessionStorage.getItem('data-test') !== null) {
+      this.isTwoway = this.dataTwoWay;
+    }
     const getHours = new Date().getHours();
     if (getHours >= 9 && getHours < 18) {
       if (getHours === 16) {
