@@ -51,4 +51,7 @@ export default {
   recuperaFecha(body) {
     return InvexClient.post(`${prefixUrl}/recuperaFecha`, body);
   },
+  validarToken(body) {
+    return InvexClient.post(`${prefixUrl}/validarToken`, body);
+  },
 };

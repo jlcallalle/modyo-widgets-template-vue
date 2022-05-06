@@ -262,4 +262,16 @@ export default {
   setLoading({ commit }, loading) {
     commit('setLoading', loading);
   },
+  async validarToken({ commit }, body) {
+    commit('setLoading', true);
+    try {
+      const data = await InvexRepository.validarToken(body);
+      commit('setLoginData', data);
+      return data;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
+  },
 };

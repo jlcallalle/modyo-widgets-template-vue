@@ -690,6 +690,7 @@ export default {
         type: 'string',
         mask: 'YYYY-MM-DD',
       },
+      tkn: '',
     };
   },
   computed: {
@@ -701,6 +702,7 @@ export default {
     ...mapState(['listaOperaciones']),
     ...mapState(['horario']),
     ...mapState(['recuperaFecha']),
+    ...mapState(['userData']),
     ...mapState([
       'listaDivisas',
       'calendario',
@@ -738,14 +740,19 @@ export default {
     },
   },
   async mounted() {
+    this.getTokenFronParam();
+    await this.$store.dispatch('validarToken', {
+      token: this.tkn,
+    });
+    this.validateUserData();
     await this.getCurrencies();
     await this.getOperations();
     this.getValueTwoWay();
     await this.getHoraRestriccion();
-    await this.$store.dispatch('generarTokenSeguridad', {
-      CUI: this.mapClientLogeo.CUI,
-      internetFolio: this.mapClientLogeo.internetFolio,
-    });
+    // await this.$store.dispatch('generarTokenSeguridad', {
+    //   CUI: this.mapClientLogeo.CUI,
+    //   internetFolio: this.mapClientLogeo.internetFolio,
+    // });
   },
   async created() {
     const dataSesion = sessionStorage.getItem('data-test');
@@ -1201,6 +1208,20 @@ export default {
         this.clickOption('Twoway');
       } else {
         this.clickOption('Comprar');
+      }
+    },
+    getTokenFronParam() {
+      const queryString = window.location.search;
+      console.log(queryString);
+      const urlParams = new URLSearchParams(queryString);
+      const token = urlParams.get('token');
+      this.tkn = token;
+    },
+    validateUserData() {
+      if (this.userData && this.userData.data) {
+        this.isTwoway = this.userData.data.twoWay;
+      } else {
+        window.location.href = 'https://clientes.invex.com/';
       }
     },
   },

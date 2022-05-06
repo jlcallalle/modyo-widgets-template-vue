@@ -67,4 +67,7 @@ export default {
   setRecuperaFecha(state, payload) {
     state.recuperaFecha = payload;
   },
+  setLoginData(state, payload) {
+    state.userData = payload;
+  },
 };
