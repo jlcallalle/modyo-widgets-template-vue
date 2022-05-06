@@ -73,7 +73,7 @@
                       <tr class="texto-color">
                         <td>Effective Date</td>
                         <td>
-                          {{ getFechaSeleccionada() }}
+                          <span class="capitalize">{{ getFechaSeleccionada() }}</span>
                           {{ getFechaSeleccionada() && '//' }}
                           {{ getLocalDate(crearOperacionConcertada.SettlDate, true) }}
                         </td>
@@ -301,7 +301,7 @@ export default {
   },
   methods: {
     getFechaSeleccionada() {
-      if (this.$store.state.fechaCatalogoSeleccionada) return this.$store.state.fechaCatalogoSeleccionada;
+      if (this.fechaCatalogoSeleccionada) return this.fechaCatalogoSeleccionada.toLowerCase();
       return '';
     },
     getProductTxt() {
@@ -594,5 +594,8 @@ export default {
   }
   .spaceTd {
     height: 49px;
+  }
+  .capitalize {
+    text-transform: capitalize;
   }
 </style>

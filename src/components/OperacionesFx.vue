@@ -602,6 +602,7 @@ import Repository from '../repositories/RepositoryFactory';
 
 const InvexRepository = Repository.get('invex');
 const segundoPeticiones = liquidParser.parse('{{ vars.segundopeticiones }}');
+const ENVIROMENT = liquidParser.parse('{{ vars.enviroment }}');
 /* const fechasForwardValidasCambios = [
   'TODAY',
   'TOMORROW',
@@ -744,11 +745,13 @@ export default {
   },
   async mounted() {
     // Se puede comentar esta parte para temas de desarrollo
-    this.getTokenFronParam();
-    await this.$store.dispatch('validarToken', {
-      token: this.tkn,
-    });
-    this.validateUserData();
+    if (ENVIROMENT === 'production') {
+      this.getTokenFronParam();
+      await this.$store.dispatch('validarToken', {
+        token: this.tkn,
+      });
+      this.validateUserData();
+    }
     // Fin de lo que se puede comentar para temas de desarrollo
     await this.getCurrencies();
     await this.getOperations();
@@ -825,7 +828,8 @@ export default {
       this.condicionFechasSwap();
     },
     deshabilitarBotonSubmit() {
-      if (this.calendarOptions.length === 0 || this.horario.status === 'offline' || !this.fechaSwapValida) return true;
+      const horarioStatus = this.horario ? this.horario.status : '';
+      if (this.calendarOptions.length === 0 || horarioStatus === 'offline' || !this.fechaSwapValida) return true;
       if (this.operacionSeleccionada === 'SWAP') {
         return this.montoPataCorta === 0 || this.montoPataCorta === '0' || this.montoPataCorta === null || this.montoPataLarga === 0 || this.montoPataLarga === '0' || this.montoPataLarga === null;
       }
@@ -1048,17 +1052,20 @@ export default {
     },
     setCalendar(ev) {
       this.calendarSelected = ev.target.value;
-      this.calendarTipoSelected = this.tipoFecha;
-      if (this.calendarTipoSelected === 'SPOT') {
+      const opcionCalendario = JSON.parse(JSON.stringify(this.calendario)).find((e) => e.date === ev.target.value);
+      if (opcionCalendario) {
+        if (opcionCalendario.Description === 'SPOT') {
         // this.operacionSeleccionada = 'SPOT';
-        this.$store.dispatch('updateOperacionSeleccionada', 'SPOT');
-        if (this.calendarActive) {
+          this.$store.dispatch('updateOperacionSeleccionada', 'SPOT');
+          if (this.calendarActive) {
+            this.remove();
+          }
+        } else {
+          this.$store.dispatch('updateOperacionSeleccionada', 'FORWARD');
           this.remove();
+          // this.operacionSeleccionada = 'FORWARD';
         }
-      } else {
-        this.$store.dispatch('updateOperacionSeleccionada', 'FORWARD');
-        this.remove();
-        // this.operacionSeleccionada = 'FORWARD';
+        this.calendarTipoSelected = opcionCalendario.Description;
       }
     },
     setCurrency(id) {
@@ -1158,7 +1165,8 @@ export default {
         TransactionId: this.qQuoteReqID,
         RequestSystem: 'PORTALFX',
       };
-      this.$store.dispatch('updateFechaCatalogoSeleccionada', this.calendarTipoSelected);
+      const opcionCal = JSON.parse(JSON.stringify(this.calendario)).find((e) => e.date === this.calendarSelected);
+      this.$store.dispatch('updateFechaCatalogoSeleccionada', opcionCal ? opcionCal.Description : null);
       this.$store.dispatch('updateOperacionSeleccionada', this.operacionSeleccionada);
       clearInterval(this.timmerId);
       // eslint-disable-next-line no-console
@@ -1218,7 +1226,6 @@ export default {
     },
     getTokenFronParam() {
       const queryString = window.location.search;
-      console.log(queryString);
       const urlParams = new URLSearchParams(queryString);
       const token = urlParams.get('token');
       this.tkn = token;

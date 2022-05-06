@@ -16,5 +16,6 @@ export default {
     urltokeninvex: 'https://back-request.herokuapp.com/routes/invexToken',
     base_api_test: 'https://jsonplaceholder.typicode.com',
     segundopeticiones: 1,
+    enviroment: 'development',
   },
 };
