@@ -714,6 +714,9 @@ export default {
       // return this.$store.state.mapClientLogeo.twoWay;
     },
     tipoFecha() {
+      if (this.calendarSelected === '') {
+        this.deshabilitarBotonSubmit();
+      }
       const tipoFechaSeleccionada = (this.calendario.find((item) => item.date === this.calendarSelected).Description);
       return tipoFechaSeleccionada;
     },
@@ -740,11 +743,13 @@ export default {
     },
   },
   async mounted() {
+    // Se puede comentar esta parte para temas de desarrollo
     this.getTokenFronParam();
     await this.$store.dispatch('validarToken', {
       token: this.tkn,
     });
     this.validateUserData();
+    // Fin de lo que se puede comentar para temas de desarrollo
     await this.getCurrencies();
     await this.getOperations();
     this.getValueTwoWay();
@@ -824,6 +829,7 @@ export default {
       if (this.operacionSeleccionada === 'SWAP') {
         return this.montoPataCorta === 0 || this.montoPataCorta === '0' || this.montoPataCorta === null || this.montoPataLarga === 0 || this.montoPataLarga === '0' || this.montoPataLarga === null;
       }
+      if (this.calendarSelected === '') return true;
       return this.monto === 0 || this.monto === '0' || this.monto === null;
     },
     closeModal() {
