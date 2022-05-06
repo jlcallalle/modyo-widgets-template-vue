@@ -18,6 +18,7 @@ export default {
   tokenSeguridad: null,
   recuperaFecha: null,
   horario: null,
+  userData: null,
   mapClientLogeo: {
     alias: 'f3853',
     CUI: '00007391',
