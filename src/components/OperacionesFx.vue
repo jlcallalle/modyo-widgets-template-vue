@@ -9,7 +9,7 @@
       </span>
     </h1>
     <p style="display:none">
-      dataTwoWay: {{ dataTwoWay }}
+      isTwoway: {{ isTwoway }}
     </p>
     <div
       v-if="loading"
@@ -129,7 +129,8 @@
               </div>
             </div>
             <div
-              class="row">
+               v-if="isTwoway !== null"
+               class="row">
               <div class="col-12">
                 <div
                   v-if="!solicitarPrecio"
@@ -632,9 +633,9 @@ export default {
       solicitarPrecio: false,
       // operacionSeleccionada: 'SPOT',
       operationsSelected: 'SPOT',
-      isTwoway: false,
+      isTwoway: null,
       // mostrarTwoWay: false,
-      optionSelected: 'Comprar',
+      optionSelected: null,
       monto: 0,
       montoPataCorta: 0,
       montoPataLarga: 0,
@@ -1233,6 +1234,9 @@ export default {
     validateUserData() {
       if (this.userData && this.userData.data) {
         this.isTwoway = this.userData.data.twoWay;
+        if (this.isTwoway === false) {
+          this.optionSelected = 'Comprar';
+        }
       } else {
         window.location.href = 'https://cdincom03.invexgf.com/';
       }
