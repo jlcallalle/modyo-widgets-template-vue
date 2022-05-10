@@ -4,7 +4,7 @@
     :class="[solicitarPrecio == false ? 'widget-operaciones-fx' : 'widget-operacion-comprar-vender' ]">
     <h1
       class="mb-4 title-widget">
-      Operaciones <span @click="changeTwoway">
+      Operaciones <span>
         FX
       </span>
     </h1>
@@ -1234,7 +1234,7 @@ export default {
       if (this.userData && this.userData.data) {
         this.isTwoway = this.userData.data.twoWay;
       } else {
-        window.location.href = 'https://clientes.invex.com/';
+        window.location.href = 'https://cdincom03.invexgf.com/';
       }
     },
   },
