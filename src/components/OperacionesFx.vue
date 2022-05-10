@@ -499,8 +499,10 @@
                     </div> -->
                     <div
                       class="wrapp-fecha">
+                      <!-- Aqui debemos meter la validacion de la pata corta, es decir
+                      , que este campo debe ser si o si más -->
                       <date-picker
-                        :min-date="new Date()"
+                        :min-date="validateDate()"
                         :disabled-dates="{ weekdays: [1, 7] }"
                         :masks="masks"
                         :model-config="modelConfig"
@@ -809,7 +811,7 @@ export default {
         this.add();
       }
     },
-    onDayClickPataCorta(ev) {
+    async onDayClickPataCorta(ev) {
       this.calendarActive = true;
       const fechaCal = ev.id;
       this.calendarTipoPataCorta = fechaCal;
@@ -817,6 +819,7 @@ export default {
         this.add();
       }
       this.condicionFechasSwap();
+      await this.getRecuperaFechaParam(this.calendarTipoPataCorta);
     },
     onDayClickPataLarga(ev) {
       this.calendarActive = true;
@@ -1035,9 +1038,31 @@ export default {
     setOperation(ev) {
       this.operationsSelected = ev.target.value;
     },
-    setCalendarPataCorta(ev) {
+    async setCalendarPataCorta(ev) {
       this.calendarTipoPataCorta = ev.target.value;
+      await this.getRecuperaFechaParam(this.calendarTipoPataCorta);
       this.condicionFechasSwap();
+    },
+    async getRecuperaFechaParam(date) {
+      const bodyFecha = {
+        fecha: date,
+      };
+      try {
+        await this.$store.dispatch('recuperaFecha', bodyFecha);
+        if (this.recuperaFecha.data.result === 'TRUE') {
+          this.customModalProps.open = true;
+          this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
+          this.customModalProps.message = '¿Deseas continuar con la operación?';
+          this.customModalProps.type = 'warning';
+          this.customModalProps.btnAcceptText = 'Aceptar';
+          this.customModalProps.btnCancelText = 'Cancelar';
+          this.customModalProps.btnCloseHide = false;
+          this.customModalProps.btnCancelFunc = this.closeModal;
+          this.customModalProps.btnAcceptFunc = this.closeModal;
+        }
+      } catch (error) {
+        this.showModalError = true;
+      }
     },
     setCalendarPataLarga(ev) {
       this.calendarTipoPataLarga = ev.target.value;
@@ -1236,6 +1261,12 @@ export default {
       } else {
         window.location.href = 'https://clientes.invex.com/';
       }
+    },
+    validateDate() {
+      console.log(new Date());
+      // Aqui debemos meter otro valor, pero no sé, si en la fecha,
+      // es decir el tenor o en el picker
+      return new Date();
     },
   },
 };
