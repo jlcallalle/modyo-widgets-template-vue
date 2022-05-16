@@ -747,11 +747,11 @@ export default {
   async mounted() {
     // Se puede comentar esta parte para temas de desarrollo
     if (ENVIROMENT === 'production') {
-    this.getTokenFronParam();
-    await this.$store.dispatch('validarToken', {
-      token: this.tkn,
-    });
-    this.validateUserData();
+      this.getTokenFronParam();
+      await this.$store.dispatch('validarToken', {
+        token: this.tkn,
+      });
+      this.validateUserData();
     }
     // Fin de lo que se puede comentar para temas de desarrollo
     await this.getCurrencies();
