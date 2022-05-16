@@ -129,8 +129,8 @@
               </div>
             </div>
             <div
-              v-if="isTwoway !== null"
-              class="row">
+               v-if="isTwoway !== null"
+               class="row">
               <div class="col-12">
                 <div
                   v-if="!solicitarPrecio"
@@ -500,8 +500,6 @@
                     </div> -->
                     <div
                       class="wrapp-fecha">
-                      <!-- Aqui debemos meter la validacion de la pata corta, es decir
-                      , que este campo debe ser si o si más -->
                       <date-picker
                         :min-date="new Date()"
                         :disabled-dates="{ weekdays: [1, 7] }"
@@ -752,7 +750,7 @@ export default {
     this.getTokenFronParam();
     await this.$store.dispatch('validarToken', {
       token: this.tkn,
-    });    
+    });
     this.validateUserData();
     }
     // Fin de lo que se puede comentar para temas de desarrollo
@@ -1265,7 +1263,7 @@ export default {
           this.optionSelected = 'Comprar';
         }
       } else {
-        // window.location.href = 'https://cdincom03.invexgf.com/';
+        window.location.href = 'https://cdincom03.invexgf.com/';
       }
     },
   },
