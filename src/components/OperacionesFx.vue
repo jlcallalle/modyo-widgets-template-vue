@@ -129,8 +129,8 @@
               </div>
             </div>
             <div
-               v-if="isTwoway !== null"
-               class="row">
+              v-if="isTwoway !== null"
+              class="row">
               <div class="col-12">
                 <div
                   v-if="!solicitarPrecio"
@@ -503,7 +503,7 @@
                       <!-- Aqui debemos meter la validacion de la pata corta, es decir
                       , que este campo debe ser si o si más -->
                       <date-picker
-                        :min-date="validateDate()"
+                        :min-date="new Date()"
                         :disabled-dates="{ weekdays: [1, 7] }"
                         :masks="masks"
                         :model-config="modelConfig"
@@ -749,11 +749,11 @@ export default {
   async mounted() {
     // Se puede comentar esta parte para temas de desarrollo
     if (ENVIROMENT === 'production') {
-      this.getTokenFronParam();
-      await this.$store.dispatch('validarToken', {
-        token: this.tkn,
-      });
-      this.validateUserData();
+    this.getTokenFronParam();
+    await this.$store.dispatch('validarToken', {
+      token: this.tkn,
+    });    
+    this.validateUserData();
     }
     // Fin de lo que se puede comentar para temas de desarrollo
     await this.getCurrencies();
@@ -822,7 +822,7 @@ export default {
       this.condicionFechasSwap();
       await this.getRecuperaFechaParam(this.calendarTipoPataCorta);
     },
-    onDayClickPataLarga(ev) {
+    async onDayClickPataLarga(ev) {
       this.calendarActive = true;
       const fechaCal = ev.id;
       this.calendarTipoPataLarga = fechaCal;
@@ -830,6 +830,7 @@ export default {
         this.add();
       }
       this.condicionFechasSwap();
+      await this.getRecuperaFechaParam(this.calendarTipoPataLarga);
     },
     deshabilitarBotonSubmit() {
       const horarioStatus = this.horario ? this.horario.status : '';
@@ -1065,8 +1066,9 @@ export default {
         this.showModalError = true;
       }
     },
-    setCalendarPataLarga(ev) {
+    async setCalendarPataLarga(ev) {
       this.calendarTipoPataLarga = ev.target.value;
+      await this.getRecuperaFechaParam(this.calendarTipoPataLarga);
       this.condicionFechasSwap();
     },
     condicionFechasSwap() {
@@ -1263,14 +1265,8 @@ export default {
           this.optionSelected = 'Comprar';
         }
       } else {
-        window.location.href = 'https://cdincom03.invexgf.com/';
+        // window.location.href = 'https://cdincom03.invexgf.com/';
       }
-    },
-    validateDate() {
-      console.log(new Date());
-      // Aqui debemos meter otro valor, pero no sé, si en la fecha,
-      // es decir el tenor o en el picker
-      return new Date();
     },
   },
 };
