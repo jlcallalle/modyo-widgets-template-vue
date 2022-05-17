@@ -128,9 +128,7 @@
                 </div>
               </div>
             </div>
-            <div
-               v-if="isTwoway !== null"
-               class="row">
+            <div class="row">
               <div class="col-12">
                 <div
                   v-if="!solicitarPrecio"
@@ -635,7 +633,7 @@ export default {
       operationsSelected: 'SPOT',
       isTwoway: null,
       // mostrarTwoWay: false,
-      optionSelected: null,
+      optionSelected: 'Comprar',
       monto: 0,
       montoPataCorta: 0,
       montoPataLarga: 0,
@@ -871,14 +869,20 @@ export default {
         this.opSide = opSide;
         const currenciesSelected = this.currenciesSelected.join('/');
         const tomorrow = this.calendarSelected.replace(/-/g, '');
+        const pataCorta = this.calendarTipoPataCorta ? this.calendarTipoPataCorta.replace(/-/g, '') : '';
+        const pataLarga = this.calendarTipoPataLarga ? this.calendarTipoPataLarga.replace(/-/g, '') : '';
         const sideValue = this.optionSelected === 'Twoway' ? 'Twoway' : opSide;
+        const monto = this.operacionSeleccionada === 'SWAP' ? this.montoPataCorta : this.monto;
+        const dateBody = this.operacionSeleccionada === 'SWAP' ? pataCorta : tomorrow;
         const body = {
           ProductType: 'FX_STD',
           NoRelatedSym: [{
             Symbol: currenciesSelected,
             Side: sideValue,
-            OrderQty: this.monto.toString(),
-            SettlDate: tomorrow,
+            OrderQty: monto.toString(),
+            SettlDate: dateBody,
+            OrderQty2: this.operacionSeleccionada === 'SWAP' ? this.montoPataLarga : null,
+            SettlDate2: this.operacionSeleccionada === 'SWAP' ? pataLarga : null,
             Currency: this.currencySelected,
             Account: 'INVEXCOMP.TEST',
             OperationName: this.operacionSeleccionada,
@@ -1151,15 +1155,20 @@ export default {
       }
       const currenciesSelected = this.currenciesSelected.join('/');
       const tomorrow = this.calendarSelected.replace(/-/g, '');
+      const monto = this.operacionSeleccionada === 'SWAP' ? this.montoPataCorta : this.monto;
+      const fechaPataCorta = this.calendarTipoPataCorta.replace(/-/g, '');
+      const fechaPataLarga = this.calendarTipoPataLarga.replace(/-/g, '');
       const bodyConcertacion = {
         Account: this.wsAccount,
         CLOrdID: this.qQuoteReqID,
         Currency: this.currencySelected,
-        OrderQty: this.monto.toString(),
+        OrderQty: monto.toString(),
+        OrderQty2: this.operacionSeleccionada === 'SWAP' ? this.montoPataLarga.toString() : null,
         OrderType: this.orderType,
         Price: this.opSide === 'Buy' ? this.currencyValueBuy : this.currencyValueSell,
         QuoteID: this.qQuoteID,
-        SettlDate: tomorrow,
+        SettlDate: this.operacionSeleccionada === 'SWAP' ? fechaPataCorta : tomorrow,
+        SettlDate2: this.operacionSeleccionada === 'SWAP' ? fechaPataLarga : null,
         Side: this.opSide,
         Symbol: currenciesSelected,
         Product: this.operacionSeleccionada,
