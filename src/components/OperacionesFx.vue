@@ -714,6 +714,16 @@ export default {
       return this.isTwoway;
       // return this.$store.state.mapClientLogeo.twoWay;
     },
+    tipoFechaPataCorta() {
+      // eslint-disable-next-line max-len
+      const tipoFechaSelecPataCorta = (this.calendario.find((item) => item.date === this.calendarTipoPataCorta).Description);
+      return tipoFechaSelecPataCorta;
+    },
+    tipoFechaPataLarga() {
+      // eslint-disable-next-line max-len
+      const tipoFechaSelecPataLarga = (this.calendario.find((item) => item.date === this.calendarTipoPataLarga).Description);
+      return tipoFechaSelecPataLarga;
+    },
     tipoFecha() {
       if (this.calendarSelected === '') {
         this.deshabilitarBotonSubmit();
@@ -1195,6 +1205,8 @@ export default {
       const opcionCal = JSON.parse(JSON.stringify(this.calendario)).find((e) => e.date === this.calendarSelected);
       this.$store.dispatch('updateFechaCatalogoSeleccionada', opcionCal ? opcionCal.Description : null);
       this.$store.dispatch('updateOperacionSeleccionada', this.operacionSeleccionada);
+      this.$store.dispatch('updateOperacionPataCorta', this.tipoFechaPataCorta);
+      this.$store.dispatch('updateOperacionPataLarga', this.tipoFechaPataLarga);
       clearInterval(this.timmerId);
       // eslint-disable-next-line no-console
       console.log('se empezo a consumir el create concertacion', new Date());

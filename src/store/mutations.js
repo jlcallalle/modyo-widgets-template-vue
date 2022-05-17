@@ -70,4 +70,10 @@ export default {
   setLoginData(state, payload) {
     state.userData = payload;
   },
+  setOperacionPataCorta(state, payload) {
+    state.operacionPataCorta = payload;
+  },
+  setOperacionPataLarga(state, payload) {
+    state.operacionPataLarga = payload;
+  },
 };

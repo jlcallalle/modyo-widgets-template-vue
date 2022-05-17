@@ -93,7 +93,12 @@
                       <tr class="texto-color">
                         <td>Effective Date</td>
                         <td>
-                          <span class="capitalize">{{ getFechaSeleccionada() }}</span>
+                          <span
+                            v-if="operacionSeleccionada == 'SWAP'"
+                            class="capitalize">{{ operacionPataCorta }}</span>
+                          <span
+                            v-else
+                            class="capitalize">{{ getFechaSeleccionada() }}</span>
                           {{ getFechaSeleccionada() && '//' }}
                           {{ getLocalDate(crearOperacionConcertada.SettlDate, true) }}
                         </td>
@@ -130,7 +135,7 @@
                           Far Leg
                         </td>
                         <td>
-                          {{ returnTxtOperacion() }}
+                          {{ returnTxtOperacionFarLeg() }}
                         </td>
                       </tr>
                       <tr
@@ -152,7 +157,12 @@
                         class="texto-color">
                         <td>Effective Date</td>
                         <td>
-                          <span class="capitalize">{{ getFechaSeleccionada() }}</span>
+                          <span
+                            v-if="operacionSeleccionada == 'SWAP'"
+                            class="capitalize">{{ operacionPataLarga }}</span>
+                          <span
+                            v-else
+                            class="capitalize">{{ getFechaSeleccionada() }}</span>
                           {{ getFechaSeleccionada() && '//' }}
                           {{ getLocalDate(crearOperacionConcertada.SettlDate2, true) }}
                         </td>
@@ -375,6 +385,8 @@ export default {
     ...mapState(['listaOrigen']),
     ...mapState(['listaDestino']),
     ...mapState(['operacionSeleccionada']),
+    ...mapState(['operacionPataCorta']),
+    ...mapState(['operacionPataLarga']),
     ...mapState(['fechaCatalogoSeleccionada']),
     tipoOperacion() {
       return this.$store.state.crearOperacionConcertada.Side;
@@ -718,6 +730,18 @@ export default {
       let str = `I ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[0]} // ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[1]}`;
       if (separa[0] === actual) {
         str = `I ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[0]} // ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[1]}`;
+      }
+      return str;
+    },
+    returnTxtOperacionFarLeg() {
+      const actual = this.$store.state.crearOperacionConcertada.Currency;
+      const valor = this.$store.state.crearOperacionConcertada.Symbol;
+      const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
+      const separa = valor.split('/');
+      let str = `I ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[0]} // ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[1]}`;
+      console.log('str', str);
+      if (separa[0] === actual) {
+        str = `I ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[0]} // ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[1]}`;
       }
       return str;
     },

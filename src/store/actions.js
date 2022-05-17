@@ -238,6 +238,12 @@ export default {
   updateOperacionSeleccionada({ commit }, operacion) {
     commit('setOperacionSeleccionada', operacion);
   },
+  updateOperacionPataCorta({ commit }, operacion) {
+    commit('setOperacionPataCorta', operacion);
+  },
+  updateOperacionPataLarga({ commit }, operacion) {
+    commit('setOperacionPataLarga', operacion);
+  },
   updateFechaCatalogoSeleccionada({ commit }, fecha) {
     commit('setFechaCatalogoSeleccionada', fecha);
   },
