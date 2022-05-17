@@ -628,6 +628,7 @@ export default {
       dataTwoWay: null,
       progress: 100,
       timeLeft: '00:60',
+      segundosTimmer: 59,
       solicitarPrecio: false,
       // operacionSeleccionada: 'SPOT',
       operationsSelected: 'SPOT',
@@ -907,8 +908,13 @@ export default {
         this.solicitarPrecio = false;
         clearInterval(this.timmerId);
       } else {
+        this.segundosTimmer = 59;
         switch (this.operacionSeleccionada) {
           case 'SPOT':
+            await this.onSumbitOperacion();
+            break;
+          case 'SWAP':
+            this.segundosTimmer = 119;
             await this.onSumbitOperacion();
             break;
           case 'FORWARD':
@@ -1084,19 +1090,33 @@ export default {
         this.optionSelected = txt;
       }
     },
+    getSecondsLeft(sec) {
+      let min = Math.floor(sec / 60);
+      let seg = sec % 60;
+      if (seg < 10) {
+        seg = `0${seg}`;
+      }
+      if (min < 10) {
+        min = `0${min}`;
+      }
+      if (min === 0) {
+        return `00:${seg}`;
+      }
+      return `${min}:${seg}`;
+    },
     async startTimer() {
       // eslint-disable-next-line no-console
       console.log('entro a timmer', new Date());
-      let sec = 59;
+      let sec = this.segundosTimmer;
       const segundosPorPeticion = segundoPeticiones || 2;
       this.progress = 100;
-      this.timeLeft = '00:59';
+      this.timeLeft = this.getSecondsLeft(sec);
       const timer = setInterval(async () => {
         // eslint-disable-next-line no-console
         console.log('en intervarl', new Date());
-        this.timeLeft = `00:${sec < 10 ? '0' : ''}${sec}`;
+        this.timeLeft = this.getSecondsLeft(sec);
         let progressAux = sec * 100;
-        progressAux /= 60;
+        progressAux /= (this.segundosTimmer + 1);
         this.progress = progressAux;
         sec -= 1;
         if (sec % segundosPorPeticion === 0) {
