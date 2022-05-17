@@ -29,6 +29,18 @@
                         <td>Local Date</td>
                         <td>{{ getTimeZoneDate(crearOperacionConcertada.TransactTime, false) }}</td>
                       </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="row-swap">
+                        <td>Near Leg UTI</td>
+                        <td>101000028135160016</td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="row-swap">
+                        <td>Far Leg UTI</td>
+                        <td>101000028135160016</td>
+                      </tr>
                       <tr>
                         <td class="spaceTd" />
                         <td class="spaceTd" />
@@ -42,23 +54,30 @@
                         <td>{{ crearOperacionConcertada.SecurityID }} </td>
                       </tr>
                       <tr>
-                        <td class="spaceTd" />
-                        <td class="spaceTd" />
-                      </tr>
-                      <tr>
                         <td>Status</td>
                         <td>{{ crearOperacionConcertada.OrdStatus }} </td>
+                      </tr>
+                      <tr>
+                        <td class="spaceTd" />
+                        <td class="spaceTd" />
                       </tr>
                       <tr class="texto-color">
                         <td>Product</td>
                         <td>{{ getProductTxt() }}</td>
                       </tr>
-                      <tr class="texto-color">
-                        <td>Requester Action</td>
+                      <tr v-if="operacionSeleccionada == 'SWAP'">
+                        <td class="spaceTd" />
+                        <td class="spaceTd" />
+                      </tr>
+                      <tr
+                        class="texto-color">
+                        <td>
+                          <span v-if="operacionSeleccionada == 'SWAP'">Near Leg</span>
+                          <span v-else> Requester Action</span>
+                        </td>
                         <td>
                           {{ returnTxtOperacion() }}
                         </td>
-                        <!-- <td>I Buy USD / Sell MXN</td> -->
                       </tr>
                       <tr class="texto-color">
                         <td>Notional Amount</td>
@@ -78,9 +97,90 @@
                           {{ getLocalDate(crearOperacionConcertada.SettlDate, true) }}
                         </td>
                       </tr>
-                      <tr class="texto-color">
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Near Points</td>
+                        <td>
+                          {{ calcNearPoints }}
+                        </td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada !== 'SWAP'"
+                        class="texto-color">
                         <td>{{ getProductTypeTxt() }} Rate</td>
                         <td>{{ crearOperacionConcertada.LastPx }}</td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Rate</td>
+                        <td>{{ crearOperacionConcertada.LastPx }}</td>
+                      </tr>
+                      <!-- pata larga -->
+                      <tr v-if="operacionSeleccionada == 'SWAP'">
+                        <td class="spaceTd" />
+                        <td class="spaceTd" />
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>
+                          Far Leg
+                        </td>
+                        <td>
+                          {{ returnTxtOperacion() }}
+                        </td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Notional Amount</td>
+                        <!-- eslint-disable-next-line max-len -->
+                        <td> {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 } ).format(formatMonto) }}  {{ currencyDivisa }} </td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Opposite Amount</td>
+                        <!-- eslint-disable-next-line max-len -->
+                        <td> {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 } ).format(calculoOpposite()) }} {{ oppositiveDivisa }} </td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Effective Date</td>
+                        <td>
+                          <span class="capitalize">{{ getFechaSeleccionada() }}</span>
+                          {{ getFechaSeleccionada() && '//' }}
+                          {{ getLocalDate(crearOperacionConcertada.SettlDate, true) }}
+                        </td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Far Points</td>
+                        <td>
+                          {{ calcFaroints }}
+                        </td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Rate</td>
+                        <td>{{ crearOperacionConcertada.LastPx2 }}</td>
+                      </tr>
+                      <tr v-if="operacionSeleccionada == 'SWAP'">
+                        <td class="spaceTd" />
+                        <td class="spaceTd" />
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Swap Points</td>
+                        <td>
+                          {{ calcSwapPoints }}
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -297,6 +397,27 @@ export default {
     formatMontoOppositive() {
       // return this.$store.state.crearOperacionConcertada.OrderQty.toLocaleString('en-US');
       return this.$store.state.crearOperacionConcertada.OrderQty * this.$store.state.crearOperacionConcertada.Price;
+    },
+    calcNearPoints() {
+      const rate = this.$store.state.crearOperacionConcertada.LastPx;
+      const spotRate = this.$store.state.crearOperacionConcertada.LastSpotRate;
+      const total = (rate - spotRate) * 10000;
+      const totalFixed = total.toFixed(3);
+      return totalFixed;
+    },
+    calcFaroints() {
+      const rate2 = this.$store.state.crearOperacionConcertada.LastPx2;
+      const spotRate = this.$store.state.crearOperacionConcertada.LastSpotRate;
+      const total = (rate2 - spotRate) * 10000;
+      const totalFixed = total.toFixed(3);
+      return totalFixed;
+    },
+    calcSwapPoints() {
+      const nearPoint = this.calcNearPoints;
+      const farPoint = this.calcFaroints;
+      const total = farPoint - nearPoint;
+      const totalFixed = total.toFixed(3);
+      return totalFixed;
     },
   },
   methods: {
