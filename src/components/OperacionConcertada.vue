@@ -13,6 +13,7 @@
               <h2 class="subtitle mb-4">
                 Operación Concertada
               </h2>
+              <p style="display:none">crearOperacionConcertada {{ crearOperacionConcertada }}</p>
               <div class="col-12">
                 <div class="table-responsive">
                   <table class="table table-wrap">
@@ -137,14 +138,14 @@
                         class="texto-color">
                         <td>Notional Amount</td>
                         <!-- eslint-disable-next-line max-len -->
-                        <td> {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 } ).format(formatMonto) }}  {{ currencyDivisa }} </td>
+                        <td> {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 } ).format(formatMontoFarLeg) }}  {{ currencyDivisa }} </td>
                       </tr>
                       <tr
                         v-if="operacionSeleccionada == 'SWAP'"
                         class="texto-color">
                         <td>Opposite Amount</td>
                         <!-- eslint-disable-next-line max-len -->
-                        <td> {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 } ).format(calculoOpposite()) }} {{ oppositiveDivisa }} </td>
+                        <td> {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 } ).format(calculoOppositeFarLeg()) }} {{ oppositiveDivisa }} </td>
                       </tr>
                       <tr
                         v-if="operacionSeleccionada == 'SWAP'"
@@ -153,7 +154,7 @@
                         <td>
                           <span class="capitalize">{{ getFechaSeleccionada() }}</span>
                           {{ getFechaSeleccionada() && '//' }}
-                          {{ getLocalDate(crearOperacionConcertada.SettlDate, true) }}
+                          {{ getLocalDate(crearOperacionConcertada.SettlDate2, true) }}
                         </td>
                       </tr>
                       <tr
@@ -394,6 +395,10 @@ export default {
       // return this.$store.state.crearOperacionConcertada.OrderQty.toLocaleString('en-US');
       return this.$store.state.crearOperacionConcertada.OrderQty;
     },
+    formatMontoFarLeg() {
+      // return this.$store.state.crearOperacionConcertada.OrderQty.toLocaleString('en-US');
+      return this.$store.state.crearOperacionConcertada.OrderQty2;
+    },
     formatMontoOppositive() {
       // return this.$store.state.crearOperacionConcertada.OrderQty.toLocaleString('en-US');
       return this.$store.state.crearOperacionConcertada.OrderQty * this.$store.state.crearOperacionConcertada.Price;
@@ -481,6 +486,22 @@ export default {
       } else {
         // eslint-disable-next-line
         total = this.$store.state.crearOperacionConcertada.OrderQty / this.$store.state.crearOperacionConcertada.LastPx;
+      }
+      return total;
+    },
+    calculoOppositeFarLeg() {
+      // return this.$store.state.crearOperacionConcertada.OrderQty * this.$store.state.crearOperacionConcertada.Price;
+      const actual = this.$store.state.crearOperacionConcertada.Currency;
+      const valor = this.$store.state.crearOperacionConcertada.Symbol;
+      const separa = valor.split('/');
+      let total;
+      // eslint-disable-next-line
+      if (separa[0] === actual) {
+        // eslint-disable-next-line
+        total = this.$store.state.crearOperacionConcertada.OrderQty2 * this.$store.state.crearOperacionConcertada.LastPx2;
+      } else {
+        // eslint-disable-next-line
+        total = this.$store.state.crearOperacionConcertada.OrderQty2 / this.$store.state.crearOperacionConcertada.LastPx2;
       }
       return total;
     },

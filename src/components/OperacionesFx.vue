@@ -750,6 +750,8 @@ export default {
         token: this.tkn,
       });
       this.validateUserData();
+    } else {
+      this.dataTwoWay = false;
     }
     // Fin de lo que se puede comentar para temas de desarrollo
     await this.getCurrencies();
@@ -762,11 +764,6 @@ export default {
     // });
   },
   async created() {
-    const dataSesion = sessionStorage.getItem('data-test');
-    this.dataTwoWay = (dataSesion === 'true');
-    if (sessionStorage.getItem('data-test') !== null) {
-      this.isTwoway = this.dataTwoWay;
-    }
     const getHours = new Date().getHours();
     if (getHours >= 9 && getHours < 18) {
       if (getHours === 16) {
