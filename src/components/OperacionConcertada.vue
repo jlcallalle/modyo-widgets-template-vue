@@ -34,13 +34,13 @@
                         v-if="operacionSeleccionada == 'SWAP'"
                         class="row-swap">
                         <td>Near Leg UTI</td>
-                        <td>101000028135160016</td>
+                        <td>{{ crearOperacionConcertada.NearLegUTI }}</td>
                       </tr>
                       <tr
                         v-if="operacionSeleccionada == 'SWAP'"
                         class="row-swap">
                         <td>Far Leg UTI</td>
-                        <td>101000028135160016</td>
+                        <td>{{ crearOperacionConcertada.FarLegUTI }}</td>
                       </tr>
                       <tr>
                         <td class="spaceTd" />
