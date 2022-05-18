@@ -715,37 +715,42 @@ export default {
       // return this.$store.state.mapClientLogeo.twoWay;
     },
     tipoFechaPataCorta() {
-      // eslint-disable-next-line max-len
-      const tipoFechaSelecPataCorta = (this.calendario.find((item) => item.date === this.calendarTipoPataCorta).Description);
-      return tipoFechaSelecPataCorta;
+      const tipoFechaSelecPataCorta = this.calendario.find((item) => item.date === this.calendarTipoPataCorta);
+      if (!tipoFechaSelecPataCorta) return '';
+      return tipoFechaSelecPataCorta.Description;
     },
     tipoFechaPataLarga() {
-      // eslint-disable-next-line max-len
-      const tipoFechaSelecPataLarga = (this.calendario.find((item) => item.date === this.calendarTipoPataLarga).Description);
-      return tipoFechaSelecPataLarga;
+      const tipoFechaSelecPataLarga = this.calendario.find((item) => item.date === this.calendarTipoPataLarga);
+      if (!tipoFechaSelecPataLarga) return '';
+      return tipoFechaSelecPataLarga.Description;
     },
     tipoFecha() {
       if (this.calendarSelected === '') {
         this.deshabilitarBotonSubmit();
       }
-      const tipoFechaSeleccionada = (this.calendario.find((item) => item.date === this.calendarSelected).Description);
-      return tipoFechaSeleccionada;
+      const tipoFechaSeleccionada = this.calendario.find((item) => item.date === this.calendarSelected);
+      if (!tipoFechaSeleccionada) return '';
+      return tipoFechaSeleccionada.Description;
     },
     datoFecha() {
-      const datoFechaSeleccionada = (this.calendario.find((item) => item.date === this.calendarSelected).date);
-      return datoFechaSeleccionada;
+      const datoFechaSeleccionada = this.calendario.find((item) => item.date === this.calendarSelected);
+      if (!datoFechaSeleccionada) return '';
+      return datoFechaSeleccionada.date;
     },
     datoFechaSpot() {
-      const datoFechaSeleccionada = (this.calendario.find((item) => item.Description === 'SPOT').date);
-      return datoFechaSeleccionada;
+      const datoFechaSeleccionada = this.calendario.find((item) => item.Description === 'SPOT');
+      if (!datoFechaSeleccionada) return '';
+      return datoFechaSeleccionada.date;
     },
     datoFechaToday() {
-      const datoFechaSeleccionada = (this.calendario.find((item) => item.Description === 'TODAY').date);
-      return datoFechaSeleccionada;
+      const datoFechaSeleccionada = this.calendario.find((item) => item.Description === 'TODAY');
+      if (!datoFechaSeleccionada) return '';
+      return datoFechaSeleccionada.date;
     },
     datoFechaTomorrow() {
-      const datoFechaSeleccionada = (this.calendario.find((item) => item.Description === 'TOMORROW').date);
-      return datoFechaSeleccionada;
+      const datoFechaSeleccionada = this.calendario.find((item) => item.Description === 'TOMORROW');
+      if (!datoFechaSeleccionada) return '';
+      return datoFechaSeleccionada.date;
     },
     fechaFormat() {
       if (!this.calendarSelected) return '';
@@ -1028,7 +1033,6 @@ export default {
     seleccionarOperacion(ev) {
       this.fechaSwapValida = true;
       this.$store.dispatch('updateOperacionSeleccionada', ev.target.value);
-      // this.operacionSeleccionada = ev.target.value;
       if (this.operacionSeleccionada === 'SPOT') {
         this.calendarSelected = this.datoFechaSpot;
         if (this.calendarActive === true) {
@@ -1183,8 +1187,8 @@ export default {
       const currenciesSelected = this.currenciesSelected.join('/');
       const tomorrow = this.calendarSelected.replace(/-/g, '');
       const monto = this.operacionSeleccionada === 'SWAP' ? this.montoPataCorta : this.monto;
-      const fechaPataCorta = this.calendarTipoPataCorta.replace(/-/g, '');
-      const fechaPataLarga = this.calendarTipoPataLarga.replace(/-/g, '');
+      const fechaPataCorta = this.operacionSeleccionada === 'SWAP' ? this.calendarTipoPataCorta.replace(/-/g, '') : '';
+      const fechaPataLarga = this.operacionSeleccionada === 'SWAP' ? this.calendarTipoPataLarga.replace(/-/g, '') : '';
       const bodyConcertacion = {
         Account: this.wsAccount,
         CLOrdID: this.qQuoteReqID,
@@ -1202,8 +1206,19 @@ export default {
         TransactionId: this.qQuoteReqID,
         RequestSystem: 'PORTALFX',
       };
-      const opcionCal = JSON.parse(JSON.stringify(this.calendario)).find((e) => e.date === this.calendarSelected);
-      this.$store.dispatch('updateFechaCatalogoSeleccionada', opcionCal ? opcionCal.Description : null);
+      let fechaCatalogoSeleccionada = null;
+      if (this.operacionSeleccionada === 'SWAP') {
+        const opcionPC = JSON.parse(JSON.stringify(this.calendario)).find((e) => e.date === this.calendarTipoPataCorta);
+        if (opcionPC) {
+          fechaCatalogoSeleccionada = opcionPC.Description;
+        }
+      } else {
+        const opcionCal = JSON.parse(JSON.stringify(this.calendario)).find((e) => e.date === this.calendarSelected);
+        if (opcionCal) {
+          fechaCatalogoSeleccionada = opcionCal.Description;
+        }
+      }
+      this.$store.dispatch('updateFechaCatalogoSeleccionada', fechaCatalogoSeleccionada);
       this.$store.dispatch('updateOperacionSeleccionada', this.operacionSeleccionada);
       this.$store.dispatch('updateOperacionPataCorta', this.tipoFechaPataCorta);
       this.$store.dispatch('updateOperacionPataLarga', this.tipoFechaPataLarga);
