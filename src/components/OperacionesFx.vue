@@ -183,7 +183,7 @@
               </div>
             </div>
             <div
-              v-if="operacionSeleccionada !== 'SWAP'"
+              v-show="operacionSeleccionada !== 'SWAP'"
               class="row">
               <div class="col-12 col-md-6">
                 <div class="box-monto input-group">
@@ -218,7 +218,6 @@
                       :value="monto"
                       :disabled="solicitarPrecio"
                       :options="{
-                        // eslint-disable-next-line no-irregular-whitespace
                         currency: 'USD',
                         currencyDisplay: 'hidden',
                         locale: 'en-US',
@@ -254,14 +253,6 @@
                     </select>
                   </div>
                   <div class="box-input-row">
-                    <!-- <div
-                      class="wrapp-fecha">
-                      <input
-                        disabled
-                        type="text"
-                        :value="dateFormat()"
-                        class="form-control input-fecha">
-                    </div> -->
                     <div
                       class="wrapp-fecha">
                       <date-picker
@@ -335,7 +326,6 @@
                       :value="montoPataCorta"
                       :disabled="solicitarPrecio"
                       :options="{
-                        // eslint-disable-next-line no-irregular-whitespace
                         currency: 'USD',
                         currencyDisplay: 'hidden',
                         locale: 'en-US',
@@ -371,14 +361,6 @@
                     </select>
                   </div>
                   <div class="box-input-row">
-                    <!-- <div
-                      class="wrapp-fecha">
-                      <input
-                        disabled
-                        type="text"
-                        :value="dateFormat()"
-                        class="form-control input-fecha">
-                    </div> -->
                     <div
                       class="wrapp-fecha">
                       <date-picker
@@ -452,7 +434,6 @@
                       :value="montoPataLarga"
                       :disabled="solicitarPrecio"
                       :options="{
-                        // eslint-disable-next-line no-irregular-whitespace
                         currency: 'USD',
                         currencyDisplay: 'hidden',
                         locale: 'en-US',
@@ -488,14 +469,6 @@
                     </select>
                   </div>
                   <div class="box-input-row">
-                    <!-- <div
-                      class="wrapp-fecha">
-                      <input
-                        disabled
-                        type="text"
-                        :value="dateFormat()"
-                        class="form-control input-fecha">
-                    </div> -->
                     <div
                       class="wrapp-fecha">
                       <date-picker
