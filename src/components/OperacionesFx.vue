@@ -128,9 +128,7 @@
                 </div>
               </div>
             </div>
-            <div
-               v-if="isTwoway !== null"
-               class="row">
+            <div class="row">
               <div class="col-12">
                 <div
                   v-if="!solicitarPrecio"
@@ -185,7 +183,7 @@
               </div>
             </div>
             <div
-              v-if="operacionSeleccionada !== 'SWAP'"
+              v-show="operacionSeleccionada !== 'SWAP'"
               class="row">
               <div class="col-12 col-md-6">
                 <div class="box-monto input-group">
@@ -220,7 +218,6 @@
                       :value="monto"
                       :disabled="solicitarPrecio"
                       :options="{
-                        // eslint-disable-next-line no-irregular-whitespace
                         currency: 'USD',
                         currencyDisplay: 'hidden',
                         locale: 'en-US',
@@ -256,14 +253,6 @@
                     </select>
                   </div>
                   <div class="box-input-row">
-                    <!-- <div
-                      class="wrapp-fecha">
-                      <input
-                        disabled
-                        type="text"
-                        :value="dateFormat()"
-                        class="form-control input-fecha">
-                    </div> -->
                     <div
                       class="wrapp-fecha">
                       <date-picker
@@ -337,7 +326,6 @@
                       :value="montoPataCorta"
                       :disabled="solicitarPrecio"
                       :options="{
-                        // eslint-disable-next-line no-irregular-whitespace
                         currency: 'USD',
                         currencyDisplay: 'hidden',
                         locale: 'en-US',
@@ -373,14 +361,6 @@
                     </select>
                   </div>
                   <div class="box-input-row">
-                    <!-- <div
-                      class="wrapp-fecha">
-                      <input
-                        disabled
-                        type="text"
-                        :value="dateFormat()"
-                        class="form-control input-fecha">
-                    </div> -->
                     <div
                       class="wrapp-fecha">
                       <date-picker
@@ -454,7 +434,6 @@
                       :value="montoPataLarga"
                       :disabled="solicitarPrecio"
                       :options="{
-                        // eslint-disable-next-line no-irregular-whitespace
                         currency: 'USD',
                         currencyDisplay: 'hidden',
                         locale: 'en-US',
@@ -490,14 +469,6 @@
                     </select>
                   </div>
                   <div class="box-input-row">
-                    <!-- <div
-                      class="wrapp-fecha">
-                      <input
-                        disabled
-                        type="text"
-                        :value="dateFormat()"
-                        class="form-control input-fecha">
-                    </div> -->
                     <div
                       class="wrapp-fecha">
                       <date-picker
@@ -630,12 +601,13 @@ export default {
       dataTwoWay: null,
       progress: 100,
       timeLeft: '00:60',
+      segundosTimmer: 59,
       solicitarPrecio: false,
       // operacionSeleccionada: 'SPOT',
       operationsSelected: 'SPOT',
       isTwoway: null,
       // mostrarTwoWay: false,
-      optionSelected: null,
+      optionSelected: 'Comprar',
       monto: 0,
       montoPataCorta: 0,
       montoPataLarga: 0,
@@ -715,28 +687,43 @@ export default {
       return this.isTwoway;
       // return this.$store.state.mapClientLogeo.twoWay;
     },
+    tipoFechaPataCorta() {
+      const tipoFechaSelecPataCorta = this.calendario.find((item) => item.date === this.calendarTipoPataCorta);
+      if (!tipoFechaSelecPataCorta) return '';
+      return tipoFechaSelecPataCorta.Description;
+    },
+    tipoFechaPataLarga() {
+      const tipoFechaSelecPataLarga = this.calendario.find((item) => item.date === this.calendarTipoPataLarga);
+      if (!tipoFechaSelecPataLarga) return '';
+      return tipoFechaSelecPataLarga.Description;
+    },
     tipoFecha() {
       if (this.calendarSelected === '') {
         this.deshabilitarBotonSubmit();
       }
-      const tipoFechaSeleccionada = (this.calendario.find((item) => item.date === this.calendarSelected).Description);
-      return tipoFechaSeleccionada;
+      const tipoFechaSeleccionada = this.calendario.find((item) => item.date === this.calendarSelected);
+      if (!tipoFechaSeleccionada) return '';
+      return tipoFechaSeleccionada.Description;
     },
     datoFecha() {
-      const datoFechaSeleccionada = (this.calendario.find((item) => item.date === this.calendarSelected).date);
-      return datoFechaSeleccionada;
+      const datoFechaSeleccionada = this.calendario.find((item) => item.date === this.calendarSelected);
+      if (!datoFechaSeleccionada) return '';
+      return datoFechaSeleccionada.date;
     },
     datoFechaSpot() {
-      const datoFechaSeleccionada = (this.calendario.find((item) => item.Description === 'SPOT').date);
-      return datoFechaSeleccionada;
+      const datoFechaSeleccionada = this.calendario.find((item) => item.Description === 'SPOT');
+      if (!datoFechaSeleccionada) return '';
+      return datoFechaSeleccionada.date;
     },
     datoFechaToday() {
-      const datoFechaSeleccionada = (this.calendario.find((item) => item.Description === 'TODAY').date);
-      return datoFechaSeleccionada;
+      const datoFechaSeleccionada = this.calendario.find((item) => item.Description === 'TODAY');
+      if (!datoFechaSeleccionada) return '';
+      return datoFechaSeleccionada.date;
     },
     datoFechaTomorrow() {
-      const datoFechaSeleccionada = (this.calendario.find((item) => item.Description === 'TOMORROW').date);
-      return datoFechaSeleccionada;
+      const datoFechaSeleccionada = this.calendario.find((item) => item.Description === 'TOMORROW');
+      if (!datoFechaSeleccionada) return '';
+      return datoFechaSeleccionada.date;
     },
     fechaFormat() {
       if (!this.calendarSelected) return '';
@@ -752,6 +739,8 @@ export default {
         token: this.tkn,
       });
       this.validateUserData();
+    } else {
+      this.dataTwoWay = false;
     }
     // Fin de lo que se puede comentar para temas de desarrollo
     await this.getCurrencies();
@@ -764,11 +753,6 @@ export default {
     // });
   },
   async created() {
-    const dataSesion = sessionStorage.getItem('data-test');
-    this.dataTwoWay = (dataSesion === 'true');
-    if (sessionStorage.getItem('data-test') !== null) {
-      this.isTwoway = this.dataTwoWay;
-    }
     const getHours = new Date().getHours();
     if (getHours >= 9 && getHours < 18) {
       if (getHours === 16) {
@@ -873,14 +857,20 @@ export default {
         this.opSide = opSide;
         const currenciesSelected = this.currenciesSelected.join('/');
         const tomorrow = this.calendarSelected.replace(/-/g, '');
+        const pataCorta = this.calendarTipoPataCorta ? this.calendarTipoPataCorta.replace(/-/g, '') : '';
+        const pataLarga = this.calendarTipoPataLarga ? this.calendarTipoPataLarga.replace(/-/g, '') : '';
         const sideValue = this.optionSelected === 'Twoway' ? 'Twoway' : opSide;
+        const monto = this.operacionSeleccionada === 'SWAP' ? this.montoPataCorta : this.monto;
+        const dateBody = this.operacionSeleccionada === 'SWAP' ? pataCorta : tomorrow;
         const body = {
           ProductType: 'FX_STD',
           NoRelatedSym: [{
             Symbol: currenciesSelected,
             Side: sideValue,
-            OrderQty: this.monto.toString(),
-            SettlDate: tomorrow,
+            OrderQty: monto.toString(),
+            SettlDate: dateBody,
+            OrderQty2: this.operacionSeleccionada === 'SWAP' ? this.montoPataLarga : null,
+            SettlDate2: this.operacionSeleccionada === 'SWAP' ? pataLarga : null,
             Currency: this.currencySelected,
             Account: 'INVEXCOMP.TEST',
             OperationName: this.operacionSeleccionada,
@@ -908,8 +898,13 @@ export default {
         this.solicitarPrecio = false;
         clearInterval(this.timmerId);
       } else {
+        this.segundosTimmer = 59;
         switch (this.operacionSeleccionada) {
           case 'SPOT':
+            await this.onSumbitOperacion();
+            break;
+          case 'SWAP':
+            this.segundosTimmer = 119;
             await this.onSumbitOperacion();
             break;
           case 'FORWARD':
@@ -1023,7 +1018,6 @@ export default {
     seleccionarOperacion(ev) {
       this.fechaSwapValida = true;
       this.$store.dispatch('updateOperacionSeleccionada', ev.target.value);
-      // this.operacionSeleccionada = ev.target.value;
       if (this.operacionSeleccionada === 'SPOT') {
         this.calendarSelected = this.datoFechaSpot;
         if (this.calendarActive === true) {
@@ -1095,19 +1089,33 @@ export default {
         this.optionSelected = txt;
       }
     },
+    getSecondsLeft(sec) {
+      let min = Math.floor(sec / 60);
+      let seg = sec % 60;
+      if (seg < 10) {
+        seg = `0${seg}`;
+      }
+      if (min < 10) {
+        min = `0${min}`;
+      }
+      if (min === 0) {
+        return `00:${seg}`;
+      }
+      return `${min}:${seg}`;
+    },
     async startTimer() {
       // eslint-disable-next-line no-console
       console.log('entro a timmer', new Date());
-      let sec = 59;
+      let sec = this.segundosTimmer;
       const segundosPorPeticion = segundoPeticiones || 2;
       this.progress = 100;
-      this.timeLeft = '00:59';
+      this.timeLeft = this.getSecondsLeft(sec);
       const timer = setInterval(async () => {
         // eslint-disable-next-line no-console
         console.log('en intervarl', new Date());
-        this.timeLeft = `00:${sec < 10 ? '0' : ''}${sec}`;
+        this.timeLeft = this.getSecondsLeft(sec);
         let progressAux = sec * 100;
-        progressAux /= 60;
+        progressAux /= (this.segundosTimmer + 1);
         this.progress = progressAux;
         sec -= 1;
         if (sec % segundosPorPeticion === 0) {
@@ -1163,24 +1171,44 @@ export default {
       }
       const currenciesSelected = this.currenciesSelected.join('/');
       const tomorrow = this.calendarSelected.replace(/-/g, '');
+      const monto = this.operacionSeleccionada === 'SWAP' ? this.montoPataCorta : this.monto;
+      const fechaPataCorta = this.operacionSeleccionada === 'SWAP' ? this.calendarTipoPataCorta.replace(/-/g, '') : '';
+      const fechaPataLarga = this.operacionSeleccionada === 'SWAP' ? this.calendarTipoPataLarga.replace(/-/g, '') : '';
       const bodyConcertacion = {
         Account: this.wsAccount,
         CLOrdID: this.qQuoteReqID,
         Currency: this.currencySelected,
-        OrderQty: this.monto.toString(),
+        OrderQty: monto.toString(),
+        OrderQty2: this.operacionSeleccionada === 'SWAP' ? this.montoPataLarga.toString() : null,
         OrderType: this.orderType,
         Price: this.opSide === 'Buy' ? this.currencyValueBuy : this.currencyValueSell,
         QuoteID: this.qQuoteID,
-        SettlDate: tomorrow,
+        SettlDate: this.operacionSeleccionada === 'SWAP' ? fechaPataCorta : tomorrow,
+        SettlDate2: this.operacionSeleccionada === 'SWAP' ? fechaPataLarga : null,
         Side: this.opSide,
         Symbol: currenciesSelected,
         Product: this.operacionSeleccionada,
         TransactionId: this.qQuoteReqID,
         RequestSystem: 'PORTALFX',
       };
-      const opcionCal = JSON.parse(JSON.stringify(this.calendario)).find((e) => e.date === this.calendarSelected);
-      this.$store.dispatch('updateFechaCatalogoSeleccionada', opcionCal ? opcionCal.Description : null);
+      let fechaCatalogoSeleccionada = null;
+      if (this.operacionSeleccionada === 'SWAP') {
+        const opcionPC = JSON.parse(JSON.stringify(this.calendario)).find((e) => e.date === this.calendarTipoPataCorta);
+        if (opcionPC) {
+          fechaCatalogoSeleccionada = opcionPC.Description;
+        }
+      } else {
+        const opcionCal = JSON.parse(JSON.stringify(this.calendario)).find((e) => e.date === this.calendarSelected);
+        if (opcionCal) {
+          fechaCatalogoSeleccionada = opcionCal.Description;
+        }
+        delete bodyConcertacion.OrderQty2;
+        delete bodyConcertacion.SettlDate2;
+      }
+      this.$store.dispatch('updateFechaCatalogoSeleccionada', fechaCatalogoSeleccionada);
       this.$store.dispatch('updateOperacionSeleccionada', this.operacionSeleccionada);
+      this.$store.dispatch('updateOperacionPataCorta', this.tipoFechaPataCorta);
+      this.$store.dispatch('updateOperacionPataLarga', this.tipoFechaPataLarga);
       clearInterval(this.timmerId);
       // eslint-disable-next-line no-console
       console.log('se empezo a consumir el create concertacion', new Date());
@@ -1283,5 +1311,10 @@ $brand-invex: #A41D36;
   margin-top: 1em;
   margin-bottom: -2em;
   font-weight: 500;
+  p {
+    font-weight: 600;
+    color: #424242;
+    font-size: 14px;
+  }
 }
 </style>

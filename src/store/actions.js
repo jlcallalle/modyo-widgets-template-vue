@@ -166,7 +166,7 @@ export default {
     commit('setLoading', true);
     try {
       const response = await InvexRepository.confirmConcertacion(body);
-      const infos = JSON.parse(response.Message);
+      const infos = response.Message;
       commit('updateCrearOperacionConcertada', infos);
       // commit('setOperacionConcertada', infos);
       return response;
@@ -237,6 +237,12 @@ export default {
   },
   updateOperacionSeleccionada({ commit }, operacion) {
     commit('setOperacionSeleccionada', operacion);
+  },
+  updateOperacionPataCorta({ commit }, operacion) {
+    commit('setOperacionPataCorta', operacion);
+  },
+  updateOperacionPataLarga({ commit }, operacion) {
+    commit('setOperacionPataLarga', operacion);
   },
   updateFechaCatalogoSeleccionada({ commit }, fecha) {
     commit('setFechaCatalogoSeleccionada', fecha);

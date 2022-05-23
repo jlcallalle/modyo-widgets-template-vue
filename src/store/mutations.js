@@ -73,4 +73,10 @@ export default {
   setpataCortapataLarga(state, payload) {
     state.pataCortapataLarga = payload;
   },
+  setOperacionPataCorta(state, payload) {
+    state.operacionPataCorta = payload;
+  },
+  setOperacionPataLarga(state, payload) {
+    state.operacionPataLarga = payload;
+  },
 };

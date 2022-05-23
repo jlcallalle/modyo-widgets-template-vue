@@ -13,6 +13,9 @@
               <h2 class="subtitle mb-4">
                 Operación Concertada
               </h2>
+              <p style="display:none">
+                crearOperacionConcertada {{ crearOperacionConcertada }}
+              </p>
               <div class="col-12">
                 <div class="table-responsive">
                   <table class="table table-wrap">
@@ -29,6 +32,18 @@
                         <td>Local Date</td>
                         <td>{{ getTimeZoneDate(crearOperacionConcertada.TransactTime, false) }}</td>
                       </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="row-swap">
+                        <td>Near Leg UTI</td>
+                        <td>{{ crearOperacionConcertada.UTI }}</td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="row-swap">
+                        <td>Far Leg UTI</td>
+                        <td>{{ crearOperacionConcertada.UTI2 }}</td>
+                      </tr>
                       <tr>
                         <td class="spaceTd" />
                         <td class="spaceTd" />
@@ -42,23 +57,30 @@
                         <td>{{ crearOperacionConcertada.SecurityID }} </td>
                       </tr>
                       <tr>
-                        <td class="spaceTd" />
-                        <td class="spaceTd" />
-                      </tr>
-                      <tr>
                         <td>Status</td>
                         <td>{{ crearOperacionConcertada.OrdStatus }} </td>
+                      </tr>
+                      <tr>
+                        <td class="spaceTd" />
+                        <td class="spaceTd" />
                       </tr>
                       <tr class="texto-color">
                         <td>Product</td>
                         <td>{{ getProductTxt() }}</td>
                       </tr>
-                      <tr class="texto-color">
-                        <td>Requester Action</td>
+                      <tr v-if="operacionSeleccionada == 'SWAP'">
+                        <td class="spaceTd" />
+                        <td class="spaceTd" />
+                      </tr>
+                      <tr
+                        class="texto-color">
+                        <td>
+                          <span v-if="operacionSeleccionada == 'SWAP'">Near Leg</span>
+                          <span v-else> Requester Action</span>
+                        </td>
                         <td>
                           {{ returnTxtOperacion() }}
                         </td>
-                        <!-- <td>I Buy USD / Sell MXN</td> -->
                       </tr>
                       <tr class="texto-color">
                         <td>Notional Amount</td>
@@ -73,14 +95,105 @@
                       <tr class="texto-color">
                         <td>Effective Date</td>
                         <td>
-                          <span class="capitalize">{{ getFechaSeleccionada() }}</span>
+                          <span
+                            v-if="operacionSeleccionada == 'SWAP'"
+                            class="capitalize">{{ getOperacionPataCorta }}</span>
+                          <span
+                            v-else
+                            class="capitalize">{{ getFechaSeleccionada() }}</span>
                           {{ getFechaSeleccionada() && '//' }}
                           {{ getLocalDate(crearOperacionConcertada.SettlDate, true) }}
                         </td>
                       </tr>
-                      <tr class="texto-color">
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Near Points</td>
+                        <td>
+                          {{ calcNearPoints }}
+                        </td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada !== 'SWAP'"
+                        class="texto-color">
                         <td>{{ getProductTypeTxt() }} Rate</td>
                         <td>{{ crearOperacionConcertada.LastPx }}</td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Rate</td>
+                        <td>{{ crearOperacionConcertada.LastPx }}</td>
+                      </tr>
+                      <!-- pata larga -->
+                      <tr v-if="operacionSeleccionada == 'SWAP'">
+                        <td class="spaceTd" />
+                        <td class="spaceTd" />
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>
+                          Far Leg
+                        </td>
+                        <td>
+                          {{ returnTxtOperacionFarLeg() }}
+                        </td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Notional Amount</td>
+                        <!-- eslint-disable-next-line max-len -->
+                        <td> {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 } ).format(formatMontoFarLeg) }}  {{ currencyDivisa }} </td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Opposite Amount</td>
+                        <!-- eslint-disable-next-line max-len -->
+                        <td> {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 } ).format(calculoOppositeFarLeg()) }} {{ oppositiveDivisa }} </td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Effective Date</td>
+                        <td>
+                          <span
+                            v-if="operacionSeleccionada == 'SWAP'"
+                            class="capitalize">{{ getOperacionPataLarga }}</span>
+                          <span
+                            v-else
+                            class="capitalize">{{ getFechaSeleccionada() }}</span>
+                          {{ getFechaSeleccionada() && '//' }}
+                          {{ getLocalDate(crearOperacionConcertada.SettlDate2, true) }}
+                        </td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Far Points</td>
+                        <td>
+                          {{ calcFaroints }}
+                        </td>
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Rate</td>
+                        <td>{{ crearOperacionConcertada.LastPx2 }}</td>
+                      </tr>
+                      <tr v-if="operacionSeleccionada == 'SWAP'">
+                        <td class="spaceTd" />
+                        <td class="spaceTd" />
+                      </tr>
+                      <tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Swap Points</td>
+                        <td>
+                          {{ calcSwapPoints }}
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -274,6 +387,8 @@ export default {
     ...mapState(['listaOrigen']),
     ...mapState(['listaDestino']),
     ...mapState(['operacionSeleccionada']),
+    ...mapState(['operacionPataCorta']),
+    ...mapState(['operacionPataLarga']),
     ...mapState(['fechaCatalogoSeleccionada']),
     tipoOperacion() {
       return this.$store.state.crearOperacionConcertada.Side;
@@ -294,9 +409,40 @@ export default {
       // return this.$store.state.crearOperacionConcertada.OrderQty.toLocaleString('en-US');
       return this.$store.state.crearOperacionConcertada.OrderQty;
     },
+    formatMontoFarLeg() {
+      // return this.$store.state.crearOperacionConcertada.OrderQty.toLocaleString('en-US');
+      return this.$store.state.crearOperacionConcertada.OrderQty2;
+    },
     formatMontoOppositive() {
       // return this.$store.state.crearOperacionConcertada.OrderQty.toLocaleString('en-US');
       return this.$store.state.crearOperacionConcertada.OrderQty * this.$store.state.crearOperacionConcertada.Price;
+    },
+    calcNearPoints() {
+      const rate = this.$store.state.crearOperacionConcertada.LastPx;
+      const spotRate = this.$store.state.crearOperacionConcertada.LastSpotRate;
+      const total = (rate - spotRate) * 10000;
+      const totalFixed = total.toFixed(3);
+      return totalFixed;
+    },
+    calcFaroints() {
+      const rate2 = this.$store.state.crearOperacionConcertada.LastPx2;
+      const spotRate = this.$store.state.crearOperacionConcertada.LastSpotRate;
+      const total = (rate2 - spotRate) * 10000;
+      const totalFixed = total.toFixed(3);
+      return totalFixed;
+    },
+    calcSwapPoints() {
+      const nearPoint = this.calcNearPoints;
+      const farPoint = this.calcFaroints;
+      const total = farPoint - nearPoint;
+      const totalFixed = total.toFixed(3);
+      return totalFixed;
+    },
+    getOperacionPataCorta() {
+      return this.operacionPataCorta.toLowerCase();
+    },
+    getOperacionPataLarga() {
+      return this.operacionPataLarga.toLowerCase();
     },
   },
   methods: {
@@ -360,6 +506,22 @@ export default {
       } else {
         // eslint-disable-next-line
         total = this.$store.state.crearOperacionConcertada.OrderQty / this.$store.state.crearOperacionConcertada.LastPx;
+      }
+      return total;
+    },
+    calculoOppositeFarLeg() {
+      // return this.$store.state.crearOperacionConcertada.OrderQty * this.$store.state.crearOperacionConcertada.Price;
+      const actual = this.$store.state.crearOperacionConcertada.Currency;
+      const valor = this.$store.state.crearOperacionConcertada.Symbol;
+      const separa = valor.split('/');
+      let total;
+      // eslint-disable-next-line
+      if (separa[0] === actual) {
+        // eslint-disable-next-line
+        total = this.$store.state.crearOperacionConcertada.OrderQty2 * this.$store.state.crearOperacionConcertada.LastPx2;
+      } else {
+        // eslint-disable-next-line
+        total = this.$store.state.crearOperacionConcertada.OrderQty2 / this.$store.state.crearOperacionConcertada.LastPx2;
       }
       return total;
     },
@@ -559,7 +721,7 @@ export default {
     },
     async returnMsgDestino() {
       this.customModalProps.title = 'No se encontraron cuentas destino';
-      this.customModalProps.message = `No existen cuentas destino registradas para la divisa ${await this.getLogicCurrencies()} para poder realizar la asignación de las cuentas a la operación`;
+      this.customModalProps.message = `No existen cuentas destino registradas para la divisa ${this.currencyDivisa} para poder realizar la asignación de las cuentas a la operación`;
       this.customModalProps.btnAcceptText = 'Aceptar';
       this.customModalProps.btnCloseHide = true;
       this.customModalProps.btnAcceptFunc = () => {
@@ -576,6 +738,18 @@ export default {
       let str = `I ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[0]} // ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[1]}`;
       if (separa[0] === actual) {
         str = `I ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[0]} // ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[1]}`;
+      }
+      return str;
+    },
+    returnTxtOperacionFarLeg() {
+      const actual = this.$store.state.crearOperacionConcertada.Currency;
+      const valor = this.$store.state.crearOperacionConcertada.Symbol;
+      const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
+      const separa = valor.split('/');
+      let str = `I ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[0]} // ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[1]}`;
+      console.log('str', str);
+      if (separa[0] === actual) {
+        str = `I ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[0]} // ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[1]}`;
       }
       return str;
     },
