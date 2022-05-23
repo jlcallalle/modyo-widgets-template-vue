@@ -1190,6 +1190,8 @@ export default {
         if (opcionCal) {
           fechaCatalogoSeleccionada = opcionCal.Description;
         }
+        delete bodyConcertacion.OrderQty2;
+        delete bodyConcertacion.SettlDate2;
       }
       this.$store.dispatch('updateFechaCatalogoSeleccionada', fechaCatalogoSeleccionada);
       this.$store.dispatch('updateOperacionSeleccionada', this.operacionSeleccionada);
