@@ -13,7 +13,9 @@
               <h2 class="subtitle mb-4">
                 Operación Concertada
               </h2>
-              <p style="display:none">crearOperacionConcertada {{ crearOperacionConcertada }}</p>
+              <p style="display:none">
+                crearOperacionConcertada {{ crearOperacionConcertada }}
+              </p>
               <div class="col-12">
                 <div class="table-responsive">
                   <table class="table table-wrap">
@@ -95,7 +97,7 @@
                         <td>
                           <span
                             v-if="operacionSeleccionada == 'SWAP'"
-                            class="capitalize">{{ operacionPataCorta }}</span>
+                            class="capitalize">{{ getOperacionPataCorta }}</span>
                           <span
                             v-else
                             class="capitalize">{{ getFechaSeleccionada() }}</span>
@@ -159,7 +161,7 @@
                         <td>
                           <span
                             v-if="operacionSeleccionada == 'SWAP'"
-                            class="capitalize">{{ operacionPataLarga }}</span>
+                            class="capitalize">{{ getOperacionPataLarga }}</span>
                           <span
                             v-else
                             class="capitalize">{{ getFechaSeleccionada() }}</span>
@@ -435,6 +437,12 @@ export default {
       const total = farPoint - nearPoint;
       const totalFixed = total.toFixed(3);
       return totalFixed;
+    },
+    getOperacionPataCorta() {
+      return this.operacionPataCorta.toLowerCase();
+    },
+    getOperacionPataLarga() {
+      return this.operacionPataLarga.toLowerCase();
     },
   },
   methods: {

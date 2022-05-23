@@ -1299,5 +1299,10 @@ $brand-invex: #A41D36;
   margin-top: 1em;
   margin-bottom: -2em;
   font-weight: 500;
+  p {
+    font-weight: 600;
+    color: #424242;
+    font-size: 14px;
+  }
 }
 </style>
