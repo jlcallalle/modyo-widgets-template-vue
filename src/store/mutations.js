@@ -70,4 +70,7 @@ export default {
   setLoginData(state, payload) {
     state.userData = payload;
   },
+  setpataCortapataLarga(state, payload) {
+    state.pataCortapataLarga = payload;
+  },
 };

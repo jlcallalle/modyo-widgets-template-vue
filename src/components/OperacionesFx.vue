@@ -826,6 +826,8 @@ export default {
       if (this.calendarOptions.length === 27) {
         this.add();
       }
+      this.pataCortapataLarga();
+      
       this.condicionFechasSwap();
     },
     deshabilitarBotonSubmit() {
@@ -987,6 +989,16 @@ export default {
         }
       } catch (error) {
         this.showModalError = true;
+      }
+      },
+      async getpataCortapataLarga() {
+        const bodyPataCortaPataLarga = {
+          pataCortapataLarga: this.pataCortapataLarga,
+        };
+        try {
+          await this.$store.dispatch('pataCortapata Larga', bodyPataCortaPataLarga);
+        } catch (error) {
+          this.showModalError = true;
       }
     },
     setMonto(ev) {
