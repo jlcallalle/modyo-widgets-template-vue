@@ -1215,6 +1215,8 @@ export default {
         if (opcionCal) {
           fechaCatalogoSeleccionada = opcionCal.Description;
         }
+        delete bodyConcertacion.OrderQty2;
+        delete bodyConcertacion.SettlDate2;
       }
       this.$store.dispatch('updateFechaCatalogoSeleccionada', fechaCatalogoSeleccionada);
       this.$store.dispatch('updateOperacionSeleccionada', this.operacionSeleccionada);
@@ -1322,5 +1324,10 @@ $brand-invex: #A41D36;
   margin-top: 1em;
   margin-bottom: -2em;
   font-weight: 500;
+  p {
+    font-weight: 600;
+    color: #424242;
+    font-size: 14px;
+  }
 }
 </style>
