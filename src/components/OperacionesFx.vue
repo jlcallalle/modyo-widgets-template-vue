@@ -811,7 +811,7 @@ export default {
         this.add();
       }
       this.pataCortapataLarga();
-      
+
       this.condicionFechasSwap();
     },
     deshabilitarBotonSubmit() {
@@ -989,15 +989,15 @@ export default {
       } catch (error) {
         this.showModalError = true;
       }
-      },
-      async getpataCortapataLarga() {
-        const bodyPataCortaPataLarga = {
-          pataCortapataLarga: this.pataCortapataLarga,
-        };
-        try {
-          await this.$store.dispatch('pataCortapata Larga', bodyPataCortaPataLarga);
-        } catch (error) {
-          this.showModalError = true;
+    },
+    async getpataCortapataLarga() {
+      const bodyPataCortaPataLarga = {
+        pataCortapataLarga: this.pataCortapataLarga,
+      };
+      try {
+        await this.$store.dispatch('pataCortapata Larga', bodyPataCortaPataLarga);
+      } catch (error) {
+        this.showModalError = true;
       }
     },
     setMonto(ev) {
@@ -1185,6 +1185,7 @@ export default {
         this.solicitarPrecio = false;
         this.monto = '0';
       } else {
+        clearInterval(this.timmerId);
         window.location.reload();
       }
     },
@@ -1230,11 +1231,11 @@ export default {
         delete bodyConcertacion.OrderQty2;
         delete bodyConcertacion.SettlDate2;
       }
+      clearInterval(this.timmerId);
       this.$store.dispatch('updateFechaCatalogoSeleccionada', fechaCatalogoSeleccionada);
       this.$store.dispatch('updateOperacionSeleccionada', this.operacionSeleccionada);
       this.$store.dispatch('updateOperacionPataCorta', this.tipoFechaPataCorta);
       this.$store.dispatch('updateOperacionPataLarga', this.tipoFechaPataLarga);
-      clearInterval(this.timmerId);
       // eslint-disable-next-line no-console
       console.log('se empezo a consumir el create concertacion', new Date());
       const responseApiConcertacion = await this.$store.dispatch('createConcertacion', bodyConcertacion);

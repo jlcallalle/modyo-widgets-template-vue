@@ -79,7 +79,7 @@
                           <span v-else> Requester Action</span>
                         </td>
                         <td>
-                          {{ returnTxtOperacion() }}
+                          {{ returnTxtOperacionFarLeg() }}
                         </td>
                       </tr>
                       <tr class="texto-color">
@@ -137,7 +137,7 @@
                           Far Leg
                         </td>
                         <td>
-                          {{ returnTxtOperacionFarLeg() }}
+                          {{ returnTxtOperacion() }}
                         </td>
                       </tr>
                       <tr
