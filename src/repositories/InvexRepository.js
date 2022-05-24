@@ -54,4 +54,7 @@ export default {
   validarToken(body) {
     return InvexClient.post(`${prefixUrl}/validarToken`, body);
   },
+  pataCortapataLarga(body) {
+    return InvexClient.post(`${prefixUrl}/pataCortapataLarga`, body);
+  },
 };
