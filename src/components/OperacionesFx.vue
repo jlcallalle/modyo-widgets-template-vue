@@ -794,7 +794,7 @@ export default {
         this.add();
       }
     },
-    onDayClickPataCorta(ev) {
+    async onDayClickPataCorta(ev) {
       this.calendarActive = true;
       const fechaCal = ev.id;
       this.calendarTipoPataCorta = fechaCal;
@@ -803,7 +803,7 @@ export default {
       }
       this.condicionFechasSwap();
     },
-    onDayClickPataLarga(ev) {
+    async onDayClickPataLarga(ev) {
       this.calendarActive = true;
       const fechaCal = ev.id;
       this.calendarTipoPataLarga = fechaCal;
@@ -905,7 +905,11 @@ export default {
             break;
           case 'SWAP':
             this.segundosTimmer = 119;
-            await this.onSumbitOperacion();
+            await this.getRecuperaFechaParam(this.calendarTipoPataCorta);
+            await this.getRecuperaFechaParam(this.calendarTipoPataLarga);
+            if (this.recuperaFecha.data.result !== 'TRUE') {
+              await this.onSumbitOperacion();
+            }
             break;
           case 'FORWARD':
             await this.getRecuperaFecha();
@@ -1042,11 +1046,32 @@ export default {
     setOperation(ev) {
       this.operationsSelected = ev.target.value;
     },
-    setCalendarPataCorta(ev) {
+    async setCalendarPataCorta(ev) {
       this.calendarTipoPataCorta = ev.target.value;
       this.condicionFechasSwap();
     },
-    setCalendarPataLarga(ev) {
+    async getRecuperaFechaParam(date) {
+      const bodyFecha = {
+        fecha: date,
+      };
+      try {
+        await this.$store.dispatch('recuperaFecha', bodyFecha);
+        if (this.recuperaFecha.data.result === 'TRUE') {
+          this.customModalProps.open = true;
+          this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
+          this.customModalProps.message = '¿Deseas continuar con la operación?';
+          this.customModalProps.type = 'warning';
+          this.customModalProps.btnAcceptText = 'Aceptar';
+          this.customModalProps.btnCancelText = 'Cancelar';
+          this.customModalProps.btnCloseHide = false;
+          this.customModalProps.btnCancelFunc = this.closeModal;
+          this.customModalProps.btnAcceptFunc = this.closeModal;
+        }
+      } catch (error) {
+        this.showModalError = true;
+      }
+    },
+    async setCalendarPataLarga(ev) {
       this.calendarTipoPataLarga = ev.target.value;
       this.condicionFechasSwap();
     },
