@@ -802,7 +802,6 @@ export default {
         this.add();
       }
       this.condicionFechasSwap();
-      await this.getRecuperaFechaParam(this.calendarTipoPataCorta);
     },
     async onDayClickPataLarga(ev) {
       this.calendarActive = true;
@@ -812,7 +811,6 @@ export default {
         this.add();
       }
       this.condicionFechasSwap();
-      await this.getRecuperaFechaParam(this.calendarTipoPataLarga);
     },
     deshabilitarBotonSubmit() {
       const horarioStatus = this.horario ? this.horario.status : '';
@@ -905,7 +903,11 @@ export default {
             break;
           case 'SWAP':
             this.segundosTimmer = 119;
-            await this.onSumbitOperacion();
+            await this.getRecuperaFechaParam(this.calendarTipoPataCorta);
+            await this.getRecuperaFechaParam(this.calendarTipoPataLarga);
+            if (this.recuperaFecha.data.result !== 'TRUE') {
+              await this.onSumbitOperacion();
+            }
             break;
           case 'FORWARD':
             await this.getRecuperaFecha();
@@ -1034,7 +1036,6 @@ export default {
     },
     async setCalendarPataCorta(ev) {
       this.calendarTipoPataCorta = ev.target.value;
-      await this.getRecuperaFechaParam(this.calendarTipoPataCorta);
       this.condicionFechasSwap();
     },
     async getRecuperaFechaParam(date) {
@@ -1060,7 +1061,6 @@ export default {
     },
     async setCalendarPataLarga(ev) {
       this.calendarTipoPataLarga = ev.target.value;
-      await this.getRecuperaFechaParam(this.calendarTipoPataLarga);
       this.condicionFechasSwap();
     },
     condicionFechasSwap() {
