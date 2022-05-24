@@ -986,6 +986,10 @@ export default {
         if (this.operacionSeleccionada === 'FORWARD') {
           this.calendarSelected = this.calendarOptions[0].date;
         }
+        if (this.operacionSeleccionada === 'SWAP') {
+          this.calendarTipoPataCorta = this.calendarOptions[0].date;
+          this.calendarTipoPataLarga = this.calendarOptions[1].date;
+        }
       } catch (error) {
         this.showModalError = true;
       }
