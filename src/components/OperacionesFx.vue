@@ -79,15 +79,23 @@
 
                 <div
                   v-if="solicitarPrecio && (optionSelected === 'Vender' || optionSelected === 'Twoway')"
-                  class="box-vender">
+                  class="box-vender tipo-venta">
                   <div class="title-operacion">
                     {{ isBuy ? 'Comprar' : 'Vender' }} {{ currencySelected }}
                   </div>
                   <div class="box-precio">
                     <span
+                      v-if="operacionSeleccionada !== 'SWAP'"
                       :class="{greenValue: valueComparationSell === '+',
                                redValue: valueComparationSell === '-'}">
                       {{ currencyValueSell }}
+                    </span>
+                    <span
+                      v-else
+                      :class="{greenValue: valueComparationSwapPoints === '+',
+                               redValue: valueComparationSwapPoints === '-'}">
+                      <!-- eslint-disable-next-line max-len -->
+                      {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 } ).format(formatSwapPoints) }}
                     </span>
                   </div>
                   <button
@@ -108,15 +116,23 @@
 
                 <div
                   v-if="solicitarPrecio && (optionSelected === 'Comprar' || optionSelected === 'Twoway')"
-                  class="box-vender">
+                  class="box-vender tipo-compra">
                   <div class="title-operacion">
                     {{ isBuy ? 'Vender' : 'Comprar' }} {{ currencySelected }}
                   </div>
                   <div class="box-precio">
                     <span
+                      v-if="operacionSeleccionada !== 'SWAP'"
                       :class="{greenValue: valueComparationBuy === '+',
                                redValue: valueComparationBuy === '-'}">
                       {{ currencyValueBuy }}
+                    </span>
+                    <span
+                      v-else
+                      :class="{greenValue: valueComparationSwapPoints === '+',
+                               redValue: valueComparationSwapPoints === '-'}">
+                      <!-- eslint-disable-next-line max-len -->
+                      {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 } ).format(formatSwapPoints) }}
                     </span>
                   </div>
                   <button
@@ -634,10 +650,12 @@ export default {
       showModalHorario: false,
       isDisabled: true,
       // loading: true,
-      currencyValueBuy: 22.749,
-      currencyValueSell: 22.749,
+      currencyValueBuy: '',
+      currencyValueSell: '',
+      currencySwapPoints: '',
       valueComparationBuy: '',
       valueComparationSell: '',
+      valueComparationSwapPoints: '',
       isBuy: false,
       wsAccount: 'INVEXCOMP.TEST',
       // qrCLOrdID: 'INVEXCOMP.TEST-00020220209124801190',
@@ -729,6 +747,10 @@ export default {
       if (!this.calendarSelected) return '';
       const dateArr = this.calendarSelected.split('-');
       return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
+    },
+    formatSwapPoints() {
+      const swapPoints = this.currencySwapPoints;
+      return Math.floor(swapPoints * 10000) / 10000;
     },
   },
   async mounted() {
@@ -854,6 +876,7 @@ export default {
         // }
         this.valueComparationSell = '';
         this.valueComparationBuy = '';
+        this.valueComparationSwapPoints = '';
         this.opSide = opSide;
         const currenciesSelected = this.currenciesSelected.join('/');
         const tomorrow = this.calendarSelected.replace(/-/g, '');
@@ -885,6 +908,7 @@ export default {
         this.$store.dispatch('setQuoteRequest', rspMsg);
         this.currencyValueSell = rspMsg.SellPrice;
         this.currencyValueBuy = rspMsg.BuyPrice;
+        this.currencySwapPoints = rspMsg.SwapPoints;
         this.qQuoteID = rspMsg.QuoteID;
         this.qQuoteReqID = rspMsg.QuoteReqID;
         this.solicitarPrecio = true;
@@ -1156,6 +1180,7 @@ export default {
             this.qQuoteID = rspMsg.QuoteID;
             const newCurrencyValueSell = rspMsg.SellPrice;
             const newCurrencyValueBuy = rspMsg.BuyPrice;
+            const newCurrencySwpaPoints = rspMsg.SwapPoints;
             if (Number(newCurrencyValueSell) > Number(this.currencyValueSell)) {
               this.valueComparationSell = '+';
             } else if (Number(newCurrencyValueSell) < Number(this.currencyValueSell)) {
@@ -1170,8 +1195,16 @@ export default {
             } else {
               this.valueComparationBuy = '=';
             }
+            if (Number(newCurrencySwpaPoints) > Number(this.currencySwapPoints)) {
+              this.valueComparationSwapPoints = '+';
+            } else if (Number(newCurrencySwpaPoints) < Number(this.currencySwapPoints)) {
+              this.valueComparationSwapPoints = '-';
+            } else {
+              this.valueComparationSwapPoints = '=';
+            }
             this.currencyValueSell = newCurrencyValueSell;
             this.currencyValueBuy = newCurrencyValueBuy;
+            this.currencySwapPoints = newCurrencySwpaPoints;
           }
         }
         if (sec < 0) {
