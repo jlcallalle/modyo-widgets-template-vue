@@ -454,7 +454,7 @@ export default {
       const tiposProductos = {
         SPOT: 'FX Spot',
         FORWARD: 'FX Forward',
-        SWAP: 'Swap',
+        SWAP: 'FX Swap',
       };
       if (tiposProductos[this.operacionSeleccionada]) return tiposProductos[this.operacionSeleccionada];
       return tiposProductos.SPOT;
