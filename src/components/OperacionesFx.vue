@@ -364,7 +364,7 @@
                       class="select-fecha"
                       :disabled="solicitarPrecio"
                       @change="setCalendarPataCorta($event)">
-                      <template v-for="(calendarOp, index) in calendarOptions">
+                      <template v-for="(calendarOp, index) in calendarOptionsPataCorta">
                         <option
                           :id="index"
                           :key="index"
@@ -472,7 +472,7 @@
                       class="select-fecha"
                       :disabled="solicitarPrecio"
                       @change="setCalendarPataLarga($event)">
-                      <template v-for="(calendarOp, index) in calendarOptions">
+                      <template v-for="(calendarOp, index) in calendarOptionsPataLarga">
                         <option
                           :id="index"
                           :key="index"
@@ -637,6 +637,8 @@ export default {
       }],
       currenciesSelected: [],
       calendarOptions: [],
+      calendarOptionsPataCorta: [],
+      calendarOptionsPataLarga: [],
       calendarSelected: null,
       calendarActive: false,
       calendarTipoSelected: null,
@@ -806,6 +808,23 @@ export default {
     remove() {
       this.calendarOptions = this.calendarOptions.filter((item) => item.Description);
     },
+    addPataCorta() {
+      this.calendarOptionsPataCorta.unshift({
+        DateValue: '', Description: '',
+      });
+      console.log('entro');
+    },
+    removePataCorta() {
+      this.calendarOptionsPataCorta = this.calendarOptionsPataCorta.filter((item) => item.Description);
+    },
+    addPataLarga() {
+      this.calendarOptionsPataLarga.unshift({
+        DateValue: '', Description: '',
+      });
+    },
+    removePataLarga() {
+      this.calendarOptionsPataLarga = this.calendarOptionsPataLarga.filter((item) => item.Description);
+    },
     onDayClick(ev) {
       this.calendarActive = true;
       const fechaCal = ev.id;
@@ -821,8 +840,9 @@ export default {
       this.calendarActive = true;
       const fechaCal = ev.id;
       this.calendarTipoPataCorta = fechaCal;
-      if (this.calendarOptions.length === 27) {
-        this.add();
+      const emptyCalendarOptions = this.calendarOptionsPataCorta.find((item) => item.Description === '');
+      if (!emptyCalendarOptions) {
+        this.addPataCorta();
       }
       this.condicionFechasSwap();
     },
@@ -830,11 +850,10 @@ export default {
       this.calendarActive = true;
       const fechaCal = ev.id;
       this.calendarTipoPataLarga = fechaCal;
-      if (this.calendarOptions.length === 27) {
-        this.add();
+      const emptyCalendarOptions = this.calendarOptionsPataLarga.find((item) => item.Description === '');
+      if (!emptyCalendarOptions) {
+        this.addPataLarga();
       }
-      this.pataCortapataLarga();
-
       this.condicionFechasSwap();
     },
     deshabilitarBotonSubmit() {
@@ -1002,6 +1021,8 @@ export default {
         // console.log('currenciesSelected', currenciesSelected);
         await this.$store.dispatch('getCalendario', currenciesSelected);
         this.calendarOptions = this.calendario;
+        this.calendarOptionsPataCorta = this.calendario;
+        this.calendarOptionsPataLarga = this.calendario;
         const spot = JSON.parse(JSON.stringify(this.calendario)).find((item) => item.Description === 'SPOT');
         if (spot) {
           this.calendarSelected = spot.date;
@@ -1060,6 +1081,8 @@ export default {
       } else if (this.operacion === 'FORWARD') {
         this.calendarSelected = this.datoFechaToday;
       } else if (this.operacion === 'SWAP') {
+        this.removePataCorta();
+        this.removePataLarga();
         this.calendarTipoPataCorta = this.datoFechaToday;
         this.calendarTipoPataLarga = this.datoFechaTomorrow;
       }
@@ -1220,6 +1243,8 @@ export default {
     },
     cancelClick() {
       this.remove();
+      this.removePataCorta();
+      this.removePataLarga();
       if (this.operacion === 'FORWARD') {
         clearInterval(this.timmerId);
         this.solicitarPrecio = false;
