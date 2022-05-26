@@ -1252,6 +1252,8 @@ export default {
       this.remove();
       this.removePataCorta();
       this.removePataLarga();
+      const findUSD = this.currenciesOptions.findIndex((item) => item.Ccy1 === 'USD' && item.Ccy2 === 'MXN');
+      this.setCurrenciesOptions({ target: { value: findUSD || 0 } });
       if (this.operacionSeleccionada === 'FORWARD') {
         clearInterval(this.timmerId);
         this.solicitarPrecio = false;
@@ -1268,7 +1270,7 @@ export default {
         this.calendarTipoPataLarga = this.calendarOptions[1].date;
       } else {
         clearInterval(this.timmerId);
-        // window.location.reload();
+        window.location.reload();
       }
     },
     async eventOperation(opcion) {
