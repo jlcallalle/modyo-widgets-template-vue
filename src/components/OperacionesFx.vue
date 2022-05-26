@@ -1122,6 +1122,7 @@ export default {
       this.tenorPataCorta = ev.target.selectedOptions[0].label;
       this.calendarTipoPataCorta = ev.target.value;
       this.condicionFechasSwap();
+      this.removePataCorta();
     },
     async getRecuperaFechaParam(date) {
       const bodyFecha = {
@@ -1148,6 +1149,7 @@ export default {
       this.tenorPataLarga = ev.target.selectedOptions[0].label;
       this.calendarTipoPataLarga = ev.target.value;
       this.condicionFechasSwap();
+      this.removePataLarga();
       this.getpataCortapataLarga();
     },
     condicionFechasSwap() {
