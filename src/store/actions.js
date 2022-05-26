@@ -281,12 +281,15 @@ export default {
     }
   },
   async fechapataCortapataLarga({ commit }, body) {
+    commit('setLoading', true);
     try {
       const data = await InvexRepository.fechapataCortapataLarga(body);
       commit('setpataCortapataLarga', data);
       return data;
     } catch (error) {
       return error;
+    } finally {
+      commit('setLoading', false);
     }
   },
 };

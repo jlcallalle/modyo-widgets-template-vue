@@ -21,7 +21,7 @@ export default {
   recuperaFecha: null,
   horario: null,
   userData: null,
-  fechapataCortapataLarga: null,
+  pataCortapataLarga: null,
   mapClientLogeo: {
     alias: 'f3853',
     CUI: '00007391',

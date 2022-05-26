@@ -686,6 +686,8 @@ export default {
         mask: 'YYYY-MM-DD',
       },
       tkn: '',
+      tenorPataCorta: 'TODAY',
+      tenorPataLarga: 'TOMORROW',
     };
   },
   computed: {
@@ -703,6 +705,7 @@ export default {
       'calendario',
       'quoteRequest',
       'operacionSeleccionada',
+      'pataCortapataLarga',
     ]),
     mostrarTwoWay() {
       return this.isTwoway;
@@ -1049,11 +1052,20 @@ export default {
     },
     async getpataCortapataLarga() {
       const bodyPataCortaPataLarga = {
-        pataCortapataLarga: this.pataCortapataLarga,
+        tenor1: this.tenorPataCorta, // this.calendarTipoPataCorta -- dia-mes-año split
+        tenor2: this.tenorPataLarga,
       };
       try {
-        await this.$store.dispatch('pataCortapata Larga', bodyPataCortaPataLarga);
+        const dataResponse = await this.$store.dispatch('fechapataCortapataLarga', bodyPataCortaPataLarga);
+        this.validateDate(dataResponse);
       } catch (error) {
+        this.showModalError = true;
+      }
+    },
+    validateDate(response) {
+      if (response.status === 'OK') {
+        this.calendarTipoPataLarga = response.data.fechaPL;
+      } else {
         this.showModalError = true;
       }
     },
@@ -1107,6 +1119,7 @@ export default {
       this.operationsSelected = ev.target.value;
     },
     async setCalendarPataCorta(ev) {
+      this.tenorPataCorta = ev.target.selectedOptions[0].label;
       this.calendarTipoPataCorta = ev.target.value;
       this.condicionFechasSwap();
     },
@@ -1132,8 +1145,10 @@ export default {
       }
     },
     async setCalendarPataLarga(ev) {
+      this.tenorPataLarga = ev.target.selectedOptions[0].label;
       this.calendarTipoPataLarga = ev.target.value;
       this.condicionFechasSwap();
+      this.getpataCortapataLarga();
     },
     condicionFechasSwap() {
       if (new Date(this.calendarTipoPataCorta) >= new Date(this.calendarTipoPataLarga)) {
