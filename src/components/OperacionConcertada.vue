@@ -747,7 +747,6 @@ export default {
       const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
       const separa = valor.split('/');
       let str = `I ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[0]} // ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[1]}`;
-      console.log('str', str);
       if (separa[0] === actual) {
         str = `I ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[0]} // ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[1]}`;
       }

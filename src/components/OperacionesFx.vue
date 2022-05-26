@@ -29,7 +29,7 @@
                   <select
                     id="tipoOperacionlSelect"
                     class="form-control"
-                    :value="operacion"
+                    :value="operacionSeleccionada"
                     :disabled="solicitarPrecio"
                     @change="seleccionarOperacion($event)">
                     <template v-for="(value, key, index) in listarOperacion">
@@ -85,7 +85,7 @@
                   </div>
                   <div class="box-precio">
                     <span
-                      v-if="operacion !== 'SWAP'"
+                      v-if="operacionSeleccionada !== 'SWAP'"
                       :class="{greenValue: valueComparationSell === '+',
                                redValue: valueComparationSell === '-'}">
                       {{ currencyValueSell }}
@@ -122,7 +122,7 @@
                   </div>
                   <div class="box-precio">
                     <span
-                      v-if="operacion !== 'SWAP'"
+                      v-if="operacionSeleccionada !== 'SWAP'"
                       :class="{greenValue: valueComparationBuy === '+',
                                redValue: valueComparationBuy === '-'}">
                       {{ currencyValueBuy }}
@@ -199,7 +199,7 @@
               </div>
             </div>
             <div
-              v-show="operacion !== 'SWAP'"
+              v-show="operacionSeleccionada !== 'SWAP'"
               class="row">
               <div class="col-12 col-md-6">
                 <div class="box-monto input-group">
@@ -283,7 +283,7 @@
                           <input
                             class="form-control input-fecha"
                             :value="inputValue"
-                            :disabled="operacion === 'SPOT' || solicitarPrecio"
+                            :disabled="operacionSeleccionada === 'SPOT' || solicitarPrecio"
                             v-on="inputEvents">
                         </template>
                       </date-picker>
@@ -305,7 +305,7 @@
               </div>
             </div>
             <div
-              v-if="operacion === 'SWAP'"
+              v-if="operacionSeleccionada === 'SWAP'"
               class="row">
               <div class="col-12 col-md-12 marginPata">
                 <p>Pata corta</p>
@@ -391,7 +391,7 @@
                           <input
                             class="form-control input-fecha"
                             :value="inputValue"
-                            :disabled="operacion === 'SPOT' || solicitarPrecio"
+                            :disabled="operacionSeleccionada === 'SPOT' || solicitarPrecio"
                             v-on="inputEvents">
                         </template>
                       </date-picker>
@@ -413,7 +413,7 @@
               </div>
             </div>
             <div
-              v-if="operacion === 'SWAP'"
+              v-if="operacionSeleccionada === 'SWAP'"
               class="row">
               <div class="col-12 col-md-12 marginPata">
                 <p>Pata larga</p>
@@ -501,7 +501,7 @@
                             class="form-control input-fecha"
                             :class="{'redValue': !fechaSwapValida}"
                             :value="inputValue"
-                            :disabled="operacion === 'SPOT' || solicitarPrecio"
+                            :disabled="operacionSeleccionada === 'SPOT' || solicitarPrecio"
                             v-on="inputEvents">
                         </template>
                       </date-picker>
@@ -732,7 +732,7 @@ export default {
       return datoFechaSeleccionada.date;
     },
     datoFechaSpot() {
-      const datoFechaSeleccionada = this.calendario.find((item) => item.Description === 'SPOT');
+      const datoFechaSeleccionada = this.calendarOptions.find((item) => item.Description === 'SPOT');
       if (!datoFechaSeleccionada) return '';
       return datoFechaSeleccionada.date;
     },
@@ -812,7 +812,6 @@ export default {
       this.calendarOptionsPataCorta.unshift({
         DateValue: '', Description: '',
       });
-      console.log('entro');
     },
     removePataCorta() {
       this.calendarOptionsPataCorta = this.calendarOptionsPataCorta.filter((item) => item.Description);
@@ -830,9 +829,10 @@ export default {
       const fechaCal = ev.id;
       this.calendarSelected = fechaCal;
       const dataSpot = this.datoFechaSpot;
+      const emptyCalendarOption = this.calendarOptions.find((item) => item.Description === '');
       if (fechaCal === dataSpot) {
         this.seleccionarOperacion({ target: { value: 'SPOT' } });
-      } else if (this.calendarOptions.length === 27) {
+      } else if (!emptyCalendarOption) {
         this.add();
       }
     },
@@ -859,7 +859,7 @@ export default {
     deshabilitarBotonSubmit() {
       const horarioStatus = this.horario ? this.horario.status : '';
       if (this.calendarOptions.length === 0 || horarioStatus === 'offline' || !this.fechaSwapValida) return true;
-      if (this.operacion === 'SWAP') {
+      if (this.operacionSeleccionada === 'SWAP') {
         return this.montoPataCorta === 0 || this.montoPataCorta === '0' || this.montoPataCorta === null || this.montoPataLarga === 0 || this.montoPataLarga === '0' || this.montoPataLarga === null;
       }
       if (this.calendarSelected === '') return true;
@@ -903,8 +903,8 @@ export default {
         const pataCorta = this.calendarTipoPataCorta ? this.calendarTipoPataCorta.replace(/-/g, '') : '';
         const pataLarga = this.calendarTipoPataLarga ? this.calendarTipoPataLarga.replace(/-/g, '') : '';
         const sideValue = this.optionSelected === 'Twoway' ? 'Twoway' : opSide;
-        const monto = this.operacion === 'SWAP' ? this.montoPataCorta : this.monto;
-        const dateBody = this.operacion === 'SWAP' ? pataCorta : tomorrow;
+        const monto = this.operacionSeleccionada === 'SWAP' ? this.montoPataCorta : this.monto;
+        const dateBody = this.operacionSeleccionada === 'SWAP' ? pataCorta : tomorrow;
         const body = {
           ProductType: 'FX_STD',
           NoRelatedSym: [{
@@ -912,11 +912,11 @@ export default {
             Side: sideValue,
             OrderQty: monto.toString(),
             SettlDate: dateBody,
-            OrderQty2: this.operacion === 'SWAP' ? this.montoPataLarga : null,
-            SettlDate2: this.operacion === 'SWAP' ? pataLarga : null,
+            OrderQty2: this.operacionSeleccionada === 'SWAP' ? this.montoPataLarga : null,
+            SettlDate2: this.operacionSeleccionada === 'SWAP' ? pataLarga : null,
             Currency: this.currencySelected,
             Account: 'INVEXCOMP.TEST',
-            OperationName: this.operacion,
+            OperationName: this.operacionSeleccionada,
           }],
         };
         this.$store.dispatch('setLoading', true);
@@ -950,7 +950,7 @@ export default {
         clearInterval(this.timmerId);
       } else {
         this.segundosTimmer = 59;
-        switch (this.operacion) {
+        switch (this.operacionSeleccionada) {
           case 'SPOT':
             await this.onSumbitOperacion();
             break;
@@ -1036,10 +1036,10 @@ export default {
         } else if (this.calendarOptions.length > 0) {
           this.calendarSelected = this.calendarOptions[0].date;
         }
-        if (this.operacion === 'FORWARD') {
+        if (this.operacionSeleccionada === 'FORWARD') {
           this.calendarSelected = this.calendarOptions[0].date;
         }
-        if (this.operacion === 'SWAP') {
+        if (this.operacionSeleccionada === 'SWAP') {
           this.calendarTipoPataCorta = this.calendarOptions[0].date;
           this.calendarTipoPataLarga = this.calendarOptions[1].date;
         }
@@ -1079,15 +1079,15 @@ export default {
     seleccionarOperacion(ev) {
       this.fechaSwapValida = true;
       this.$store.dispatch('updateOperacionSeleccionada', ev.target.value);
-      this.operacion = ev.target.value;
-      if (this.operacion === 'SPOT') {
+      // this.operacion = ev.target.value;
+      if (this.operacionSeleccionada === 'SPOT') {
         this.calendarSelected = this.datoFechaSpot;
         if (this.calendarActive === true) {
           this.remove();
         }
-      } else if (this.operacion === 'FORWARD') {
+      } else if (this.operacionSeleccionada === 'FORWARD') {
         this.calendarSelected = this.datoFechaToday;
-      } else if (this.operacion === 'SWAP') {
+      } else if (this.operacionSeleccionada === 'SWAP') {
         this.removePataCorta();
         this.removePataLarga();
         this.calendarTipoPataCorta = this.datoFechaToday;
@@ -1148,13 +1148,13 @@ export default {
       if (opcionCalendario) {
         if (opcionCalendario.Description === 'SPOT') {
           this.$store.dispatch('updateOperacionSeleccionada', 'SPOT');
-          this.operacion = 'SPOT';
+          // this.operacion = 'SPOT';
           if (this.calendarActive) {
             this.remove();
           }
         } else {
           this.$store.dispatch('updateOperacionSeleccionada', 'FORWARD');
-          this.operacion = 'FORWARD';
+          // this.operacion = 'FORWARD';
           this.remove();
         }
         this.calendarTipoSelected = opcionCalendario.Description;
@@ -1205,7 +1205,7 @@ export default {
         sec -= 1;
         if (sec % segundosPorPeticion === 0) {
           const opName = this.optionSelected === 'Twoway' ? 'Twoway' : this.opSide;
-          const rsp = await this.$store.dispatch('getQuote', { quoteId: this.qQuoteReqID, opSide: opName, operationName: this.operacion });
+          const rsp = await this.$store.dispatch('getQuote', { quoteId: this.qQuoteReqID, opSide: opName, operationName: this.operacionSeleccionada });
           if (rsp.DataIdentifier === 7) {
             const rspMsg = JSON.parse(rsp.Message);
             this.qQuoteReqID = rspMsg.QuoteReqID;
@@ -1252,12 +1252,12 @@ export default {
       this.remove();
       this.removePataCorta();
       this.removePataLarga();
-      if (this.operacion === 'FORWARD') {
+      if (this.operacionSeleccionada === 'FORWARD') {
         clearInterval(this.timmerId);
         this.solicitarPrecio = false;
         this.monto = '0';
         this.calendarSelected = this.datoFechaToday;
-      } else if (this.operacion === 'SWAP') {
+      } else if (this.operacionSeleccionada === 'SWAP') {
         clearInterval(this.timmerId);
         this.solicitarPrecio = false;
         this.monto = '0';
@@ -1266,10 +1266,8 @@ export default {
         this.calendarSelected = this.datoFechaToday;
         this.calendarTipoPataCorta = this.calendarOptions[0].date;
         this.calendarTipoPataLarga = this.calendarOptions[1].date;
-        console.log('calendarTipoPataLarga', this.calendarTipoPataLarga);
       } else {
         clearInterval(this.timmerId);
-        console.log('this.operacionSelecionada', this.operacion);
         // window.location.reload();
       }
     },
@@ -1281,28 +1279,28 @@ export default {
       }
       const currenciesSelected = this.currenciesSelected.join('/');
       const tomorrow = this.calendarSelected.replace(/-/g, '');
-      const monto = this.operacion === 'SWAP' ? this.montoPataCorta : this.monto;
-      const fechaPataCorta = this.operacion === 'SWAP' ? this.calendarTipoPataCorta.replace(/-/g, '') : '';
-      const fechaPataLarga = this.operacion === 'SWAP' ? this.calendarTipoPataLarga.replace(/-/g, '') : '';
+      const monto = this.operacionSeleccionada === 'SWAP' ? this.montoPataCorta : this.monto;
+      const fechaPataCorta = this.operacionSeleccionada === 'SWAP' ? this.calendarTipoPataCorta.replace(/-/g, '') : '';
+      const fechaPataLarga = this.operacionSeleccionada === 'SWAP' ? this.calendarTipoPataLarga.replace(/-/g, '') : '';
       const bodyConcertacion = {
         Account: this.wsAccount,
         CLOrdID: this.qQuoteReqID,
         Currency: this.currencySelected,
         OrderQty: monto.toString(),
-        OrderQty2: this.operacion === 'SWAP' ? this.montoPataLarga.toString() : null,
+        OrderQty2: this.operacionSeleccionada === 'SWAP' ? this.montoPataLarga.toString() : null,
         OrderType: this.orderType,
         Price: this.opSide === 'Buy' ? this.currencyValueBuy : this.currencyValueSell,
         QuoteID: this.qQuoteID,
-        SettlDate: this.operacion === 'SWAP' ? fechaPataCorta : tomorrow,
-        SettlDate2: this.operacion === 'SWAP' ? fechaPataLarga : null,
+        SettlDate: this.operacionSeleccionada === 'SWAP' ? fechaPataCorta : tomorrow,
+        SettlDate2: this.operacionSeleccionada === 'SWAP' ? fechaPataLarga : null,
         Side: this.opSide,
         Symbol: currenciesSelected,
-        Product: this.operacion,
+        Product: this.operacionSeleccionada,
         TransactionId: this.qQuoteReqID,
         RequestSystem: 'PORTALFX',
       };
       let fechaCatalogoSeleccionada = null;
-      if (this.operacion === 'SWAP') {
+      if (this.operacionSeleccionada === 'SWAP') {
         const opcionPC = JSON.parse(JSON.stringify(this.calendario)).find((e) => e.date === this.calendarTipoPataCorta);
         if (opcionPC) {
           fechaCatalogoSeleccionada = opcionPC.Description;
@@ -1317,7 +1315,7 @@ export default {
       }
       clearInterval(this.timmerId);
       this.$store.dispatch('updateFechaCatalogoSeleccionada', fechaCatalogoSeleccionada);
-      this.$store.dispatch('updateOperacionSeleccionada', this.operacion);
+      // this.$store.dispatch('updateOperacionSeleccionada', this.operacion);
       this.$store.dispatch('updateOperacionPataCorta', this.tipoFechaPataCorta);
       this.$store.dispatch('updateOperacionPataLarga', this.tipoFechaPataLarga);
       // eslint-disable-next-line no-console
