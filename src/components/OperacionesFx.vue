@@ -935,6 +935,13 @@ export default {
         this.startTimer();
       } catch (err) {
         // console.log(err);
+        this.customModalProps.open = true;
+        this.customModalProps.title = 'Error en su solicitud';
+        this.customModalProps.message = 'Intente de nuevo';
+        this.customModalProps.type = 'warning';
+        this.customModalProps.btnAcceptText = 'Aceptar';
+        this.customModalProps.btnCloseHide = true;
+        this.customModalProps.btnAcceptFunc = this.closeModal;
       }
     },
     async onSubmit() {
