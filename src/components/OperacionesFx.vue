@@ -1078,9 +1078,16 @@ export default {
       }
     },
     validateDate(response) {
-      console.log(response);
       if (response.status === 'OK') {
-        this.calendarTipoPataLarga = response.data.fechaPL;
+        // this.calendarTipoPataLarga = response.data.fechaPL;
+        this.calendarOptionsPataLarga = this.calendarOptionsPataLarga.map((item) => {
+          const itemValue = JSON.parse(JSON.stringify(item));
+          if (itemValue.Description === this.tenorPataLarga) {
+            itemValue.date = response.data.fechaPL;
+            this.calendarTipoPataLarga = response.data.fechaPL;
+          }
+          return itemValue;
+        });
       } else {
         this.showModalError = true;
       }
