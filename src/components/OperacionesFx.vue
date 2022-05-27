@@ -614,6 +614,7 @@ export default {
   },
   data() {
     return {
+      isFromCalendar: false,
       dataTwoWay: null,
       progress: 100,
       timeLeft: '00:60',
@@ -843,6 +844,7 @@ export default {
       this.calendarActive = true;
       const fechaCal = ev.id;
       this.calendarTipoPataCorta = fechaCal;
+      this.isFromCalendar = true;
       const emptyCalendarOptions = this.calendarOptionsPataCorta.find((item) => item.Description === '');
       if (!emptyCalendarOptions) {
         this.addPataCorta();
@@ -1051,10 +1053,23 @@ export default {
       }
     },
     async getpataCortapataLarga() {
-      const bodyPataCortaPataLarga = {
-        tenor1: this.tenorPataCorta, // this.calendarTipoPataCorta -- dia-mes-año split
-        tenor2: this.tenorPataLarga,
-      };
+      let bodyPataCortaPataLarga = null;
+      if (this.calendarTipoPataCorta && this.isFromCalendar) {
+        const arrayDate = this.calendarTipoPataCorta.split('-');
+        bodyPataCortaPataLarga = {
+          tenor1: '',
+          tenor2: this.tenorPataLarga,
+          fechaIPC: `${arrayDate[2]}-${arrayDate[1]}-${arrayDate[0]}`,
+          fechaIPL: '',
+        };
+      } else {
+        bodyPataCortaPataLarga = {
+          tenor1: this.tenorPataCorta,
+          tenor2: this.tenorPataLarga,
+          fechaIPC: '',
+          fechaIPL: '',
+        };
+      }
       try {
         const dataResponse = await this.$store.dispatch('fechapataCortapataLarga', bodyPataCortaPataLarga);
         this.validateDate(dataResponse);
@@ -1063,6 +1078,7 @@ export default {
       }
     },
     validateDate(response) {
+      console.log(response);
       if (response.status === 'OK') {
         this.calendarTipoPataLarga = response.data.fechaPL;
       } else {
@@ -1119,6 +1135,7 @@ export default {
       this.operationsSelected = ev.target.value;
     },
     async setCalendarPataCorta(ev) {
+      this.isFromCalendar = false;
       this.tenorPataCorta = ev.target.selectedOptions[0].label;
       this.calendarTipoPataCorta = ev.target.value;
       this.condicionFechasSwap();
