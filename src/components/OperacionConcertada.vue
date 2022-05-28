@@ -221,7 +221,7 @@
           class="col-md-12 col-xl-4 box-sidebar-spot">
           <div class="box-cuentas-liquidacion">
             <h2 class="mb-4">
-              Instrucciones de liquidacion
+              Instrucciones de liquidación
             </h2>
             <p>Seleccionar cuentas</p>
             <form @submit.prevent="onSubmit">
