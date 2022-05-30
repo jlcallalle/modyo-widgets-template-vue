@@ -850,6 +850,7 @@ export default {
         this.addPataCorta();
       }
       this.condicionFechasSwap();
+      this.getpataCortapataLarga();
     },
     async onDayClickPataLarga(ev) {
       this.calendarActive = true;
@@ -1079,13 +1080,14 @@ export default {
     },
     validateDate(response) {
       if (response.status === 'OK') {
-        // this.calendarTipoPataLarga = response.data.fechaPL;
+        this.calendarTipoPataCorta = response.data.fechaPC;
         this.calendarOptionsPataLarga = this.calendarOptionsPataLarga.map((item) => {
           const itemValue = JSON.parse(JSON.stringify(item));
           if (itemValue.Description === this.tenorPataLarga) {
             itemValue.date = response.data.fechaPL;
             this.calendarTipoPataLarga = response.data.fechaPL;
           }
+          this.condicionFechasSwap();
           return itemValue;
         });
       } else {
@@ -1147,6 +1149,7 @@ export default {
       this.calendarTipoPataCorta = ev.target.value;
       this.condicionFechasSwap();
       this.removePataCorta();
+      this.getpataCortapataLarga();
     },
     async getRecuperaFechaParam(date) {
       const bodyFecha = {
