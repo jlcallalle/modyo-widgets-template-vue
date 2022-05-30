@@ -1080,11 +1080,11 @@ export default {
     },
     validateDate(response) {
       if (response.status === 'OK') {
-        this.calendarTipoPataCorta = response.data.fechaPC;
         this.calendarOptionsPataLarga = this.calendarOptionsPataLarga.map((item) => {
           const itemValue = JSON.parse(JSON.stringify(item));
           if (itemValue.Description === this.tenorPataLarga) {
             itemValue.date = response.data.fechaPL;
+            itemValue.Description = response.data.PataLarga;
             this.calendarTipoPataLarga = response.data.fechaPL;
           }
           this.condicionFechasSwap();
