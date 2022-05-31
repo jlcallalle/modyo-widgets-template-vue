@@ -850,7 +850,7 @@ export default {
       if (!emptyCalendarOptions) {
         this.addPataCorta();
       }
-      this.calendarOptionsPataCorta = this.calendario;
+      // this.calendarOptionsPataCorta = this.calendario;
       this.condicionFechasSwap();
       if (this.fechaSwapValida) {
         this.getpataCortapataLarga();
@@ -864,11 +864,7 @@ export default {
       if (!emptyCalendarOptions) {
         this.addPataLarga();
       }
-      this.calendarOptionsPataLarga = this.calendario;
       this.condicionFechasSwap();
-      if (this.fechaSwapValida) {
-        this.getpataCortapataLarga();
-      }
     },
     deshabilitarBotonSubmit() {
       const horarioStatus = this.horario ? this.horario.status : '';
