@@ -850,7 +850,7 @@ export default {
       if (!emptyCalendarOptions) {
         this.addPataCorta();
       }
-      // this.calendarOptionsPataCorta = this.calendario;
+      this.calendarOptionsPataCorta = this.calendario;
       this.condicionFechasSwap();
       if (this.fechaSwapValida) {
         this.getpataCortapataLarga();
@@ -864,7 +864,7 @@ export default {
       if (!emptyCalendarOptions) {
         this.addPataLarga();
       }
-      // this.calendarOptionsPataLarga = this.calendario;
+      this.calendarOptionsPataLarga = this.calendario;
       this.condicionFechasSwap();
       if (this.fechaSwapValida) {
         this.getpataCortapataLarga();
@@ -1166,7 +1166,7 @@ export default {
       this.isFromCalendar = false;
       this.tenorPataCorta = ev.target.selectedOptions[0].label;
       this.calendarTipoPataCorta = ev.target.value;
-      // this.calendarOptionsPataCorta = this.calendario;
+      this.calendarOptionsPataCorta = this.calendario;
       this.condicionFechasSwap();
       this.removePataCorta();
       if (this.fechaSwapValida) {
@@ -1197,7 +1197,7 @@ export default {
     async setCalendarPataLarga(ev) {
       this.tenorPataLarga = ev.target.selectedOptions[0].label;
       this.calendarTipoPataLarga = ev.target.value;
-      // this.calendarOptionsPataLarga = this.calendario;
+      this.calendarOptionsPataLarga = this.calendario;
       this.condicionFechasSwap();
       if (this.fechaSwapValida) {
         this.getpataCortapataLarga();
