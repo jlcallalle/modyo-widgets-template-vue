@@ -850,8 +850,11 @@ export default {
       if (!emptyCalendarOptions) {
         this.addPataCorta();
       }
+      // this.calendarOptionsPataCorta = this.calendario;
       this.condicionFechasSwap();
-      this.getpataCortapataLarga();
+      if (this.fechaSwapValida) {
+        this.getpataCortapataLarga();
+      }
     },
     async onDayClickPataLarga(ev) {
       this.calendarActive = true;
@@ -861,7 +864,11 @@ export default {
       if (!emptyCalendarOptions) {
         this.addPataLarga();
       }
+      // this.calendarOptionsPataLarga = this.calendario;
       this.condicionFechasSwap();
+      if (this.fechaSwapValida) {
+        this.getpataCortapataLarga();
+      }
     },
     deshabilitarBotonSubmit() {
       const horarioStatus = this.horario ? this.horario.status : '';
@@ -1159,9 +1166,12 @@ export default {
       this.isFromCalendar = false;
       this.tenorPataCorta = ev.target.selectedOptions[0].label;
       this.calendarTipoPataCorta = ev.target.value;
+      // this.calendarOptionsPataCorta = this.calendario;
       this.condicionFechasSwap();
       this.removePataCorta();
-      this.getpataCortapataLarga();
+      if (this.fechaSwapValida) {
+        this.getpataCortapataLarga();
+      }
     },
     async getRecuperaFechaParam(date) {
       const bodyFecha = {
@@ -1187,9 +1197,12 @@ export default {
     async setCalendarPataLarga(ev) {
       this.tenorPataLarga = ev.target.selectedOptions[0].label;
       this.calendarTipoPataLarga = ev.target.value;
+      // this.calendarOptionsPataLarga = this.calendario;
       this.condicionFechasSwap();
+      if (this.fechaSwapValida) {
+        this.getpataCortapataLarga();
+      }
       this.removePataLarga();
-      this.getpataCortapataLarga();
     },
     condicionFechasSwap() {
       if (new Date(this.calendarTipoPataCorta) >= new Date(this.calendarTipoPataLarga)) {
