@@ -689,6 +689,7 @@ export default {
       tkn: '',
       tenorPataCorta: 'TODAY',
       tenorPataLarga: 'TOMORROW',
+      customDate: '2022-06-07',
     };
   },
   computed: {
@@ -1080,12 +1081,14 @@ export default {
     },
     validateDate(response) {
       if (response.status === 'OK') {
+        const pataLargaResponse = response.data.fechaPL;
+        this.findDateAndReplace(pataLargaResponse);
         this.calendarOptionsPataLarga = this.calendarOptionsPataLarga.map((item) => {
           const itemValue = JSON.parse(JSON.stringify(item));
           if (itemValue.Description === this.tenorPataLarga) {
-            itemValue.date = response.data.fechaPL;
+            itemValue.date = pataLargaResponse;
             itemValue.Description = response.data.PataLarga;
-            this.calendarTipoPataLarga = response.data.fechaPL;
+            this.calendarTipoPataLarga = pataLargaResponse;
           }
           this.condicionFechasSwap();
           return itemValue;
@@ -1093,6 +1096,15 @@ export default {
       } else {
         this.showModalError = true;
       }
+    },
+    findDateAndReplace(dateToReplace) {
+      this.calendarOptionsPataLarga = this.calendarOptionsPataLarga.map((item) => {
+        const itemValue = JSON.parse(JSON.stringify(item));
+        if (itemValue.date === dateToReplace) {
+          itemValue.date = this.customDate;
+        }
+        return itemValue;
+      });
     },
     setMonto(ev) {
       this.monto = ev;
