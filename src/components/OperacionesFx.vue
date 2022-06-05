@@ -1145,6 +1145,7 @@ export default {
         this.calendarTipoPataCorta = this.datoFechaToday;
         this.calendarTipoPataLarga = this.datoFechaTomorrow;
       }
+      this.cancelClick();
     },
     setCurrencySelected(ev) {
       this.currencySelected = ev.target.value;
@@ -1314,28 +1315,26 @@ export default {
       this.timmerId = timer;
     },
     cancelClick() {
+      clearInterval(this.timmerId);
       this.remove();
       this.removePataCorta();
       this.removePataLarga();
+      this.solicitarPrecio = false;
+      this.monto = '0';
       const findUSD = this.currenciesOptions.findIndex((item) => item.Ccy1 === 'USD' && item.Ccy2 === 'MXN');
       this.setCurrenciesOptions({ target: { value: findUSD || 0 } });
       if (this.operacionSeleccionada === 'FORWARD') {
-        clearInterval(this.timmerId);
-        this.solicitarPrecio = false;
-        this.monto = '0';
         this.calendarSelected = this.datoFechaToday;
       } else if (this.operacionSeleccionada === 'SWAP') {
-        clearInterval(this.timmerId);
-        this.solicitarPrecio = false;
-        this.monto = '0';
         this.montoPataCorta = '0';
         this.montoPataLarga = '0';
         this.calendarSelected = this.datoFechaToday;
-        this.calendarTipoPataCorta = this.calendarOptions[0].date;
-        this.calendarTipoPataLarga = this.calendarOptions[1].date;
+        if (this.calendarOptions) {
+          this.calendarTipoPataCorta = this.calendarOptions[0].date;
+          this.calendarTipoPataLarga = this.calendarOptions[1].date;
+        }
       } else {
-        clearInterval(this.timmerId);
-        window.location.reload();
+        this.calendarSelected = this.datoFechaSpot;
       }
     },
     async eventOperation(opcion) {
