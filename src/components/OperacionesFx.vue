@@ -92,10 +92,10 @@
                     </span>
                     <span
                       v-else
-                      :class="{greenValue: valueComparationSwapPoints === '+',
-                               redValue: valueComparationSwapPoints === '-'}">
+                      :class="{greenValue: valueComparationSwapPointsSell === '+',
+                               redValue: valueComparationSwapPointsSell === '-'}">
                       <!-- eslint-disable-next-line max-len -->
-                      {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 } ).format(formatSwapPoints) }}
+                      {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 } ).format(formatSwapPointsSell) }}
                     </span>
                   </div>
                   <button
@@ -129,10 +129,10 @@
                     </span>
                     <span
                       v-else
-                      :class="{greenValue: valueComparationSwapPoints === '+',
-                               redValue: valueComparationSwapPoints === '-'}">
+                      :class="{greenValue: valueComparationSwapPointsBuy === '+',
+                               redValue: valueComparationSwapPointsBuy === '-'}">
                       <!-- eslint-disable-next-line max-len -->
-                      {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 } ).format(formatSwapPoints) }}
+                      {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 } ).format(formatSwapPointsBuy) }}
                     </span>
                   </div>
                   <button
@@ -656,10 +656,12 @@ export default {
       // loading: true,
       currencyValueBuy: '',
       currencyValueSell: '',
-      currencySwapPoints: '',
+      currencySwapPointsSell: '',
+      currencySwapPointsBuy: '',
       valueComparationBuy: '',
       valueComparationSell: '',
-      valueComparationSwapPoints: '',
+      valueComparationSwapPointsSell: '',
+      valueComparationSwapPointsBuy: '',
       isBuy: false,
       wsAccount: 'INVEXCOMP.TEST',
       // qrCLOrdID: 'INVEXCOMP.TEST-00020220209124801190',
@@ -755,9 +757,13 @@ export default {
       const dateArr = this.calendarSelected.split('-');
       return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
     },
-    formatSwapPoints() {
-      const swapPoints = this.currencySwapPoints;
-      return Math.floor(swapPoints * 10000) / 10000;
+    formatSwapPointsSell() {
+      const swapPointsSell = this.currencySwapPointsSell;
+      return Math.floor(swapPointsSell * 10000) / 10000;
+    },
+    formatSwapPointsBuy() {
+      const swapPointsBuy = this.currencySwapPointsBuy;
+      return Math.floor(swapPointsBuy * 10000) / 10000;
     },
   },
   async mounted() {
@@ -901,7 +907,8 @@ export default {
         // }
         this.valueComparationSell = '';
         this.valueComparationBuy = '';
-        this.valueComparationSwapPoints = '';
+        this.valueComparationSwapPointsSell = '';
+        this.valueComparationSwapPointsBuy = '';
         this.opSide = opSide;
         const currenciesSelected = this.currenciesSelected.join('/');
         const tomorrow = this.calendarSelected.replace(/-/g, '');
@@ -933,7 +940,8 @@ export default {
         this.$store.dispatch('setQuoteRequest', rspMsg);
         this.currencyValueSell = rspMsg.SellPrice;
         this.currencyValueBuy = rspMsg.BuyPrice;
-        this.currencySwapPoints = rspMsg.SwapPoints;
+        this.currencySwapPointsSell = rspMsg.SwapPointsSell;
+        this.currencySwapPointsBuy = rspMsg.SwapPointsBuy;
         this.qQuoteID = rspMsg.QuoteID;
         this.qQuoteReqID = rspMsg.QuoteReqID;
         this.solicitarPrecio = true;
@@ -1253,7 +1261,8 @@ export default {
             this.qQuoteID = rspMsg.QuoteID;
             const newCurrencyValueSell = rspMsg.SellPrice;
             const newCurrencyValueBuy = rspMsg.BuyPrice;
-            const newCurrencySwpaPoints = rspMsg.SwapPoints;
+            const newCurrencySwpaPointsSell = rspMsg.SwapPointsSell;
+            const newCurrencySwpaPointsBuy = rspMsg.SwapPointsBuy;
             if (Number(newCurrencyValueSell) > Number(this.currencyValueSell)) {
               this.valueComparationSell = '+';
             } else if (Number(newCurrencyValueSell) < Number(this.currencyValueSell)) {
@@ -1268,16 +1277,24 @@ export default {
             } else {
               this.valueComparationBuy = '=';
             }
-            if (Number(newCurrencySwpaPoints) > Number(this.currencySwapPoints)) {
-              this.valueComparationSwapPoints = '+';
-            } else if (Number(newCurrencySwpaPoints) < Number(this.currencySwapPoints)) {
-              this.valueComparationSwapPoints = '-';
+            if (Number(newCurrencySwpaPointsSell) > Number(this.currencySwapPointsSell)) {
+              this.valueComparationSwapPointsSell = '+';
+            } else if (Number(newCurrencySwpaPointsSell) < Number(this.currencySwapPointsSell)) {
+              this.valueComparationSwapPointsSell = '-';
             } else {
-              this.valueComparationSwapPoints = '=';
+              this.valueComparationSwapPointsSell = '=';
+            }
+            if (Number(newCurrencySwpaPointsBuy) > Number(this.currencySwapPointsBuy)) {
+              this.valueComparationSwapPointsBuy = '+';
+            } else if (Number(newCurrencySwpaPointsBuy) < Number(this.currencySwapPointsBuy)) {
+              this.valueComparationSwapPointsBuy = '-';
+            } else {
+              this.valueComparationSwapPointsBuy = '=';
             }
             this.currencyValueSell = newCurrencyValueSell;
             this.currencyValueBuy = newCurrencyValueBuy;
-            this.currencySwapPoints = newCurrencySwpaPoints;
+            this.currencySwapPointsSell = newCurrencySwpaPointsSell;
+            this.currencySwapPointsBuy = newCurrencySwpaPointsBuy;
           }
         }
         if (sec < 0) {

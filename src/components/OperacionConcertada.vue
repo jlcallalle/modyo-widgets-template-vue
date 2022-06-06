@@ -190,9 +190,16 @@
                       <tr
                         v-if="operacionSeleccionada == 'SWAP'"
                         class="texto-color">
-                        <td>Swap Points</td>
+                        <td>Swap PointsSell</td>
                         <td>
-                          {{ calcSwapPoints }}
+                          {{ calcSwapPointsSell }}
+                        </td>
+                      </tr><tr
+                        v-if="operacionSeleccionada == 'SWAP'"
+                        class="texto-color">
+                        <td>Swap PointsBuy</td>
+                        <td>
+                          {{ calcSwapPointsBuy }}
                         </td>
                       </tr>
                     </tbody>
@@ -431,7 +438,14 @@ export default {
       const totalFixed = total.toFixed(3);
       return totalFixed;
     },
-    calcSwapPoints() {
+    calcSwapPointsSell() {
+      const nearPoint = this.calcNearPoints;
+      const farPoint = this.calcFaroints;
+      const total = farPoint - nearPoint;
+      const totalFixed = total.toFixed(3);
+      return totalFixed;
+    },
+    calcSwapPointsBuy() {
       const nearPoint = this.calcNearPoints;
       const farPoint = this.calcFaroints;
       const total = farPoint - nearPoint;
