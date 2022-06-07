@@ -13,7 +13,7 @@ export default {
     return InvexClient.get(`${prefixUrl}/lista-operaciones?network=${network}`);
   },
   // eslint-disable-next-line no-unused-vars
-  getCalendar(CustomerID = '', CurrencyPair = 'EUR/USD') {
+  getCalendar(CustomerID = 'INVEXCOM.TEST', CurrencyPair = 'EUR/USD') {
     return InvexClient.post(`${prefixUrl}/Calend`, {
       CustomerID,
       CurrencyPair,

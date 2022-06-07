@@ -54,7 +54,7 @@
                       </tr>
                       <tr>
                         <td>Provider / Trader</td>
-                        <td>{{ crearOperacionConcertada.SecurityID }} </td>
+                        <td>INVEX.TEST</td>
                       </tr>
                       <tr>
                         <td>Status</td>
@@ -390,6 +390,7 @@ export default {
     ...mapState(['operacionPataCorta']),
     ...mapState(['operacionPataLarga']),
     ...mapState(['fechaCatalogoSeleccionada']),
+    ...mapState(['userData']),
     tipoOperacion() {
       return this.$store.state.crearOperacionConcertada.Side;
     },
@@ -641,9 +642,11 @@ export default {
           userId: 'PORTALUSR',
           branch: '001',
           sourceUserId: 'PORTALUSR',
-          CustomerNumber: '00004635',
+          CustomerNumber: this.userData.data.CUI,
+          // CustomerNumber: '00004635',
           Type: 'CE',
-          InternetFolio: '3853',
+          InternetFolio: this.userData.data.internetFolio,
+          // InternetFolio: '3853',
           AllowOperate: 'T',
           Currency: await this.getLogicCurrencies(),
         };
@@ -672,9 +675,11 @@ export default {
           userId: 'FXUSR',
           branch: '001',
           sourceUserId: 'FXUSR',
-          CustomerNumber: '00004635',
+          CustomerNumber: this.userData.data.CUI,
+          // CustomerNumber: '00004635',
           Type: 'CE',
-          InternetFolio: '3853',
+          InternetFolio: this.userData.data.internetFolio,
+          // InternetFolio: '3853',
           AllowOperate: 'S',
           Currency: await this.getLogicCurrencies(true),
           SameBank: false,

@@ -111,10 +111,10 @@ export default {
     }
   },
 
-  async getCalendario({ commit }, currency) {
+  async getCalendario({ commit }, currency, user360T) {
     commit('setLoading', true);
     try {
-      const response = await InvexRepository.getCalendar('INVEXCOM.TEST', currency);
+      const response = await InvexRepository.getCalendar(user360T, currency);
       const infos = JSON.parse(response.Message);
       const cal = infos.map((e) => ({
         ...e,

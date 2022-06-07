@@ -932,7 +932,7 @@ export default {
             OrderQty2: this.operacionSeleccionada === 'SWAP' ? this.montoPataLarga : null,
             SettlDate2: this.operacionSeleccionada === 'SWAP' ? pataLarga : null,
             Currency: this.currencySelected,
-            Account: 'INVEXCOMP.TEST',
+            Account: this.userData.data.user360T,
             OperationName: this.operacionSeleccionada,
           }],
         };
@@ -962,7 +962,7 @@ export default {
         this.customModalProps.btnAcceptFunc = this.closeModal;
       }
     },
-    async onSubmit() {
+    async onSubmit() { 
       if (this.solicitarPrecio) {
         this.solicitarPrecio = false;
         clearInterval(this.timmerId);
@@ -1044,7 +1044,7 @@ export default {
       try {
         const currenciesSelected = this.currenciesSelected.join('/');
         // console.log('currenciesSelected', currenciesSelected);
-        await this.$store.dispatch('getCalendario', currenciesSelected);
+        await this.$store.dispatch('getCalendario', currenciesSelected, this.userData.data.user360T);
         this.calendarOptions = this.calendario;
         this.calendarOptionsPataCorta = this.calendario;
         this.calendarOptionsPataLarga = this.calendario;
@@ -1366,7 +1366,7 @@ export default {
       const fechaPataCorta = this.operacionSeleccionada === 'SWAP' ? this.calendarTipoPataCorta.replace(/-/g, '') : '';
       const fechaPataLarga = this.operacionSeleccionada === 'SWAP' ? this.calendarTipoPataLarga.replace(/-/g, '') : '';
       const bodyConcertacion = {
-        Account: this.wsAccount,
+        Account: this.userData.data.user360T,
         CLOrdID: this.qQuoteReqID,
         Currency: this.currencySelected,
         OrderQty: monto.toString(),
@@ -1381,6 +1381,7 @@ export default {
         Product: this.operacionSeleccionada,
         TransactionId: this.qQuoteReqID,
         RequestSystem: 'PORTALFX',
+        InternetFolio: this.userData.data.internetFolio,
       };
       let fechaCatalogoSeleccionada = null;
       if (this.operacionSeleccionada === 'SWAP') {
