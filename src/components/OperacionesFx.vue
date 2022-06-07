@@ -962,7 +962,7 @@ export default {
         this.customModalProps.btnAcceptFunc = this.closeModal;
       }
     },
-    async onSubmit() { 
+    async onSubmit() {
       if (this.solicitarPrecio) {
         this.solicitarPrecio = false;
         clearInterval(this.timmerId);
