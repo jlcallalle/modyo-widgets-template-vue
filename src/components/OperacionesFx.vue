@@ -691,6 +691,7 @@ export default {
       tkn: '',
       tenorPataCorta: 'TODAY',
       tenorPataLarga: 'TOMORROW',
+      customDate: '2022-06-07',
     };
   },
   computed: {
@@ -855,7 +856,11 @@ export default {
       if (!emptyCalendarOptions) {
         this.addPataCorta();
       }
+      // this.calendarOptionsPataCorta = this.calendario;
       this.condicionFechasSwap();
+      if (this.fechaSwapValida) {
+        this.getpataCortapataLarga();
+      }
     },
     async onDayClickPataLarga(ev) {
       this.calendarActive = true;
@@ -1087,18 +1092,30 @@ export default {
     },
     validateDate(response) {
       if (response.status === 'OK') {
-        // this.calendarTipoPataLarga = response.data.fechaPL;
+        const pataLargaResponse = response.data.fechaPL;
+        this.findDateAndReplace(pataLargaResponse);
         this.calendarOptionsPataLarga = this.calendarOptionsPataLarga.map((item) => {
           const itemValue = JSON.parse(JSON.stringify(item));
           if (itemValue.Description === this.tenorPataLarga) {
-            itemValue.date = response.data.fechaPL;
-            this.calendarTipoPataLarga = response.data.fechaPL;
+            itemValue.date = pataLargaResponse;
+            itemValue.Description = response.data.PataLarga;
+            this.calendarTipoPataLarga = pataLargaResponse;
           }
+          this.condicionFechasSwap();
           return itemValue;
         });
       } else {
         this.showModalError = true;
       }
+    },
+    findDateAndReplace(dateToReplace) {
+      this.calendarOptionsPataLarga = this.calendarOptionsPataLarga.map((item) => {
+        const itemValue = JSON.parse(JSON.stringify(item));
+        if (itemValue.date === dateToReplace) {
+          itemValue.date = this.customDate;
+        }
+        return itemValue;
+      });
     },
     setMonto(ev) {
       this.monto = ev;
@@ -1136,6 +1153,7 @@ export default {
         this.calendarTipoPataCorta = this.datoFechaToday;
         this.calendarTipoPataLarga = this.datoFechaTomorrow;
       }
+      this.cancelClick();
     },
     setCurrencySelected(ev) {
       this.currencySelected = ev.target.value;
@@ -1153,8 +1171,12 @@ export default {
       this.isFromCalendar = false;
       this.tenorPataCorta = ev.target.selectedOptions[0].label;
       this.calendarTipoPataCorta = ev.target.value;
+      this.calendarOptionsPataCorta = this.calendario;
       this.condicionFechasSwap();
       this.removePataCorta();
+      if (this.fechaSwapValida) {
+        this.getpataCortapataLarga();
+      }
     },
     async getRecuperaFechaParam(date) {
       const bodyFecha = {
@@ -1180,9 +1202,12 @@ export default {
     async setCalendarPataLarga(ev) {
       this.tenorPataLarga = ev.target.selectedOptions[0].label;
       this.calendarTipoPataLarga = ev.target.value;
+      this.calendarOptionsPataLarga = this.calendario;
       this.condicionFechasSwap();
+      if (this.fechaSwapValida) {
+        this.getpataCortapataLarga();
+      }
       this.removePataLarga();
-      this.getpataCortapataLarga();
     },
     condicionFechasSwap() {
       if (new Date(this.calendarTipoPataCorta) >= new Date(this.calendarTipoPataLarga)) {
@@ -1307,28 +1332,26 @@ export default {
       this.timmerId = timer;
     },
     cancelClick() {
+      clearInterval(this.timmerId);
       this.remove();
       this.removePataCorta();
       this.removePataLarga();
+      this.solicitarPrecio = false;
+      this.monto = '0';
       const findUSD = this.currenciesOptions.findIndex((item) => item.Ccy1 === 'USD' && item.Ccy2 === 'MXN');
       this.setCurrenciesOptions({ target: { value: findUSD || 0 } });
       if (this.operacionSeleccionada === 'FORWARD') {
-        clearInterval(this.timmerId);
-        this.solicitarPrecio = false;
-        this.monto = '0';
         this.calendarSelected = this.datoFechaToday;
       } else if (this.operacionSeleccionada === 'SWAP') {
-        clearInterval(this.timmerId);
-        this.solicitarPrecio = false;
-        this.monto = '0';
         this.montoPataCorta = '0';
         this.montoPataLarga = '0';
         this.calendarSelected = this.datoFechaToday;
-        this.calendarTipoPataCorta = this.calendarOptions[0].date;
-        this.calendarTipoPataLarga = this.calendarOptions[1].date;
+        if (this.calendarOptions) {
+          this.calendarTipoPataCorta = this.calendarOptions[0].date;
+          this.calendarTipoPataLarga = this.calendarOptions[1].date;
+        }
       } else {
-        clearInterval(this.timmerId);
-        window.location.reload();
+        this.calendarSelected = this.datoFechaSpot;
       }
     },
     async eventOperation(opcion) {
