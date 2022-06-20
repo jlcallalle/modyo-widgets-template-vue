@@ -590,8 +590,7 @@ import Repository from '../repositories/RepositoryFactory';
 
 const InvexRepository = Repository.get('invex');
 const segundoPeticiones = liquidParser.parse('{{ vars.segundopeticiones }}');
-// const ENVIROMENT = liquidParser.parse('{{ vars.enviroment }}');
-const ENVIROMENT = 'production';
+const ENVIROMENT = liquidParser.parse('{{ vars.enviroment }}');
 /* const fechasForwardValidasCambios = [
   'TODAY',
   'TOMORROW',
