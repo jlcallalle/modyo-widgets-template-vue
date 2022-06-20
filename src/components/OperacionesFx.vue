@@ -590,7 +590,8 @@ import Repository from '../repositories/RepositoryFactory';
 
 const InvexRepository = Repository.get('invex');
 const segundoPeticiones = liquidParser.parse('{{ vars.segundopeticiones }}');
-const ENVIROMENT = liquidParser.parse('{{ vars.enviroment }}');
+// const ENVIROMENT = liquidParser.parse('{{ vars.enviroment }}');
+const ENVIROMENT = 'production';
 /* const fechasForwardValidasCambios = [
   'TODAY',
   'TOMORROW',
@@ -770,11 +771,7 @@ export default {
   async mounted() {
     // Se puede comentar esta parte para temas de desarrollo
     if (ENVIROMENT === 'production') {
-      this.getTokenFronParam();
-      await this.$store.dispatch('validarToken', {
-        token: this.tkn,
-      });
-      this.validateUserData();
+      await this.validateSession();
     } else {
       this.dataTwoWay = false;
     }
@@ -1463,8 +1460,20 @@ export default {
       const token = urlParams.get('token');
       this.tkn = token;
     },
+    async validateSession() {
+      if (localStorage.getItem('userData') === null) {
+        this.getTokenFronParam();
+        await this.$store.dispatch('validarToken', {
+          token: this.tkn,
+        });
+      } else {
+        await this.$store.dispatch('setUserData', localStorage.getItem('userData'));
+      }
+      this.validateUserData();
+    },
     validateUserData() {
       if (this.userData && this.userData.data) {
+        localStorage.setItem('userData', JSON.stringify(this.userData));
         this.isTwoway = this.userData.data.twoWay;
         if (this.isTwoway === false) {
           this.optionSelected = 'Comprar';

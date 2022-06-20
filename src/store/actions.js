@@ -280,6 +280,14 @@ export default {
       commit('setLoading', false);
     }
   },
+  async setUserData({ commit }, data) {
+    try {
+      commit('setLoginData', JSON.parse(data));
+      return JSON.parse(data);
+    } catch (error) {
+      return error;
+    }
+  },
   async fechapataCortapataLarga({ commit }, body) {
     commit('setLoading', true);
     try {
