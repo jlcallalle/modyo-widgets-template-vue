@@ -115,7 +115,7 @@
                     </div>
                   </div>
                   <div class="content-trade">
-                    <div class="row">
+                    <div class="row row-opera">
                       <div class="col-12 col-md-6">
                         <div class="box-periodo input-group">
                           <div class="group-select">
@@ -136,9 +136,31 @@
                             <div class="title-group title-fecha">
                               Fecha de liquidación
                             </div>
-                            <input
-                              type="date"
-                              class="form-control input-fecha">
+                            <div
+                              class="wrapp-fecha">
+                              <date-picker
+                                :value="dateCalendar()"
+                                :popover="{ visibility: 'click' }">
+                                <template #default="{ inputValue, inputEvents }">
+                                  <input
+                                    class="form-control input-fecha"
+                                    :value="inputValue"
+                                    v-on="inputEvents">
+                                </template>
+                              </date-picker>
+                            </div>
+                            <i class="icon-calendar">
+                              <svg
+                                width="24"
+                                height="25"
+                                viewBox="0 0 24 25"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                  d="M16 13.5H13C12.45 13.5 12 13.95 12 14.5V17.5C12 18.05 12.45 18.5 13 18.5H16C16.55 18.5 17 18.05 17 17.5V14.5C17 13.95 16.55 13.5 16 13.5ZM16 3.5V4.5H8V3.5C8 2.95 7.55 2.5 7 2.5C6.45 2.5 6 2.95 6 3.5V4.5H5C3.89 4.5 3.01 5.4 3.01 6.5L3 20.5C3 21.6 3.89 22.5 5 22.5H19C20.1 22.5 21 21.6 21 20.5V6.5C21 5.4 20.1 4.5 19 4.5H18V3.5C18 2.95 17.55 2.5 17 2.5C16.45 2.5 16 2.95 16 3.5ZM18 20.5H6C5.45 20.5 5 20.05 5 19.5V9.5H19V19.5C19 20.05 18.55 20.5 18 20.5Z"
+                                  fill="#424242" />
+                              </svg>
+                            </i>
                           </div>
                         </div>
                       </div>
@@ -184,7 +206,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="row">
+                    <div class="row row-opera">
                       <div class="col-12 col-md-6">
                         <div class="box-periodo input-group">
                           <div class="group-select">
@@ -205,9 +227,31 @@
                             <div class="title-group title-fecha">
                               Fecha de liquidación
                             </div>
-                            <input
-                              type="date"
-                              class="form-control input-fecha">
+                            <div
+                              class="wrapp-fecha">
+                              <date-picker
+                                :value="dateCalendar()"
+                                :popover="{ visibility: 'click' }">
+                                <template #default="{ inputValue, inputEvents }">
+                                  <input
+                                    class="form-control input-fecha"
+                                    :value="inputValue"
+                                    v-on="inputEvents">
+                                </template>
+                              </date-picker>
+                            </div>
+                            <i class="icon-calendar">
+                              <svg
+                                width="24"
+                                height="25"
+                                viewBox="0 0 24 25"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                  d="M16 13.5H13C12.45 13.5 12 13.95 12 14.5V17.5C12 18.05 12.45 18.5 13 18.5H16C16.55 18.5 17 18.05 17 17.5V14.5C17 13.95 16.55 13.5 16 13.5ZM16 3.5V4.5H8V3.5C8 2.95 7.55 2.5 7 2.5C6.45 2.5 6 2.95 6 3.5V4.5H5C3.89 4.5 3.01 5.4 3.01 6.5L3 20.5C3 21.6 3.89 22.5 5 22.5H19C20.1 22.5 21 21.6 21 20.5V6.5C21 5.4 20.1 4.5 19 4.5H18V3.5C18 2.95 17.55 2.5 17 2.5C16.45 2.5 16 2.95 16 3.5ZM18 20.5H6C5.45 20.5 5 20.05 5 19.5V9.5H19V19.5C19 20.05 18.55 20.5 18 20.5Z"
+                                  fill="#424242" />
+                              </svg>
+                            </i>
                           </div>
                         </div>
                       </div>
@@ -253,7 +297,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="row">
+                    <div class="row row-opera">
                       <div class="col-12 col-md-6">
                         <div class="box-periodo input-group">
                           <div class="group-select">
@@ -274,9 +318,31 @@
                             <div class="title-group title-fecha">
                               Fecha de liquidación
                             </div>
-                            <input
-                              type="date"
-                              class="form-control input-fecha">
+                            <div
+                              class="wrapp-fecha">
+                              <date-picker
+                                :value="dateCalendar()"
+                                :popover="{ visibility: 'click' }">
+                                <template #default="{ inputValue, inputEvents }">
+                                  <input
+                                    class="form-control input-fecha"
+                                    :value="inputValue"
+                                    v-on="inputEvents">
+                                </template>
+                              </date-picker>
+                            </div>
+                            <i class="icon-calendar">
+                              <svg
+                                width="24"
+                                height="25"
+                                viewBox="0 0 24 25"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                  d="M16 13.5H13C12.45 13.5 12 13.95 12 14.5V17.5C12 18.05 12.45 18.5 13 18.5H16C16.55 18.5 17 18.05 17 17.5V14.5C17 13.95 16.55 13.5 16 13.5ZM16 3.5V4.5H8V3.5C8 2.95 7.55 2.5 7 2.5C6.45 2.5 6 2.95 6 3.5V4.5H5C3.89 4.5 3.01 5.4 3.01 6.5L3 20.5C3 21.6 3.89 22.5 5 22.5H19C20.1 22.5 21 21.6 21 20.5V6.5C21 5.4 20.1 4.5 19 4.5H18V3.5C18 2.95 17.55 2.5 17 2.5C16.45 2.5 16 2.95 16 3.5ZM18 20.5H6C5.45 20.5 5 20.05 5 19.5V9.5H19V19.5C19 20.05 18.55 20.5 18 20.5Z"
+                                  fill="#424242" />
+                              </svg>
+                            </i>
                           </div>
                         </div>
                       </div>
@@ -339,6 +405,34 @@
                         Agregar
                       </button>
                     </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 mt-4">
+                <div class="row">
+                  <div class="col-6">
+                    <div class="cantidad">
+                      <span>3</span> Operaciones
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="total-monto">
+                      <span>Total de monto cotizado</span>
+                      <span>0</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 mt-4">
+                <div class="row-check">
+                  <div class="form-check">
+                    <input
+                      id="asignaCheck"
+                      type="checkbox"
+                      class="form-check-input">
+                    <label
+                      class="form-check-label"
+                      for="asignaCheck">Asignar instrucciones de liquidación prestablecidas</label>
                   </div>
                 </div>
               </div>
