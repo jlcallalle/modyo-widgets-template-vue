@@ -21,7 +21,9 @@
         <div class="col-md-12 col-xl-8 box-operaciones">
           <form @submit.prevent="enterForm">
             <div class="row">
-              <div class="col-12 col-md-6">
+              <div
+                class="col-12"
+                :class="operacionSeleccionada === 'BLOCKTRADE' ? 'col-md-4' : 'col-md-6' ">
                 <div class="form-group">
                   <label
                     for="tipoOperacionlSelect"
@@ -43,7 +45,9 @@
                   </select>
                 </div>
               </div>
-              <div class="col-12 col-md-6">
+              <div
+                class="col-12"
+                :class="operacionSeleccionada === 'BLOCKTRADE' ? 'col-md-4' : 'col-md-6' ">
                 <div class="form-group">
                   <label
                     for="tipoDivisasSelect"
@@ -65,8 +69,282 @@
                   </select>
                 </div>
               </div>
+              <div
+                v-if="operacionSeleccionada === 'BLOCKTRADE'"
+                class="col-12 col-md-4">
+                <div class="form-group">
+                  <label
+                    for="divisaSelect"
+                    class="title-group">
+                    Divisa:</label>
+                  <select
+                    name="select"
+                    class="form-control"
+                    :disabled="solicitarPrecio"
+                    @change="setCurrencySelected($event)">
+                    <template v-for="(currency, index) in currenciesSelected">
+                      <option
+                        :id="index"
+                        :key="index"
+                        :selected="currencySelected === currency"
+                        :value="currency">
+                        {{ currency }}
+                      </option>
+                    </template>
+                  </select>
+                </div>
+              </div>
             </div>
             <div
+              v-if="operacionSeleccionada === 'BLOCKTRADE'"
+              class="row">
+              <div class="col-12">
+                <div class="box-block-trade">
+                  <div class="header-trade">
+                    <div class="row">
+                      <div class="col-6">
+                        <div class="fecha-trade">
+                          Fecha de Liquidación
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="divisa-trade">
+                          Nocional <span>({{ currencySelected }}) </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="content-trade">
+                    <div class="row">
+                      <div class="col-12 col-md-6">
+                        <div class="box-periodo input-group">
+                          <div class="group-select">
+                            <div class="title-group title-fecha">
+                              Periodo
+                            </div>
+                            <select
+                              name="select"
+                              class="select-fecha">
+                              <option
+                                id="0"
+                                value="2022-02-09">
+                                TODAY
+                              </option>
+                            </select>
+                          </div>
+                          <div class="box-input-row">
+                            <div class="title-group title-fecha">
+                              Fecha de liquidación
+                            </div>
+                            <input
+                              type="date"
+                              class="form-control input-fecha">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <div class="wrap-actions">
+                          <button class="btn btn-switch">
+                            <span>
+                              <svg
+                                width="19"
+                                height="28"
+                                viewBox="0 0 19 28"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                  d="M14.3773 13.9998L18.1667 10.2104L14.3773 6.4209V9.263H0.166748V11.1577H14.3773V13.9998Z"
+                                  fill="#A41D36" />
+                                <path
+                                  d="M3.95622 14L0.166748 17.7895L3.95622 21.5789V18.7368H18.1667V16.8421H3.95622V14Z"
+                                  fill="#A41D36" />
+                              </svg>
+                            </span>
+                            Comprar
+                          </button>
+                          <div class="form-group-delete">
+                            <input
+                              type="text"
+                              class="form-control">
+                            <a
+                              href="#"
+                              class="icon-delete">
+                              <svg
+                                width="20"
+                                height="24"
+                                viewBox="0 0 20 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                  d="M1.99984 21.3333C1.99984 22.8 3.19984 24 4.6665 24H15.3332C16.7998 24 17.9998 22.8 17.9998 21.3333V5.33333H1.99984V21.3333ZM19.3332 1.33333H14.6665L13.3332 0H6.6665L5.33317 1.33333H0.666504V4H19.3332V1.33333Z"
+                                  fill="#666666" />
+                              </svg>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12 col-md-6">
+                        <div class="box-periodo input-group">
+                          <div class="group-select">
+                            <div class="title-group title-fecha">
+                              Periodo
+                            </div>
+                            <select
+                              name="select"
+                              class="select-fecha">
+                              <option
+                                id="0"
+                                value="2022-02-09">
+                                TODAY
+                              </option>
+                            </select>
+                          </div>
+                          <div class="box-input-row">
+                            <div class="title-group title-fecha">
+                              Fecha de liquidación
+                            </div>
+                            <input
+                              type="date"
+                              class="form-control input-fecha">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <div class="wrap-actions">
+                          <button class="btn btn-switch">
+                            <span>
+                              <svg
+                                width="19"
+                                height="28"
+                                viewBox="0 0 19 28"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                  d="M14.3773 13.9998L18.1667 10.2104L14.3773 6.4209V9.263H0.166748V11.1577H14.3773V13.9998Z"
+                                  fill="#A41D36" />
+                                <path
+                                  d="M3.95622 14L0.166748 17.7895L3.95622 21.5789V18.7368H18.1667V16.8421H3.95622V14Z"
+                                  fill="#A41D36" />
+                              </svg>
+                            </span>
+                            Vender
+                          </button>
+                          <div class="form-group-delete">
+                            <input
+                              type="text"
+                              class="form-control">
+                            <a
+                              href="#"
+                              class="icon-delete">
+                              <svg
+                                width="20"
+                                height="24"
+                                viewBox="0 0 20 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                  d="M1.99984 21.3333C1.99984 22.8 3.19984 24 4.6665 24H15.3332C16.7998 24 17.9998 22.8 17.9998 21.3333V5.33333H1.99984V21.3333ZM19.3332 1.33333H14.6665L13.3332 0H6.6665L5.33317 1.33333H0.666504V4H19.3332V1.33333Z"
+                                  fill="#666666" />
+                              </svg>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12 col-md-6">
+                        <div class="box-periodo input-group">
+                          <div class="group-select">
+                            <div class="title-group title-fecha">
+                              Periodo
+                            </div>
+                            <select
+                              name="select"
+                              class="select-fecha">
+                              <option
+                                id="0"
+                                value="2022-02-09">
+                                TODAY
+                              </option>
+                            </select>
+                          </div>
+                          <div class="box-input-row">
+                            <div class="title-group title-fecha">
+                              Fecha de liquidación
+                            </div>
+                            <input
+                              type="date"
+                              class="form-control input-fecha">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <div class="wrap-actions">
+                          <button class="btn btn-switch">
+                            <span>
+                              <svg
+                                width="19"
+                                height="28"
+                                viewBox="0 0 19 28"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                  d="M14.3773 13.9998L18.1667 10.2104L14.3773 6.4209V9.263H0.166748V11.1577H14.3773V13.9998Z"
+                                  fill="#A41D36" />
+                                <path
+                                  d="M3.95622 14L0.166748 17.7895L3.95622 21.5789V18.7368H18.1667V16.8421H3.95622V14Z"
+                                  fill="#A41D36" />
+                              </svg>
+                            </span>
+                            Comprar
+                          </button>
+                          <div class="form-group-delete">
+                            <input
+                              type="text"
+                              class="form-control">
+                            <a
+                              href="#"
+                              class="icon-delete">
+                              <svg
+                                width="20"
+                                height="24"
+                                viewBox="0 0 20 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                  d="M1.99984 21.3333C1.99984 22.8 3.19984 24 4.6665 24H15.3332C16.7998 24 17.9998 22.8 17.9998 21.3333V5.33333H1.99984V21.3333ZM19.3332 1.33333H14.6665L13.3332 0H6.6665L5.33317 1.33333H0.666504V4H19.3332V1.33333Z"
+                                  fill="#666666" />
+                              </svg>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="box-agregar">
+                      <button class="btn btn-agregar">
+                        <span>
+                          <svg
+                            width="25"
+                            height="25"
+                            viewBox="0 0 25 25"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                              d="M24.5 14.2143H14.2143V24.5H10.7857V14.2143H0.5V10.7857H10.7857V0.5H14.2143V10.7857H24.5V14.2143Z"
+                              fill="#A41D36" />
+                          </svg>
+                        </span>
+                        Agregar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              v-if="operacionSeleccionada !== 'BLOCKTRADE'"
               class="row">
               <div class="col-6">
                 <div
@@ -144,7 +422,9 @@
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div
+              v-if="operacionSeleccionada !== 'BLOCKTRADE'"
+              class="row">
               <div class="col-12">
                 <div
                   v-if="!solicitarPrecio"
@@ -199,7 +479,7 @@
               </div>
             </div>
             <div
-              v-show="operacionSeleccionada !== 'SWAP'"
+              v-show="operacionSeleccionada !== 'SWAP' && operacionSeleccionada !== 'BLOCKTRADE'"
               class="row">
               <div class="col-12 col-md-6">
                 <div class="box-monto input-group">

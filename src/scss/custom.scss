@@ -528,3 +528,89 @@
 		transform: rotate(360deg);
 	}
 }
+
+/* Template Block Trade */
+
+.box-block-trade {
+    border:1px solid $brand-invex;
+    border-radius: 10px;
+    margin-top: -8px;
+}
+
+.content-trade {
+    padding: 0 20px 20px;
+    > .row {
+        margin-top: 12px;
+    }
+}
+
+.header-trade {
+    background-color: $brand-invex;
+    color:white;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.fecha-trade, .divisa-trade {
+    font-size: 14px;
+    text-align: center;
+    padding: 9px 10px;
+}
+
+.box-periodo {
+    display: flex;
+    margin-top: 35px;
+    flex-wrap: nowrap;
+}
+
+.wrap-actions {
+    display: flex;
+    gap: 0 10px;
+    align-items: center;
+    margin-top: 35px;
+    justify-content: space-around;
+    .form-control {
+        width: 138px;
+    }
+}
+.form-group-delete {
+    display: flex;
+    align-items: center;
+    gap: 0 20px;
+}
+
+.btn-switch {
+    color:  $brand-invex;
+    border-color:  $brand-invex;
+    padding: 0.4rem 1rem;
+    display: flex;
+    align-items: center;
+    height: 40px;
+    width: 116px;
+    &:hover {
+        color: $brand-invex;
+    }
+    span {
+        margin-right: 6px;
+    }
+}
+
+.box-agregar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-agregar {
+    color: $brand-invex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    &:hover {
+       color: $brand-invex;
+    }
+    span {
+        margin-right: 10px;
+    }
+}
