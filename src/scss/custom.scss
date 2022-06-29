@@ -534,13 +534,18 @@
 .box-block-trade {
     border:1px solid $brand-invex;
     border-radius: 10px;
-    margin-top: -8px;
+    margin-top: 8px;
 }
 
 .content-trade {
-    padding: 0 20px 20px;
-    > .row {
-        margin-top: 12px;
+    padding: 0 15px 15px;
+    
+    @include media-breakpoint-up(md) { 
+        // overflow-y: auto;
+        // max-height: 446px;
+    }
+     .row {
+        padding-bottom: 20px;
     }
 }
 
@@ -559,7 +564,7 @@
 
 .box-periodo {
     display: flex;
-    margin-top: 35px;
+    margin-top: 37px;
     flex-wrap: nowrap;
 }
 
@@ -567,8 +572,12 @@
     display: flex;
     gap: 0 10px;
     align-items: center;
-    margin-top: 35px;
-    justify-content: space-around;
+    margin-top: 15px;
+    justify-content: space-between;
+    @include media-breakpoint-up(md) { 
+        margin-top: 35px;
+        justify-content: space-around;
+    }
     .form-control {
         width: 138px;
     }
@@ -606,11 +615,29 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 10px;
+    font-size: 12px;
     &:hover {
        color: $brand-invex;
     }
     span {
         margin-right: 10px;
     }
+}
+
+.cantidad {
+    color:#424242;
+    font-weight: 600;
+    font-size: 16px;
+}
+.total-monto {
+    color:#424242;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-around;
+}
+.row-check label {
+    color:#424242;
+    font-weight: 400;
+    font-size: 12px;
 }
