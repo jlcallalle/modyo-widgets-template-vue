@@ -233,15 +233,14 @@
                     id="tipoCuentalSelect"
                     class="form-control"
                     @change="setOrigen($event)">
-                    <template v-for="(origen, index) in listadoOrigen">
-                      <option
-                        :id="index"
-                        :key="index"
-                        :selected="origenSelected === origen.customerAccount"
-                        :value="origen.customerAccount">
-                        {{ origenTxt(origen) }}
-                      </option>
-                    </template>
+                    <option
+                      v-for="(origen, index) in listadoOrigen"
+                      :id="index"
+                      :key="index"
+                      :selected="origenSelected === origen.customerAccount"
+                      :value="origen.customerAccount">
+                      {{ origenTxt(origen) }}
+                    </option>
                   </select>
                 </div>
                 <a
@@ -271,15 +270,14 @@
                     class="form-control"
                     :disabled="origenSelected === null"
                     @change="setDestino($event)">
-                    <template v-for="(destino, index) in listadoDestino">
-                      <option
-                        :id="index"
-                        :key="index"
-                        :selected="destinoSelected === destino.BeneficiaryAccount"
-                        :value="destino.BeneficiaryAccount">
-                        {{ destinoTxt(destino) }}
-                      </option>
-                    </template>
+                    <option
+                      v-for="(destino, index) in listadoDestino"
+                      :id="index"
+                      :key="index"
+                      :selected="destinoSelected === destino.BeneficiaryAccount"
+                      :value="destino.BeneficiaryAccount">
+                      {{ destinoTxt(destino) }}
+                    </option>
                   </select>
                 </div>
                 <div

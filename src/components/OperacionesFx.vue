@@ -34,14 +34,13 @@
                     :value="operacionSeleccionada"
                     :disabled="solicitarPrecio"
                     @change="seleccionarOperacion($event)">
-                    <template v-for="(value, key, index) in listarOperacion">
-                      <option
-                        :key="index"
-                        :value="value.productCode"
-                        :selected="key === 0">
-                        {{ value.productCode }}
-                      </option>
-                    </template>
+                    <option
+                      v-for="(value, key, index) in listarOperacion"
+                      :key="index"
+                      :value="value.productCode"
+                      :selected="key === 0">
+                      {{ value.productCode }}
+                    </option>
                   </select>
                 </div>
               </div>
@@ -58,14 +57,13 @@
                     :disabled="solicitarPrecio"
                     :value="currencySelectedId"
                     @change="setCurrenciesOptions($event)">
-                    <template v-for="(currency, index) in currenciesOptions">
-                      <option
-                        :id="index"
-                        :key="index"
-                        :value="index">
-                        {{ currency.Ccy1 }} / {{ currency.Ccy2 }}
-                      </option>
-                    </template>
+                    <option
+                      v-for="(currency, index) in currenciesOptions"
+                      :id="index"
+                      :key="index"
+                      :value="index">
+                      {{ currency.Ccy1 }} / {{ currency.Ccy2 }}
+                    </option>
                   </select>
                 </div>
               </div>
@@ -82,15 +80,14 @@
                     class="form-control"
                     :disabled="solicitarPrecio"
                     @change="setCurrencySelected($event)">
-                    <template v-for="(currency, index) in currenciesSelected">
-                      <option
-                        :id="index"
-                        :key="index"
-                        :selected="currencySelected === currency"
-                        :value="currency">
-                        {{ currency }}
-                      </option>
-                    </template>
+                    <option
+                      v-for="(currency, index) in currenciesSelected"
+                      :id="index"
+                      :key="index"
+                      :selected="currencySelected === currency"
+                      :value="currency">
+                      {{ currency }}
+                    </option>
                   </select>
                 </div>
               </div>
@@ -115,30 +112,70 @@
                     </div>
                   </div>
                   <div class="content-trade">
-                    <div class="row">
+                    <div
+                      v-for="(blockTradeRow, indexRow) in blockTradeRows"
+                      :key="indexRow"
+                      class="row">
                       <div class="col-12 col-md-6">
-                        <div class="box-periodo input-group">
+                        <div class="box-liquidacion input-group">
                           <div class="group-select">
                             <div class="title-group title-fecha">
                               Periodo
                             </div>
                             <select
+                              id="fecha-calendario"
                               name="select"
-                              class="select-fecha">
+                              class="select-fecha"
+                              :disabled="solicitarPrecio"
+                              @change="setCalendarBlockTradeRows($event, indexRow)">
                               <option
-                                id="0"
-                                value="2022-02-09">
-                                TODAY
+                                v-for="(calendarOp, indexOptions) in calendarOptions"
+                                :id="indexOptions"
+                                :key="indexOptions"
+                                :data-tipo="calendarOp.Description"
+                                :selected="blockTradeRow.fechaSeleccionada === calendarOp.date"
+                                :value="calendarOp.date">
+                                {{ calendarOp.Description }}
                               </option>
                             </select>
                           </div>
                           <div class="box-input-row">
-                            <div class="title-group title-fecha">
-                              Fecha de liquidación
+                            <div class="group-select">
+                              <div class="title-group title-fecha">
+                                Fecha de liquidación
+                              </div>
+                              <div
+                                class="wrapp-fecha">
+                                <date-picker
+                                  :min-date="new Date()"
+                                  :disabled-dates="{ weekdays: [1, 7] }"
+                                  :masks="masks"
+                                  :model-config="modelConfig"
+                                  :value="dateCalendar()"
+                                  :popover="{ visibility: 'click' }"
+                                  @dayclick="onDayClick">
+                                  <template #default="{ inputValue, inputEvents }">
+                                    <input
+                                      class="form-control input-fecha"
+                                      :value="inputValue"
+                                      :disabled="solicitarPrecio"
+                                      v-on="inputEvents">
+                                  </template>
+                                </date-picker>
+                              </div>
+                              <i class="icon-calendar">
+                                <svg
+                                  width="24"
+                                  height="25"
+                                  viewBox="0 0 24 25"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M16 13.5H13C12.45 13.5 12 13.95 12 14.5V17.5C12 18.05 12.45 18.5 13 18.5H16C16.55 18.5 17 18.05 17 17.5V14.5C17 13.95 16.55 13.5 16 13.5ZM16 3.5V4.5H8V3.5C8 2.95 7.55 2.5 7 2.5C6.45 2.5 6 2.95 6 3.5V4.5H5C3.89 4.5 3.01 5.4 3.01 6.5L3 20.5C3 21.6 3.89 22.5 5 22.5H19C20.1 22.5 21 21.6 21 20.5V6.5C21 5.4 20.1 4.5 19 4.5H18V3.5C18 2.95 17.55 2.5 17 2.5C16.45 2.5 16 2.95 16 3.5ZM18 20.5H6C5.45 20.5 5 20.05 5 19.5V9.5H19V19.5C19 20.05 18.55 20.5 18 20.5Z"
+                                    fill="#424242" />
+                                </svg>
+                              </i>
                             </div>
-                            <input
-                              type="date"
-                              class="form-control input-fecha">
                           </div>
                         </div>
                       </div>
@@ -492,15 +529,14 @@
                       class="select-precio"
                       :disabled="solicitarPrecio"
                       @change="setCurrencySelected($event)">
-                      <template v-for="(currency, index) in currenciesSelected">
-                        <option
-                          :id="index"
-                          :key="index"
-                          :selected="currencySelected === currency"
-                          :value="currency">
-                          {{ currency }}
-                        </option>
-                      </template>
+                      <option
+                        v-for="(currency, index) in currenciesSelected"
+                        :id="index"
+                        :key="index"
+                        :selected="currencySelected === currency"
+                        :value="currency">
+                        {{ currency }}
+                      </option>
                     </select>
                   </div>
                   <div class="box-input-row">
@@ -536,16 +572,15 @@
                       class="select-fecha"
                       :disabled="solicitarPrecio"
                       @change="setCalendar($event)">
-                      <template v-for="(calendarOp, index) in calendarOptions">
-                        <option
-                          :id="index"
-                          :key="index"
-                          :data-tipo="calendarOp.Description"
-                          :selected="calendarSelected === calendarOp.date"
-                          :value="calendarOp.date">
-                          {{ calendarOp.Description }}
-                        </option>
-                      </template>
+                      <option
+                        v-for="(calendarOp, index) in calendarOptions"
+                        :id="index"
+                        :key="index"
+                        :data-tipo="calendarOp.Description"
+                        :selected="calendarSelected === calendarOp.date"
+                        :value="calendarOp.date">
+                        {{ calendarOp.Description }}
+                      </option>
                     </select>
                   </div>
                   <div class="box-input-row">
@@ -601,15 +636,14 @@
                       class="select-precio"
                       :disabled="solicitarPrecio"
                       @change="setCurrencySelected($event)">
-                      <template v-for="(currency, index) in currenciesSelected">
-                        <option
-                          :id="index"
-                          :key="index"
-                          :selected="currencySelected === currency"
-                          :value="currency">
-                          {{ currency }}
-                        </option>
-                      </template>
+                      <option
+                        v-for="(currency, index) in currenciesSelected"
+                        :id="index"
+                        :key="index"
+                        :selected="currencySelected === currency"
+                        :value="currency">
+                        {{ currency }}
+                      </option>
                     </select>
                   </div>
                   <div class="box-input-row">
@@ -644,16 +678,15 @@
                       class="select-fecha"
                       :disabled="solicitarPrecio"
                       @change="setCalendarPataCorta($event)">
-                      <template v-for="(calendarOp, index) in calendarOptionsPataCorta">
-                        <option
-                          :id="index"
-                          :key="index"
-                          :data-tipo="calendarOp.Description"
-                          :selected="calendarTipoPataCorta === calendarOp.date"
-                          :value="calendarOp.date">
-                          {{ calendarOp.Description }}
-                        </option>
-                      </template>
+                      <option
+                        v-for="(calendarOp, index) in calendarOptionsPataCorta"
+                        :id="index"
+                        :key="index"
+                        :data-tipo="calendarOp.Description"
+                        :selected="calendarTipoPataCorta === calendarOp.date"
+                        :value="calendarOp.date">
+                        {{ calendarOp.Description }}
+                      </option>
                     </select>
                   </div>
                   <div class="box-input-row">
@@ -709,15 +742,14 @@
                       class="select-precio"
                       :disabled="solicitarPrecio"
                       @change="setCurrencySelected($event)">
-                      <template v-for="(currency, index) in currenciesSelected">
-                        <option
-                          :id="index"
-                          :key="index"
-                          :selected="currencySelected === currency"
-                          :value="currency">
-                          {{ currency }}
-                        </option>
-                      </template>
+                      <option
+                        v-for="(currency, index) in currenciesSelected"
+                        :id="index"
+                        :key="index"
+                        :selected="currencySelected === currency"
+                        :value="currency">
+                        {{ currency }}
+                      </option>
                     </select>
                   </div>
                   <div class="box-input-row">
@@ -752,16 +784,15 @@
                       class="select-fecha"
                       :disabled="solicitarPrecio"
                       @change="setCalendarPataLarga($event)">
-                      <template v-for="(calendarOp, index) in calendarOptionsPataLarga">
-                        <option
-                          :id="index"
-                          :key="index"
-                          :data-tipo="calendarOp.Description"
-                          :selected="calendarTipoPataLarga === calendarOp.date"
-                          :value="calendarOp.date">
-                          {{ calendarOp.Description }}
-                        </option>
-                      </template>
+                      <option
+                        v-for="(calendarOp, index) in calendarOptionsPataLarga"
+                        :id="index"
+                        :key="index"
+                        :data-tipo="calendarOp.Description"
+                        :selected="calendarTipoPataLarga === calendarOp.date"
+                        :value="calendarOp.date">
+                        {{ calendarOp.Description }}
+                      </option>
                     </select>
                   </div>
                   <div class="box-input-row">
@@ -972,6 +1003,12 @@ export default {
       tenorPataCorta: 'TODAY',
       tenorPataLarga: 'TOMORROW',
       customDate: '2022-06-07',
+      blockTradeRows: [{
+        tenorSeleccionado: 'TODAY',
+        fechaSeleccionada: '',
+        nocional: '1',
+        compra: true,
+      }],
     };
   },
   computed: {
@@ -1053,6 +1090,13 @@ export default {
       await this.validateSession();
     } else {
       this.dataTwoWay = false;
+      const userDefault = {
+        data: {
+          user360T: 'INVEXCOMP1.TEST',
+          internetFolio: '9254',
+        },
+      };
+      await this.$store.dispatch('setUserData', JSON.stringify(userDefault));
     }
     // Fin de lo que se puede comentar para temas de desarrollo
     await this.getCurrencies();
@@ -1070,13 +1114,6 @@ export default {
       if (getHours === 16) {
         this.showModalHorario = true;
       }
-    }
-    const responseApiServicio = await this.$store.dispatch('updateServicio');
-    if (responseApiServicio.status === 200 || responseApiServicio.status === 201) {
-      // console.log('servicio ok');
-    } else {
-      // console.log('servicio error');
-      // this.showModalError = true;
     }
     const responseApiOperaciones = await this.$store.dispatch('updateListarOperaciones');
     if (responseApiOperaciones.status === 200 || responseApiOperaciones.status === 201) {
@@ -1491,6 +1528,9 @@ export default {
       } else {
         this.fechaSwapValida = true;
       }
+    },
+    setCalendarBlockTradeRows(ev, ind) {
+      this.blockTradeRows[ind].fechaSeleccionada = ev.target.value;
     },
     setCalendar(ev) {
       this.calendarSelected = ev.target.value;

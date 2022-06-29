@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState } from 'vuex';
 import OperacionesFx from './components/OperacionesFx.vue';
 import OperacionConcertada from './components/OperacionConcertada.vue';
 
@@ -24,14 +24,7 @@ export default {
     };
   },
   computed: {
-    // ...mapState(['posts']),
     ...mapState(['currentView']),
-  },
-  created() {
-    // this.getPosts();
-  },
-  methods: {
-    ...mapActions(['getPosts']),
   },
 };
 </script>
