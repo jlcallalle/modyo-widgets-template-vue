@@ -58,7 +58,9 @@
 <script>
 export default {
   name: 'ModaHorario',
-  props: ['open'],
+  props: {
+    open: Boolean,
+  },
   data() {
     return {
 

@@ -57,8 +57,9 @@
 <script>
 export default {
   name: 'ModalTiempo',
-  props:
-    ['open'],
+  props: {
+    open: Boolean,
+  },
   data() {
     return {
 

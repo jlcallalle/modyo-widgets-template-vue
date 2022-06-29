@@ -58,7 +58,9 @@
 <script>
 export default {
   name: 'ModalError',
-  props: ['open'],
+  props: {
+    open: Boolean,
+  },
   data() {
     return {
 
