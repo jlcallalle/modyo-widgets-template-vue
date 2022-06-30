@@ -106,7 +106,7 @@
                       </div>
                       <div class="col-6">
                         <div class="divisa-trade">
-                          Nocional <span>({{ currencySelected }}) </span>
+                          Monto en <span>({{ currencySelected }}) </span>
                         </div>
                       </div>
                     </div>
@@ -117,7 +117,7 @@
                       :key="indexRow"
                       class="row row-opera">
                       <div class="col-12 col-md-6">
-                        <div class="box-liquidacion input-group">
+                        <div class="box-periodo input-group">
                           <div class="group-select">
                             <div class="title-group title-fecha">
                               Periodo
@@ -181,7 +181,9 @@
                       </div>
                       <div class="col-12 col-md-6">
                         <div class="wrap-actions">
-                          <button class="btn btn-switch">
+                          <button
+                            class="btn btn-switch"
+                            @click="eventSwitchOp1">
                             <span>
                               <svg
                                 width="19"
@@ -197,7 +199,7 @@
                                   fill="#A41D36" />
                               </svg>
                             </span>
-                            Comprar
+                            {{ optionSwitchOp1 ? 'Comprar' : 'Vender' }}
                           </button>
                           <div class="form-group-delete">
                             <input
@@ -272,7 +274,9 @@
                       </div>
                       <div class="col-12 col-md-6">
                         <div class="wrap-actions">
-                          <button class="btn btn-switch">
+                          <button
+                            class="btn btn-switch"
+                            @click="eventSwitchOp2">
                             <span>
                               <svg
                                 width="19"
@@ -288,7 +292,7 @@
                                   fill="#A41D36" />
                               </svg>
                             </span>
-                            Vender
+                            {{ optionSwitchOp2 ? 'Comprar' : 'Vender' }}
                           </button>
                           <div class="form-group-delete">
                             <input
@@ -363,7 +367,9 @@
                       </div>
                       <div class="col-12 col-md-6">
                         <div class="wrap-actions">
-                          <button class="btn btn-switch">
+                          <button
+                            class="btn btn-switch"
+                            @click="eventSwitchOp3">
                             <span>
                               <svg
                                 width="19"
@@ -379,7 +385,7 @@
                                   fill="#A41D36" />
                               </svg>
                             </span>
-                            Comprar
+                            {{ optionSwitchOp3 ? 'Comprar' : 'Vender' }}
                           </button>
                           <div class="form-group-delete">
                             <input
@@ -1081,6 +1087,9 @@ export default {
         nocional: '1',
         compra: true,
       }],
+      optionSwitchOp1: true,
+      optionSwitchOp2: true,
+      optionSwitchOp3: true,
     };
   },
   computed: {
@@ -1877,6 +1886,15 @@ export default {
       } else {
         window.location.href = 'https://cdincom03.invexgf.com/';
       }
+    },
+    eventSwitchOp1() {
+      this.optionSwitchOp1 = !this.optionSwitchOp1;
+    },
+    eventSwitchOp2() {
+      this.optionSwitchOp2 = !this.optionSwitchOp2;
+    },
+    eventSwitchOp3() {
+      this.optionSwitchOp3 = !this.optionSwitchOp3;
     },
   },
 };
