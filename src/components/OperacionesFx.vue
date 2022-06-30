@@ -446,14 +446,49 @@
               </div>
               <div class="col-12 mt-4">
                 <div class="row-check">
-                  <div class="form-check">
-                    <input
-                      id="asignaCheck"
-                      type="checkbox"
-                      class="form-check-input">
-                    <label
-                      class="form-check-label"
-                      for="asignaCheck">Asignar instrucciones de liquidación prestablecidas</label>
+                  <input
+                    id="asignaCheck"
+                    v-model="checkedInstrucion"
+                    type="checkbox"
+                    class="check-square-input">
+                  <label
+                      for="asignaCheck"
+                      class="check-square form-check-label" />
+                    <span>
+                      Asignar instrucciones de liquidación prestablecidas
+                    </span>
+                </div>
+                <div
+                  v-if="checkedInstrucion"
+                  class="row mostrar-instrucciones">
+                  <div class="col-12 col-md-6">
+                    <div class="form-group">
+                      <label
+                        for="selecCuentaOrigen"
+                        class="title-cuenta">Cuenta Origen:</label>
+                      <select
+                        id="selecCuentaOrigen"
+                        class="form-control">
+                        <option value="MXN INVEX - 1254483">
+                          MXN INVEX - 1254483
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <div class="form-group">
+                      <label
+                        for="selecCuentaDestino"
+                        class="title-cuenta">
+                        Cuenta Origen:</label>
+                      <select
+                        id="selecCuentaDestino"
+                        class="form-control">
+                        <option value="USD INVEX - 1254483">
+                          USD INVEX - 1254483
+                        </option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1090,6 +1125,7 @@ export default {
       optionSwitchOp1: true,
       optionSwitchOp2: true,
       optionSwitchOp3: true,
+      checkedInstrucion: false,
     };
   },
   computed: {

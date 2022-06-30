@@ -21,6 +21,11 @@
     font-size: 12px;
 }
 
+.title-cuenta {
+    color:$grey-dark;
+    font-size: 14px;
+}
+
 .box-rfs {
     background-color: #F5F5F5;
     border: 1px solid #F5F5F5;
@@ -361,7 +366,7 @@
     padding: 15px;
     margin-bottom: 18px;
     h2 {
-        color: #424242;
+        color: $grey-dark;
         font-weight: 600;
         font-size: 24px;
         line-height: 29px;
@@ -455,7 +460,7 @@
       padding: 1rem 1rem 0 1rem;
   }
   .modal-title {
-      color: #424242;
+      color: $grey-dark;
       font-weight: 600;
       font-size: 24px;
       line-height: 29px;
@@ -539,7 +544,6 @@
 
 .content-trade {
     padding: 0 15px 15px;
-    
     @include media-breakpoint-up(md) { 
         // overflow-y: auto;
         // max-height: 446px;
@@ -625,19 +629,52 @@
 }
 
 .cantidad {
-    color:#424242;
+    color:$grey-dark;
     font-weight: 600;
     font-size: 16px;
 }
 .total-monto {
-    color:#424242;
+    color:$grey-dark;
     font-weight: 600;
     font-size: 14px;
     display: flex;
     justify-content: space-around;
 }
 .row-check label {
-    color:#424242;
+    color:$grey-dark;
     font-weight: 400;
     font-size: 12px;
 }
+.mostrar-instrucciones {
+    margin-top: 24px;
+}
+
+.check-square {
+    height: 18px;
+    width: 18px;
+    border:1px solid $grey-dark;
+    min-width: 18px;
+    position: relative;
+    top: 5px;
+    cursor: pointer;
+  }
+  .check-square-input {
+    display: none;
+  }
+  .check-square-input:checked + .check-square {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 32px;
+    cursor: pointer;
+    border: 0;
+    background-color: $brand-invex;
+    background-size: 14px;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAACRSURBVHgB5dDbCYAgFAZghQZohEZohEZog0ZohEZplNqgERrB8Ppo54eEKIn01R8O4uXDo4yVF+99bYyZlVId5lUqttYuNLac84OW1iRMN29aa0+1CSHqXLy8sHOuoRpiGHs3PEdvwKeE1gAeeP/ECLXUAOMgAH74N350Ml0AJZJwiJSyJ7Rn4RA8iZ4xsjJyAgzlsdsXGOkIAAAAAElFTkSuQmCC);
+  }
+
+  .row-check {
+    span {
+        font-size: 12px;
+        margin-left: 10px;
+    }
+  }
