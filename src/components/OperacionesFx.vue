@@ -151,7 +151,7 @@
                                   :disabled-dates="{ weekdays: [1, 7] }"
                                   :masks="masks"
                                   :model-config="modelConfig"
-                                  :value="dateCalendarBlockTradeRow(indexRow)"
+                                  :value="blockTradeRow.fechaSeleccionada"
                                   :popover="{ visibility: 'click' }"
                                   @dayclick="onDayClick">
                                   <template #default="{ inputValue, inputEvents }">
@@ -183,7 +183,7 @@
                         <div class="wrap-actions">
                           <button
                             class="btn btn-switch"
-                            @click="eventSwitchOp1">
+                            @click="changeBlockTradeRowCompra(indexRow)">
                             <span>
                               <svg
                                 width="19"
@@ -199,7 +199,7 @@
                                   fill="#A41D36" />
                               </svg>
                             </span>
-                            {{ optionSwitchOp1 ? 'Comprar' : 'Vender' }}
+                            {{ blockTradeRow.compra ? 'Comprar' : 'Vender' }}
                           </button>
                           <div class="form-group-delete">
                             <currency-input
@@ -254,13 +254,13 @@
                 <div class="row">
                   <div class="col-6">
                     <div class="cantidad">
-                      <span>{{ blockTradeRows.length }}</span> Operaciones
+                      <span>{{ blockTradeRows.length }}</span> Operacion{{ blockTradeRows.length !== 1 ? 'es' : '' }}
                     </div>
                   </div>
                   <div class="col-6">
                     <div class="total-monto">
                       <span>Total de monto cotizado</span>
-                      <span>{{ calculateBlockTradeNotional }}</span>
+                      <span>{{ calculateBlockTradeNotional() }}</span>
                     </div>
                   </div>
                 </div>
@@ -920,14 +920,10 @@ export default {
       tenorPataLarga: 'TOMORROW',
       customDate: '2022-06-07',
       blockTradeRows: [{
-        tenorSeleccionado: 'TODAY',
         fechaSeleccionada: '',
         nocional: '0',
         compra: true,
       }],
-      optionSwitchOp1: true,
-      optionSwitchOp2: true,
-      optionSwitchOp3: true,
       checkedInstrucion: false,
       currencyOptions: {
         currency: 'USD',
@@ -1010,10 +1006,6 @@ export default {
     formatSwapPointsBuy() {
       const swapPointsBuy = this.currencySwapPointsBuy;
       return Math.floor(swapPointsBuy * 10000) / 10000;
-    },
-    calculateBlockTradeNotional() {
-      const sum = this.blockTradeRows.reduce((acc, currentValue) => acc + Number(currentValue.notional), 0);
-      return Number.isNaN(sum) ? 0 : sum;
     },
   },
   async mounted() {
@@ -1384,6 +1376,11 @@ export default {
     seleccionarOperacion(ev) {
       this.fechaSwapValida = true;
       this.$store.dispatch('updateOperacionSeleccionada', ev.target.value);
+      this.blockTradeRows = [{
+        fechaSeleccionada: this.calendarOptions[0].date,
+        nocional: '0',
+        compra: true,
+      }];
       // this.operacion = ev.target.value;
       if (this.operacionSeleccionada === 'SPOT') {
         this.calendarSelected = this.datoFechaSpot;
@@ -1682,11 +1679,6 @@ export default {
       const dateArr = this.calendarSelected.split('-');
       return `${dateArr[2]}-${dateArr[1]}-${dateArr[0]}`;
     },
-    dateCalendarBlockTradeRow(ind) {
-      if (!this.blockTradeRows[ind]) return '';
-      if (!this.blockTradeRows[ind].fechaSeleccionada) return '';
-      return `${this.blockTradeRows[ind].fechaSeleccionada}`;
-    },
     dateCalendar() {
       if (!this.calendarSelected) return '';
       return `${this.calendarSelected}`;
@@ -1738,19 +1730,12 @@ export default {
         window.location.href = 'https://cdincom03.invexgf.com/';
       }
     },
-    eventSwitchOp1() {
-      this.optionSwitchOp1 = !this.optionSwitchOp1;
-    },
-    eventSwitchOp2() {
-      this.optionSwitchOp2 = !this.optionSwitchOp2;
-    },
-    eventSwitchOp3() {
-      this.optionSwitchOp3 = !this.optionSwitchOp3;
+    changeBlockTradeRowCompra(ind) {
+      this.blockTradeRows[ind].compra = !this.blockTradeRows[ind].compra;
     },
     addBlockTradeRow() {
       this.blockTradeRows.push({
-        tenorSeleccionado: 'TODAY',
-        fechaSeleccionada: '',
+        fechaSeleccionada: this.calendarOptions[0].date,
         nocional: '0',
         compra: true,
       });
@@ -1759,7 +1744,18 @@ export default {
       this.blockTradeRows.splice(ind, 1);
     },
     changeBlockTradeNotional(ind, ev) {
-      this.blockTradeRows[ind] = ev;
+      this.blockTradeRows[ind].nocional = ev;
+    },
+    calculateBlockTradeNotional() {
+      // eslint-disable-next-line max-len
+      let sum = this.blockTradeRows.reduce((acc, currentVal) => acc + Number(currentVal ? currentVal.nocional : 0), 0);
+      if (Number.isNaN(sum)) sum = 0;
+      return sum.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    },
+    dateCalendarBlockTradeRow(ind) {
+      if (!this.blockTradeRows[ind]) return '';
+      if (!this.blockTradeRows[ind].fechaSeleccionada) return '';
+      return `${this.blockTradeRows[ind].fechaSeleccionada}`;
     },
   },
 };
