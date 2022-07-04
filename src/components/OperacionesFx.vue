@@ -93,7 +93,7 @@
               </div>
             </div>
             <div
-              v-if="operacionSeleccionada === 'BLOCKTRADE' && solicitarPrecio === false"
+              v-if="operacionSeleccionada === 'BLOCKTRADE' && !solicitarPrecio"
               class="row">
               <div class="col-12">
                 <div class="box-block-trade">
@@ -1184,12 +1184,22 @@ export default {
       }
       this.condicionFechasSwap();
     },
+    validateBlockTradeRows() {
+      let notionalValid = true;
+      let datesValid = true;
+      this.blockTradeRows.forEach((blockTradeRow) => {
+        if (!blockTradeRow.nocional || blockTradeRow.nocional === 0) notionalValid = false;
+        if (!blockTradeRow.fechaSeleccionada) datesValid = false;
+      });
+      return notionalValid && datesValid;
+    },
     deshabilitarBotonSubmit() {
       const horarioStatus = this.horario ? this.horario.status : '';
       if (this.calendarOptions.length === 0 || horarioStatus === 'offline' || !this.fechaSwapValida) return true;
       if (this.operacionSeleccionada === 'SWAP') {
         return this.montoPataCorta === 0 || this.montoPataCorta === '0' || this.montoPataCorta === null || this.montoPataLarga === 0 || this.montoPataLarga === '0' || this.montoPataLarga === null;
       }
+      if (this.operacionSeleccionada === 'BLOCKTRADE') return !this.validateBlockTradeRows();
       if (this.calendarSelected === '') return true;
       return this.monto === 0 || this.monto === '0' || this.monto === null;
     },
@@ -1310,6 +1320,7 @@ export default {
             break;
           case 'BLOCKTRADE':
             try {
+              this.segundosTimmer = 299;
               this.solicitarPrecio = true;
               this.startTimer();
             } catch (err) {
@@ -1684,6 +1695,12 @@ export default {
           this.calendarTipoPataCorta = this.calendarOptions[0].date;
           this.calendarTipoPataLarga = this.calendarOptions[1].date;
         }
+      } else if (this.operacionSeleccionada === 'BLOCKTRADE') {
+        this.blockTradeRows = [{
+          fechaSeleccionada: this.calendarOptions[0].date,
+          nocional: '0',
+          compra: true,
+        }];
       } else {
         this.calendarSelected = this.datoFechaSpot;
       }
@@ -1812,7 +1829,7 @@ export default {
       if (this.userData && this.userData.data) {
         localStorage.setItem('userData', JSON.stringify(this.userData));
         this.isTwoway = this.userData.data.twoWay;
-        if (this.isTwoway === false) {
+        if (!this.isTwoway) {
           this.optionSelected = 'Comprar';
         }
       } else {
@@ -1823,8 +1840,9 @@ export default {
       this.blockTradeRows[ind].compra = !this.blockTradeRows[ind].compra;
     },
     addBlockTradeRow() {
+      const fechaSeleccionada = this.calendarOptions[0] ? this.calendarOptions[0].date : null;
       this.blockTradeRows.push({
-        fechaSeleccionada: this.calendarOptions[0].date,
+        fechaSeleccionada,
         nocional: '0',
         compra: true,
       });
