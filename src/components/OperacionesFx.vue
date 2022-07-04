@@ -93,7 +93,7 @@
               </div>
             </div>
             <div
-              v-if="operacionSeleccionada === 'BLOCKTRADE'"
+              v-if="operacionSeleccionada === 'BLOCKTRADE' && solicitarPrecio === false"
               class="row">
               <div class="col-12">
                 <div class="box-block-trade">
@@ -315,6 +315,20 @@
               </div>
             </div>
             <div
+              v-if="operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio === true"
+              class="row">
+              <div class="col-6">
+                <div class="box-rfs">
+                  <span>RFS.</span>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="box-rfs">
+                  <span>RFS.</span>
+                </div>
+              </div>
+            </div>
+            <div
               v-if="operacionSeleccionada !== 'BLOCKTRADE'"
               class="row">
               <div class="col-6">
@@ -394,18 +408,19 @@
               </div>
             </div>
             <div
-              v-if="operacionSeleccionada !== 'BLOCKTRADE'"
+              v-if="operacionSeleccionada !== 'BLOCKTRADE' ||
+                operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio === true"
               class="row">
               <div class="col-12">
                 <div
-                  v-if="!solicitarPrecio"
+                  v-if="!solicitarPrecio || operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio === true"
                   class="title-actions">
                   Selecciona una acción
                 </div>
                 <div
                   class="box-btn-operacion">
                   <button
-                    v-if="!solicitarPrecio"
+                    v-if="!solicitarPrecio || operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio === true"
                     type="button"
                     class="btn btn-outline-operacion btn-sm"
                     :class="{ 'active': optionSelected === 'Vender' }"
@@ -414,7 +429,8 @@
                   </button>
 
                   <button
-                    v-if="mostrarTwoWay && !solicitarPrecio"
+                    v-if="mostrarTwoWay && !solicitarPrecio || operacionSeleccionada == 'BLOCKTRADE'
+                      && solicitarPrecio === true"
                     type="button"
                     class="btn btn-outline-operacion btn-sm"
                     :class="{ 'active': mostrarTwoWay == true && optionSelected === 'Twoway'}"
@@ -431,7 +447,65 @@
                     {{ isBuy ? 'Vender' : 'Comprar' }} {{ currencySelected }}
                   </button>
                 </div>
-
+                <div
+                  v-if="operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio === true"
+                  class="box-block-detalle mt-4">
+                  <div class="box-spot-mes">
+                    <details>
+                      <summary>Detalle</summary>
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th scope="col">
+                              Fecha de liquidación
+                            </th>
+                            <th scope="col">
+                              Nocional
+                            </th>
+                            <th scope="col">
+                              Tipo de Cambio
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>mar, 20-11-2021</td>
+                            <td>21.4915000</td>
+                            <td>21.4915000</td>
+                          </tr>
+                          <tr>
+                            <td>mar, 20-11-2021</td>
+                            <td>21.4915000</td>
+                            <td>21.4915000</td>
+                          </tr>
+                          <tr>
+                            <td>mar, 20-11-2021</td>
+                            <td>21.4915000</td>
+                            <td>21.4915000</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div class="row box-monto-detalle">
+                        <div class="col-6">
+                          <div class="monto-title">
+                            Precio Promedio
+                          </div>
+                          <div class="monto-cantidad">
+                            21, 4960333
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="monto-title">
+                            Total del monto cotizado (Nocional USD)
+                          </div>
+                          <div class="monto-cantidad">
+                            0.00
+                          </div>
+                        </div>
+                      </div>
+                    </details>
+                  </div>
+                </div>
                 <div
                   v-if="solicitarPrecio"
                   class="box-tiempo">
@@ -647,6 +721,7 @@
                 </div>
               </div>
             </div>
+
             <div
               v-if="operacionSeleccionada === 'SWAP'"
               class="row">
@@ -1239,6 +1314,20 @@ export default {
               this.customModalProps.btnAcceptFunc = this.closeModal;
             } else {
               await this.onSumbitOperacion();
+            }
+            break;
+          case 'BLOCKTRADE':
+            try {
+              this.solicitarPrecio = true;
+              this.startTimer();
+            } catch (err) {
+              this.customModalProps.open = true;
+              this.customModalProps.title = 'Error en su solicitud';
+              this.customModalProps.message = 'Intente de nuevo';
+              this.customModalProps.type = 'warning';
+              this.customModalProps.btnAcceptText = 'Aceptar';
+              this.customModalProps.btnCloseHide = true;
+              this.customModalProps.btnAcceptFunc = this.closeModal;
             }
             break;
           default:
