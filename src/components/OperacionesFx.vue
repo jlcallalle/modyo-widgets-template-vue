@@ -288,10 +288,15 @@
                         for="selecCuentaOrigen"
                         class="title-cuenta">Cuenta Origen:</label>
                       <select
-                        id="selecCuentaOrigen"
-                        class="form-control">
-                        <option value="MXN INVEX - 1254483">
-                          MXN INVEX - 1254483
+                        class="form-control"
+                        @change="setOrigen($event)">
+                        <option
+                          v-for="(origen, index) in listadoOrigen"
+                          :id="index"
+                          :key="index"
+                          :selected="origenSelected === origen.customerAccount"
+                          :value="origen.customerAccount">
+                          {{ origenTxt(origen) }}
                         </option>
                       </select>
                     </div>
@@ -301,12 +306,18 @@
                       <label
                         for="selecCuentaDestino"
                         class="title-cuenta">
-                        Cuenta Origen:</label>
+                        Cuenta Destino:</label>
                       <select
-                        id="selecCuentaDestino"
-                        class="form-control">
-                        <option value="USD INVEX - 1254483">
-                          USD INVEX - 1254483
+                        id="tipoCuentalSelect"
+                        class="form-control"
+                        @change="setDestino($event)">
+                        <option
+                          v-for="(destino, index) in listadoDestino"
+                          :id="index"
+                          :key="index"
+                          :selected="destinoSelected === destino.BeneficiaryAccount"
+                          :value="destino.BeneficiaryAccount">
+                          {{ destinoTxt(destino) }}
                         </option>
                       </select>
                     </div>
@@ -1008,6 +1019,14 @@ export default {
         valueRange: { min: 0 },
         hideCurrencySymbolOnFocus: true,
       },
+      destinoCurrency: '',
+      allListadoDestino: [],
+      listadoOrigen: [],
+      listadoDestino: [],
+      origenSelected: null,
+      destinoSelected: null,
+      cuentaOrigen: null,
+      cuentaDestino: null,
     };
   },
   computed: {
@@ -1017,6 +1036,8 @@ export default {
     ...mapState(['servicio']),
     ...mapState(['listarOperacion']),
     ...mapState(['listaOperaciones']),
+    ...mapState(['listaOrigen']),
+    ...mapState(['listaDestino']),
     ...mapState(['horario']),
     ...mapState(['recuperaFecha']),
     ...mapState(['userData']),
@@ -1102,6 +1123,8 @@ export default {
     await this.getOperations();
     this.getValueTwoWay();
     await this.getHoraRestriccion();
+    this.getListadoOrigen();
+    this.getListadoDestino();
     // await this.$store.dispatch('generarTokenSeguridad', {
     //   CUI: this.mapClientLogeo.CUI,
     //   internetFolio: this.mapClientLogeo.internetFolio,
@@ -1863,6 +1886,108 @@ export default {
       if (!this.blockTradeRows[ind]) return '';
       if (!this.blockTradeRows[ind].fechaSeleccionada) return '';
       return `${this.blockTradeRows[ind].fechaSeleccionada}`;
+    },
+    async getListadoOrigen() {
+      const body = {
+        transactionId: 'INVEXCOMP.TEST-00020220512111543075',
+        requestSystem: 'PORTAL',
+        source: 'PORTALSYS',
+        userId: 'PORTALUSR',
+        branch: '001',
+        sourceUserId: 'PORTALUSR',
+        CustomerNumber: '00004635',
+        Type: 'CE',
+        InternetFolio: '9254',
+        AllowOperate: 'T',
+        Currency: this.currencySelected,
+      };
+      try {
+        const response = await this.$store.dispatch('getListaOrigen', body);
+        if (Array.isArray(response.cuentas)) {
+          this.listadoOrigen = response.cuentas;
+        } else {
+          this.listadoOrigen = [response.cuentas];
+        }
+        if (this.listadoOrigen.length > 0) {
+          this.setOrigen({ target: { value: this.listadoOrigen[0].customerAccount } });
+        }
+      } catch (error) {
+        this.showModalError = true;
+      }
+    },
+    async getListadoDestino() {
+      const body = {
+        transactionId: 'INVEXCOMP.TEST-00020220512111543075',
+        requestSystem: 'PORTALFX',
+        source: 'FXSYS',
+        userId: 'FXUSR',
+        branch: '001',
+        sourceUserId: 'FXUSR',
+        CustomerNumber: '00004635',
+        Type: 'CE',
+        InternetFolio: '9254',
+        AllowOperate: 'S',
+        Currency: this.currencySelected,
+        SameBank: false,
+        IsBeneficiaryCreditCard: false,
+      };
+      try {
+        const response = await this.$store.dispatch('getListaDestino', body);
+        const respAux = JSON.parse(JSON.stringify(response));
+        if (response) {
+          if (Array.isArray(respAux)) {
+            this.$set(this, 'allListadoDestino', respAux);
+          } else {
+            this.$set(this, 'allListadoDestino', [respAux]);
+          }
+          if (this.allListadoDestino.length > 0) {
+            this.listadoDestino = [];
+            this.destinoSelected = '';
+            this.cuentaDestino = null;
+            const listadoAux = JSON.parse(JSON.stringify(this.allListadoDestino));
+            if (Array.isArray(listadoAux)) {
+              listadoAux.forEach((item) => {
+                if (item.cuentas.beneficiaryData) {
+                  if (Array.isArray(item.cuentas.beneficiaryData.beneficiaryAccount)) {
+                    item.cuentas.beneficiaryData.beneficiaryAccount.forEach((item2) => {
+                      const auxPush = { ...item2, customerAccount: item.cuentas.customerAccount };
+                      this.listadoDestino.push(auxPush);
+                    });
+                  } else {
+                    this.listadoDestino.push({
+                      ...item.cuentas.beneficiaryData.beneficiaryAccount,
+                      customerAccount: item.cuentas.customerAccount,
+                    });
+                  }
+                }
+              });
+            }
+            this.setDestino({ target: { value: this.listadoDestino[0].BeneficiaryAccount } });
+          }
+        }
+      } catch (error) {
+        this.showModalError = true;
+      }
+    },
+    setOrigen(event) {
+      this.origenSelected = event.target.value;
+      this.cuentaOrigen = this.listadoOrigen.find((item) => item.customerAccount === this.origenSelected);
+    },
+    setDestino(event) {
+      this.destinoSelected = event.target.value;
+      this.cuentaDestino = this.listadoDestino.find((item) => item.BeneficiaryAccount === this.destinoSelected);
+    },
+    origenTxt(origen) {
+      if (!origen) return '';
+      return `${origen.currency}
+                        ${origen.type} - **********${origen.customerAccount.slice(origen.customerAccount.length - 4)}`;
+    },
+    destinoTxt(destino) {
+      if (!destino) return '';
+      const destinoAux = JSON.parse(JSON.stringify(destino));
+      if (!destinoAux.BeneficiaryAccount) return '';
+      return `${this.destinoCurrency} ${destinoAux.BeneficiaryBank} - **********${destinoAux.BeneficiaryAccount.toString()
+        .slice(destinoAux.BeneficiaryAccount.toString().length - 4)}`;
     },
   },
 };
