@@ -129,7 +129,7 @@
                               :disabled="solicitarPrecio"
                               @change="setCalendarBlockTradeRows($event, indexRow)">
                               <option
-                                v-for="(calendarOp, indexOptions) in calendarOptions"
+                                v-for="(calendarOp, indexOptions) in blockTradeRow.calendarOptions"
                                 :id="indexOptions"
                                 :key="indexOptions"
                                 :data-tipo="calendarOp.Description"
@@ -153,7 +153,7 @@
                                   :model-config="modelConfig"
                                   :value="blockTradeRow.fechaSeleccionada"
                                   :popover="{ visibility: 'click' }"
-                                  @dayclick="onDayClick">
+                                  @dayclick="onDayClickBlockTrade(indexRow, $event)">
                                   <template #default="{ inputValue, inputEvents }">
                                     <input
                                       class="form-control input-fecha"
@@ -1009,6 +1009,7 @@ export default {
         fechaSeleccionada: '',
         nocional: '0',
         compra: true,
+        calendarOptions: [],
       }],
       checkedInstrucion: false,
       currencyOptions: {
@@ -1206,6 +1207,21 @@ export default {
         this.addPataLarga();
       }
       this.condicionFechasSwap();
+    },
+    onDayClickBlockTrade(ind, ev) {
+      this.blockTradeRows[ind].fechaSeleccionada = ev.id;
+      const emptyCalendarOption = this.blockTradeRows[ind].calendarOptions.find((item) => item.Description === '');
+      const hasTenor = this.blockTradeRows[ind].calendarOptions.find((item) => item.date === ev.id);
+      if (hasTenor) {
+        if (emptyCalendarOption) {
+          // eslint-disable-next-line max-len
+          this.blockTradeRows[ind].calendarOptions = this.blockTradeRows[ind].calendarOptions.filter((blockTradeRow) => blockTradeRow.Description);
+        }
+      } else if (!emptyCalendarOption) {
+        this.blockTradeRows[ind].calendarOptions.unshift({
+          DateValue: '', Description: '',
+        });
+      }
     },
     validateBlockTradeRows() {
       let notionalValid = true;
@@ -1503,6 +1519,7 @@ export default {
         fechaSeleccionada: this.calendarOptions[0].date,
         nocional: '0',
         compra: true,
+        calendarOptions: [...this.calendarOptions],
       }];
       // this.operacion = ev.target.value;
       if (this.operacionSeleccionada === 'SPOT') {
@@ -1583,6 +1600,8 @@ export default {
     },
     setCalendarBlockTradeRows(ev, ind) {
       this.blockTradeRows[ind].fechaSeleccionada = ev.target.value;
+      // eslint-disable-next-line max-len
+      this.blockTradeRows[ind].calendarOptions = this.blockTradeRows[ind].calendarOptions.filter((blockTradeRow) => blockTradeRow.Description);
     },
     setCalendar(ev) {
       this.calendarSelected = ev.target.value;
@@ -1723,6 +1742,7 @@ export default {
           fechaSeleccionada: this.calendarOptions[0].date,
           nocional: '0',
           compra: true,
+          calendarOptions: [...this.calendarOptions],
         }];
       } else {
         this.calendarSelected = this.datoFechaSpot;
@@ -1868,6 +1888,7 @@ export default {
         fechaSeleccionada,
         nocional: '0',
         compra: true,
+        calendarOptions: [...this.calendarOptions],
       });
     },
     removeBlockTradeRow(ind) {
