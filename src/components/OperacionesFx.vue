@@ -1358,18 +1358,31 @@ export default {
             }
             break;
           case 'BLOCKTRADE':
-            try {
-              this.segundosTimmer = 299;
-              this.solicitarPrecio = true;
-              this.startTimer();
-            } catch (err) {
+            await this.getRecuperaFechaBloque();
+            if (this.recuperaFecha.data.result === 'TRUE') {
               this.customModalProps.open = true;
-              this.customModalProps.title = 'Error en su solicitud';
-              this.customModalProps.message = 'Intente de nuevo';
+              this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
+              this.customModalProps.message = '¿Deseas continuar con la operación?';
               this.customModalProps.type = 'warning';
               this.customModalProps.btnAcceptText = 'Aceptar';
-              this.customModalProps.btnCloseHide = true;
+              this.customModalProps.btnCancelText = 'Cancelar';
+              this.customModalProps.btnCloseHide = false;
+              this.customModalProps.btnCancelFunc = this.closeModal;
               this.customModalProps.btnAcceptFunc = this.closeModal;
+            } else {
+              try {
+                this.segundosTimmer = 299;
+                this.solicitarPrecio = true;
+                this.startTimer();
+              } catch (err) {
+                this.customModalProps.open = true;
+                this.customModalProps.title = 'Error en su solicitud';
+                this.customModalProps.message = 'Intente de nuevo';
+                this.customModalProps.type = 'warning';
+                this.customModalProps.btnAcceptText = 'Aceptar';
+                this.customModalProps.btnCloseHide = true;
+                this.customModalProps.btnAcceptFunc = this.closeModal;
+              }
             }
             break;
           default:
@@ -1409,6 +1422,16 @@ export default {
     async getRecuperaFecha() {
       const bodyFecha = {
         fecha: this.calendarSelected,
+      };
+      try {
+        await this.$store.dispatch('recuperaFecha', bodyFecha);
+      } catch (error) {
+        this.showModalError = true;
+      }
+    },
+    async getRecuperaFechaBloque() {
+      const bodyFecha = {
+        fecha: this.blockTradeRows[0].fechaSeleccionada,
       };
       try {
         await this.$store.dispatch('recuperaFecha', bodyFecha);
