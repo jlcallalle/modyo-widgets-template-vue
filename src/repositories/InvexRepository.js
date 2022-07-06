@@ -8,11 +8,9 @@ export default {
   getCurrencies(transactionId, requestSystem) {
     return InvexClient.get(`${prefixUrl}/listado-divisas`);
   },
-  // eslint-disable-next-line no-unused-vars
   getOperations(network = 'FX') {
     return InvexClient.get(`${prefixUrl}/lista-operaciones?network=${network}`);
   },
-  // eslint-disable-next-line no-unused-vars
   getCalendar(CustomerID = 'INVEXCOM.TEST', CurrencyPair = 'EUR/USD') {
     return InvexClient.post(`${prefixUrl}/Calend`, {
       CustomerID,
@@ -21,6 +19,9 @@ export default {
   },
   getQuoteRequest(body) {
     return InvexClient.post(`${prefixUrl}/quoterequest`, body);
+  },
+  getQuoteRequestBlockTrade(body) {
+    return InvexClient.post(`${prefixUrl}/quoterequestblock`, body);
   },
   getQuote(quoteId, opSide, operationName = 'SPOT') {
     return InvexClient.get(

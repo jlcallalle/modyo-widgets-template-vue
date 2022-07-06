@@ -1323,6 +1323,55 @@ export default {
         this.customModalProps.btnAcceptFunc = this.closeModal;
       }
     },
+    async onSubmitBlockTrade() {
+      try {
+        const Symbol = this.currenciesSelected.join('/');
+        let totalCompra = 0;
+        let totalVenta = 0;
+        const NoLegs = this.blockTradeRows.map((blockTradeRow) => {
+          if (blockTradeRow.compra) totalCompra += blockTradeRow.nocional;
+          else totalVenta += blockTradeRow.nocional;
+          const LegSettlDate = blockTradeRow.fechaSeleccionada.replace(/-/g, '');
+          return {
+            LegSymbol: Symbol,
+            LegSide: blockTradeRow.compra ? '1' : '2',
+            LegQty: blockTradeRow.nocional,
+            NoLegAllocs: '1',
+            LegAllocAccount: this.userData.data.user360T,
+            LegAllocQty: blockTradeRow.nocional,
+            LegSettlDate,
+          };
+        });
+        const Side = totalCompra >= totalVenta ? '1' : '2';
+        const body = {
+          ProductType: 'FX_BT',
+          NoRelatedSym: [{
+            Symbol,
+            Side,
+            OrderQty: '0',
+            SettlDate: '20220628',
+            Currency: this.currencySelected,
+            Account: this.userData.data.user360T,
+            ExpireTime: '300',
+            OperationName: 'BLOCKTRADE',
+          }],
+          NoLegsV: this.blockTradeRows.length,
+          NoLegs,
+        };
+        console.log('body block trade', body);
+        this.segundosTimmer = 299;
+        this.solicitarPrecio = true;
+        this.startTimer();
+      } catch (e) {
+        this.customModalProps.open = true;
+        this.customModalProps.title = 'Error en su solicitud';
+        this.customModalProps.message = 'Intente de nuevo';
+        this.customModalProps.type = 'warning';
+        this.customModalProps.btnAcceptText = 'Aceptar';
+        this.customModalProps.btnCloseHide = true;
+        this.customModalProps.btnAcceptFunc = this.closeModal;
+      }
+    },
     async onSubmit() {
       if (this.solicitarPrecio) {
         this.solicitarPrecio = false;
@@ -1358,19 +1407,7 @@ export default {
             }
             break;
           case 'BLOCKTRADE':
-            try {
-              this.segundosTimmer = 299;
-              this.solicitarPrecio = true;
-              this.startTimer();
-            } catch (err) {
-              this.customModalProps.open = true;
-              this.customModalProps.title = 'Error en su solicitud';
-              this.customModalProps.message = 'Intente de nuevo';
-              this.customModalProps.type = 'warning';
-              this.customModalProps.btnAcceptText = 'Aceptar';
-              this.customModalProps.btnCloseHide = true;
-              this.customModalProps.btnAcceptFunc = this.closeModal;
-            }
+            await this.onSubmitBlockTrade();
             break;
           default:
             await this.onSumbitOperacion();
