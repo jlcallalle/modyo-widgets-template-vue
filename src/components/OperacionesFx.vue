@@ -1029,6 +1029,7 @@ export default {
       cuentaOrigen: null,
       cuentaDestino: null,
       fechaBloqueMax: null,
+      blockTradeSide: 1,
     };
   },
   computed: {
@@ -1362,6 +1363,7 @@ export default {
         });
         const Side = totalCompra >= totalVenta ? '1' : '2';
         const SettlDate = Side === '1' ? dateStrCompra : dateStrVenta;
+        this.blockTradeSide = Side;
         const body = {
           ProductType: 'FX_BT',
           NoRelatedSym: [{
@@ -1379,15 +1381,25 @@ export default {
         };
         this.$store.dispatch('setLoading', true);
         const quoteRequest = await InvexRepository.getQuoteRequestBlockTrade(body);
-        // eslint-disable-next-line no-console
-        console.log('quoteRequest', quoteRequest);
         this.$store.dispatch('setLoading', false);
         // eslint-disable-next-line no-console
         console.log('se consumio el quote request', new Date());
-        // const rspMsg = JSON.parse(quoteRequest.Message);
-        this.segundosTimmer = 299;
-        this.solicitarPrecio = true;
-        this.startTimer();
+        if (quoteRequest.message === 'Success' && quoteRequest.data && quoteRequest.data.DataIdentifier) {
+          this.qQuoteReqID = quoteRequest.data.message.QuoteReqID;
+          this.blockTradeRows = this.blockTradeRows.map((blockTradeRow, ind) => {
+            const returnBlockTradeRow = blockTradeRow;
+            if (quoteRequest.data.message.LegInfo[ind]) {
+              const price = blockTradeRow.compra ? 'BuyPrice' : 'SellPrice';
+              returnBlockTradeRow.price = quoteRequest.data.message.LegInfo[ind][price];
+            }
+            return returnBlockTradeRow;
+          });
+          this.segundosTimmer = 299;
+          this.solicitarPrecio = true;
+          this.startTimer();
+        } else {
+          throw new Error('Error en su solicitud');
+        }
       } catch (e) {
         this.customModalProps.open = true;
         this.customModalProps.title = 'Error en su solicitud';
@@ -1736,6 +1748,72 @@ export default {
       }
       return `${min}:${seg}`;
     },
+    async getQuotes() {
+      const opName = this.optionSelected === 'Twoway' ? 'Twoway' : this.opSide;
+      const rsp = await this.$store.dispatch('getQuote', { quoteId: this.qQuoteReqID, opSide: opName, operationName: this.operacionSeleccionada });
+      if (rsp.DataIdentifier === 7) {
+        const rspMsg = JSON.parse(rsp.Message);
+        this.qQuoteReqID = rspMsg.QuoteReqID;
+        this.qQuoteID = rspMsg.QuoteID;
+        const newCurrencyValueSell = rspMsg.SellPrice;
+        const newCurrencyValueBuy = rspMsg.BuyPrice;
+        const newCurrencySwpaPointsSell = rspMsg.SwapPointsSell;
+        const newCurrencySwpaPointsBuy = rspMsg.SwapPointsBuy;
+        if (Number(newCurrencyValueSell) > Number(this.currencyValueSell)) {
+          this.valueComparationSell = '+';
+        } else if (Number(newCurrencyValueSell) < Number(this.currencyValueSell)) {
+          this.valueComparationSell = '-';
+        } else {
+          this.valueComparationSell = '=';
+        }
+        if (Number(newCurrencyValueBuy) > Number(this.currencyValueBuy)) {
+          this.valueComparationBuy = '+';
+        } else if (Number(newCurrencyValueBuy) < Number(this.currencyValueBuy)) {
+          this.valueComparationBuy = '-';
+        } else {
+          this.valueComparationBuy = '=';
+        }
+        if (Number(newCurrencySwpaPointsSell) > Number(this.currencySwapPointsSell)) {
+          this.valueComparationSwapPointsSell = '+';
+        } else if (Number(newCurrencySwpaPointsSell) < Number(this.currencySwapPointsSell)) {
+          this.valueComparationSwapPointsSell = '-';
+        } else {
+          this.valueComparationSwapPointsSell = '=';
+        }
+        if (Number(newCurrencySwpaPointsBuy) > Number(this.currencySwapPointsBuy)) {
+          this.valueComparationSwapPointsBuy = '+';
+        } else if (Number(newCurrencySwpaPointsBuy) < Number(this.currencySwapPointsBuy)) {
+          this.valueComparationSwapPointsBuy = '-';
+        } else {
+          this.valueComparationSwapPointsBuy = '=';
+        }
+        this.currencyValueSell = newCurrencyValueSell;
+        this.currencyValueBuy = newCurrencyValueBuy;
+        this.currencySwapPointsSell = newCurrencySwpaPointsSell;
+        this.currencySwapPointsBuy = newCurrencySwpaPointsBuy;
+      }
+    },
+    async getQuoteBlock() {
+      const rsp = await this.$store.dispatch('getQuoteBlock', { quoteId: this.qQuoteReqID, opSide: this.blockTradeSide });
+      if (rsp.message === 'Success' && rsp.data && rsp.DataIdentifier === 7) {
+        this.blockTradeRows = this.blockTradeRows.map((blockTradeRow, ind) => {
+          const returnBlockTradeRow = blockTradeRow;
+          if (rsp.data.message.LegInfo[ind]) {
+            const price = blockTradeRow.compra ? 'BuyPrice' : 'SellPrice';
+            const priceValue = rsp.data.message.LegInfo[ind][price];
+            if (Number(returnBlockTradeRow.price) > Number(priceValue)) {
+              returnBlockTradeRow.priceComparation = '+';
+            } else if (Number(returnBlockTradeRow.price) < Number(priceValue)) {
+              returnBlockTradeRow.priceComparation = '-';
+            } else {
+              returnBlockTradeRow.priceComparation = '';
+            }
+            returnBlockTradeRow.price = rsp.data.message.LegInfo[ind][price];
+          }
+          return returnBlockTradeRow;
+        });
+      }
+    },
     async startTimer() {
       // eslint-disable-next-line no-console
       console.log('entro a timmer', new Date());
@@ -1752,48 +1830,11 @@ export default {
         this.progress = progressAux;
         sec -= 1;
         if (sec % segundosPorPeticion === 0) {
-          const opName = this.optionSelected === 'Twoway' ? 'Twoway' : this.opSide;
-          const rsp = await this.$store.dispatch('getQuote', { quoteId: this.qQuoteReqID, opSide: opName, operationName: this.operacionSeleccionada });
-          if (rsp.DataIdentifier === 7) {
-            const rspMsg = JSON.parse(rsp.Message);
-            this.qQuoteReqID = rspMsg.QuoteReqID;
-            this.qQuoteID = rspMsg.QuoteID;
-            const newCurrencyValueSell = rspMsg.SellPrice;
-            const newCurrencyValueBuy = rspMsg.BuyPrice;
-            const newCurrencySwpaPointsSell = rspMsg.SwapPointsSell;
-            const newCurrencySwpaPointsBuy = rspMsg.SwapPointsBuy;
-            if (Number(newCurrencyValueSell) > Number(this.currencyValueSell)) {
-              this.valueComparationSell = '+';
-            } else if (Number(newCurrencyValueSell) < Number(this.currencyValueSell)) {
-              this.valueComparationSell = '-';
-            } else {
-              this.valueComparationSell = '=';
-            }
-            if (Number(newCurrencyValueBuy) > Number(this.currencyValueBuy)) {
-              this.valueComparationBuy = '+';
-            } else if (Number(newCurrencyValueBuy) < Number(this.currencyValueBuy)) {
-              this.valueComparationBuy = '-';
-            } else {
-              this.valueComparationBuy = '=';
-            }
-            if (Number(newCurrencySwpaPointsSell) > Number(this.currencySwapPointsSell)) {
-              this.valueComparationSwapPointsSell = '+';
-            } else if (Number(newCurrencySwpaPointsSell) < Number(this.currencySwapPointsSell)) {
-              this.valueComparationSwapPointsSell = '-';
-            } else {
-              this.valueComparationSwapPointsSell = '=';
-            }
-            if (Number(newCurrencySwpaPointsBuy) > Number(this.currencySwapPointsBuy)) {
-              this.valueComparationSwapPointsBuy = '+';
-            } else if (Number(newCurrencySwpaPointsBuy) < Number(this.currencySwapPointsBuy)) {
-              this.valueComparationSwapPointsBuy = '-';
-            } else {
-              this.valueComparationSwapPointsBuy = '=';
-            }
-            this.currencyValueSell = newCurrencyValueSell;
-            this.currencyValueBuy = newCurrencyValueBuy;
-            this.currencySwapPointsSell = newCurrencySwpaPointsSell;
-            this.currencySwapPointsBuy = newCurrencySwpaPointsBuy;
+          if (this.operacionSeleccionada === 'BLOCKTRADE') {
+            this.getQuoteBlock();
+            console.log('blockTrade', this.blockTradeRows);
+          } else {
+            this.getQuotes();
           }
         }
         if (sec < 0) {

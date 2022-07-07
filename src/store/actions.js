@@ -162,6 +162,21 @@ export default {
     }
   },
 
+  // eslint-disable-next-line no-empty-pattern
+  async getQuoteBlock({}, body) {
+    // commit('setLoading', true);
+    try {
+      const response = await InvexRepository.getQuoteBlock(body.quoteId, body.opSide);
+      // const infos = JSON.parse(response.Message);
+      // commit('setQuote', infos);
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      // commit('setLoading', false);
+    }
+  },
+
   async createConcertacion({ commit }, body) {
     commit('setLoading', true);
     try {

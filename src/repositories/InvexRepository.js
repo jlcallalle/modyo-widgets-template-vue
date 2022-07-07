@@ -28,6 +28,11 @@ export default {
       `${prefixUrl}/quote?QuoteReqID=${quoteId}&OperationSide=${opSide}&OperationName=${operationName}`,
     );
   },
+  getQuoteBlock(quoteId, opSide, operationName = 'BLOCKTRADE') {
+    return InvexClient.get(
+      `${prefixUrl}/quoteblock?QuoteReqID=${quoteId}&OperationSide=${opSide}&OperationName=${operationName}`,
+    );
+  },
   registrarOperacion(body) {
     return InvexClient.post(`${prefixUrl}/registrar-operacion`, body);
   },
