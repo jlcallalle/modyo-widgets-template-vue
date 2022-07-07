@@ -1028,6 +1028,7 @@ export default {
       destinoSelected: null,
       cuentaOrigen: null,
       cuentaDestino: null,
+      fechaBloqueMax: null,
     };
   },
   computed: {
@@ -1432,6 +1433,7 @@ export default {
             }
             break;
           case 'BLOCKTRADE':
+            this.fechaTrade();
             await this.getRecuperaFechaBloque();
             if (this.recuperaFecha.data.result === 'TRUE') {
               this.customModalProps.open = true;
@@ -1442,7 +1444,7 @@ export default {
               this.customModalProps.btnCancelText = 'Cancelar';
               this.customModalProps.btnCloseHide = false;
               this.customModalProps.btnCancelFunc = this.closeModal;
-              this.customModalProps.btnAcceptFunc = await this.onSubmitBlockTrade();
+              this.customModalProps.btnAcceptFunc = this.closeModal;
             } else {
               await this.onSubmitBlockTrade();
             }
@@ -1493,7 +1495,7 @@ export default {
     },
     async getRecuperaFechaBloque() {
       const bodyFecha = {
-        fecha: this.blockTradeRows[0].fechaSeleccionada,
+        fecha: this.fechaBloqueMax,
       };
       try {
         await this.$store.dispatch('recuperaFecha', bodyFecha);
@@ -2094,6 +2096,14 @@ export default {
       if (!destinoAux.BeneficiaryAccount) return '';
       return `${this.destinoCurrency} ${destinoAux.BeneficiaryBank} - **********${destinoAux.BeneficiaryAccount.toString()
         .slice(destinoAux.BeneficiaryAccount.toString().length - 4)}`;
+    },
+    fechaTrade() {
+      const fechasBloque = this.blockTradeRows.map((item) => {
+        const itemValue = item.fechaSeleccionada;
+        return itemValue;
+      });
+      const max = fechasBloque.reduce((acc, date) => (acc && new Date(acc) > new Date(date) ? acc : date), '');
+      this.fechaBloqueMax = max;
     },
   },
 };
