@@ -1328,9 +1328,26 @@ export default {
         const Symbol = this.currenciesSelected.join('/');
         let totalCompra = 0;
         let totalVenta = 0;
+        let dateCompra = new Date(Date.now() - 86400000);
+        let dateStrCompra = '';
+        let dateVenta = new Date(Date.now() - 86400000);
+        let dateStrVenta = '';
         const NoLegs = this.blockTradeRows.map((blockTradeRow) => {
-          if (blockTradeRow.compra) totalCompra += blockTradeRow.nocional;
-          else totalVenta += blockTradeRow.nocional;
+          if (blockTradeRow.compra) {
+            totalCompra += blockTradeRow.nocional;
+            const fechaSeleccionada = new Date(blockTradeRow.fechaSeleccionada);
+            if (dateCompra < fechaSeleccionada) {
+              dateCompra = fechaSeleccionada;
+              dateStrCompra = blockTradeRow.fechaSeleccionada.replace(/-/g, '');
+            }
+          } else {
+            totalVenta += blockTradeRow.nocional;
+            const fechaSeleccionada = new Date(blockTradeRow.fechaSeleccionada);
+            if (dateVenta < fechaSeleccionada) {
+              dateVenta = fechaSeleccionada;
+              dateStrVenta = blockTradeRow.fechaSeleccionada.replace(/-/g, '');
+            }
+          }
           const LegSettlDate = blockTradeRow.fechaSeleccionada.replace(/-/g, '');
           return {
             LegSymbol: Symbol,
@@ -1343,13 +1360,14 @@ export default {
           };
         });
         const Side = totalCompra >= totalVenta ? '1' : '2';
+        const SettlDate = Side === '1' ? dateStrCompra : dateStrVenta;
         const body = {
           ProductType: 'FX_BT',
           NoRelatedSym: [{
             Symbol,
             Side,
             OrderQty: '0',
-            SettlDate: '20220628',
+            SettlDate,
             Currency: this.currencySelected,
             Account: this.userData.data.user360T,
             ExpireTime: '300',
@@ -1358,7 +1376,14 @@ export default {
           NoLegsV: this.blockTradeRows.length,
           NoLegs,
         };
-        console.log('body block trade', body);
+        this.$store.dispatch('setLoading', true);
+        const quoteRequest = await InvexRepository.getQuoteRequestBlockTrade(body);
+        // eslint-disable-next-line no-console
+        console.log('quoteRequest', quoteRequest);
+        this.$store.dispatch('setLoading', false);
+        // eslint-disable-next-line no-console
+        console.log('se consumio el quote request', new Date());
+        // const rspMsg = JSON.parse(quoteRequest.Message);
         this.segundosTimmer = 299;
         this.solicitarPrecio = true;
         this.startTimer();
@@ -1407,7 +1432,20 @@ export default {
             }
             break;
           case 'BLOCKTRADE':
-            await this.onSubmitBlockTrade();
+            await this.getRecuperaFechaBloque();
+            if (this.recuperaFecha.data.result === 'TRUE') {
+              this.customModalProps.open = true;
+              this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
+              this.customModalProps.message = '¿Deseas continuar con la operación?';
+              this.customModalProps.type = 'warning';
+              this.customModalProps.btnAcceptText = 'Aceptar';
+              this.customModalProps.btnCancelText = 'Cancelar';
+              this.customModalProps.btnCloseHide = false;
+              this.customModalProps.btnCancelFunc = this.closeModal;
+              this.customModalProps.btnAcceptFunc = await this.onSubmitBlockTrade();
+            } else {
+              await this.onSubmitBlockTrade();
+            }
             break;
           default:
             await this.onSumbitOperacion();
@@ -1446,6 +1484,16 @@ export default {
     async getRecuperaFecha() {
       const bodyFecha = {
         fecha: this.calendarSelected,
+      };
+      try {
+        await this.$store.dispatch('recuperaFecha', bodyFecha);
+      } catch (error) {
+        this.showModalError = true;
+      }
+    },
+    async getRecuperaFechaBloque() {
+      const bodyFecha = {
+        fecha: this.blockTradeRows[0].fechaSeleccionada,
       };
       try {
         await this.$store.dispatch('recuperaFecha', bodyFecha);
