@@ -479,20 +479,16 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td>mar, 20-11-2021</td>
-                            <td>21.4915000</td>
-                            <td>21.4915000</td>
-                          </tr>
-                          <tr>
-                            <td>mar, 20-11-2021</td>
-                            <td>21.4915000</td>
-                            <td>21.4915000</td>
-                          </tr>
-                          <tr>
-                            <td>mar, 20-11-2021</td>
-                            <td>21.4915000</td>
-                            <td>21.4915000</td>
+                          <tr
+                            v-for="(blockTradeRow, indexRow) in blockTradeRows"
+                            :key="indexRow">
+                            <td>{{ formatoFechaBlockTradeDetail(blockTradeRow.fechaSeleccionada) }}</td>
+                            <td>{{ blockTradeRow.nocional }}</td>
+                            <td
+                              :class="{greenValue: blockTradeRow.priceComparation === '+',
+                                       redValue: blockTradeRow.priceComparation === '-'}">
+                              {{ blockTradeRow.price }}
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -890,6 +886,7 @@
 <script>
 import { mapState } from 'vuex';
 import { VueEllipseProgress } from 'vue-ellipse-progress';
+import moment from 'moment-timezone';
 import DatePicker from 'v-calendar/lib/components/date-picker.umd';
 import CustomModal from './CustomModal.vue';
 import CurrencyInput from './CurrencyInput.vue';
@@ -1386,14 +1383,7 @@ export default {
         console.log('se consumio el quote request', new Date());
         if (quoteRequest.message === 'Success' && quoteRequest.data && quoteRequest.data.DataIdentifier) {
           this.qQuoteReqID = quoteRequest.data.message.QuoteReqID;
-          this.blockTradeRows = this.blockTradeRows.map((blockTradeRow, ind) => {
-            const returnBlockTradeRow = blockTradeRow;
-            if (quoteRequest.data.message.LegInfo[ind]) {
-              const price = blockTradeRow.compra ? 'BuyPrice' : 'SellPrice';
-              returnBlockTradeRow.price = quoteRequest.data.message.LegInfo[ind][price];
-            }
-            return returnBlockTradeRow;
-          });
+          this.setNewBlockTradeRowsValues(quoteRequest.data.message);
           this.segundosTimmer = 299;
           this.solicitarPrecio = true;
           this.startTimer();
@@ -1447,7 +1437,7 @@ export default {
           case 'BLOCKTRADE':
             this.fechaTrade();
             await this.getRecuperaFechaBloque();
-            if (this.recuperaFecha.data.result === 'TRUE') {
+            if (this.recuperaFecha.data.result === 'dTRUE') {
               this.customModalProps.open = true;
               this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
               this.customModalProps.message = '¿Deseas continuar con la operación?';
@@ -1793,14 +1783,13 @@ export default {
         this.currencySwapPointsBuy = newCurrencySwpaPointsBuy;
       }
     },
-    async getQuoteBlock() {
-      const rsp = await this.$store.dispatch('getQuoteBlock', { quoteId: this.qQuoteReqID, opSide: this.blockTradeSide });
-      if (rsp.message === 'Success' && rsp.data && rsp.DataIdentifier === 7) {
-        this.blockTradeRows = this.blockTradeRows.map((blockTradeRow, ind) => {
-          const returnBlockTradeRow = blockTradeRow;
-          if (rsp.data.message.LegInfo[ind]) {
-            const price = blockTradeRow.compra ? 'BuyPrice' : 'SellPrice';
-            const priceValue = rsp.data.message.LegInfo[ind][price];
+    setNewBlockTradeRowsValues(newValues) {
+      this.blockTradeRows = this.blockTradeRows.map((blockTradeRow, ind) => {
+        const returnBlockTradeRow = blockTradeRow;
+        if (newValues.LegInfo[ind]) {
+          const price = blockTradeRow.compra ? 'BuyPrice' : 'SellPrice';
+          const priceValue = newValues.LegInfo[ind][price];
+          if (returnBlockTradeRow.price) {
             if (Number(returnBlockTradeRow.price) > Number(priceValue)) {
               returnBlockTradeRow.priceComparation = '+';
             } else if (Number(returnBlockTradeRow.price) < Number(priceValue)) {
@@ -1808,10 +1797,16 @@ export default {
             } else {
               returnBlockTradeRow.priceComparation = '';
             }
-            returnBlockTradeRow.price = rsp.data.message.LegInfo[ind][price];
           }
-          return returnBlockTradeRow;
-        });
+          returnBlockTradeRow.price = newValues.LegInfo[ind][price];
+        }
+        return returnBlockTradeRow;
+      });
+    },
+    async getQuoteBlock() {
+      const rsp = await this.$store.dispatch('getQuoteBlock', { quoteId: this.qQuoteReqID, opSide: this.blockTradeSide });
+      if (rsp.message === 'Success' && rsp.data && rsp.DataIdentifier === 7) {
+        this.setNewBlockTradeRowsValues(rsp.data.message);
       }
     },
     async startTimer() {
@@ -1832,7 +1827,6 @@ export default {
         if (sec % segundosPorPeticion === 0) {
           if (this.operacionSeleccionada === 'BLOCKTRADE') {
             this.getQuoteBlock();
-            console.log('blockTrade', this.blockTradeRows);
           } else {
             this.getQuotes();
           }
@@ -2145,6 +2139,10 @@ export default {
       });
       const max = fechasBloque.reduce((acc, date) => (acc && new Date(acc) > new Date(date) ? acc : date), '');
       this.fechaBloqueMax = max;
+    },
+    formatoFechaBlockTradeDetail(fecha) {
+      moment.locale('es');
+      return moment(fecha, 'YYYY-MM-DD HH:mm:ss').format('ddd DD. MMM YYYY');
     },
   },
 };
