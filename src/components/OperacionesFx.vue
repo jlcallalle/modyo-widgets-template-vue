@@ -252,15 +252,15 @@
               </div>
               <div class="col-12 mt-4">
                 <div class="row">
-                  <div class="col-6">
+                  <div class="col-12 col-md-6">
                     <div class="cantidad">
                       <span>{{ blockTradeRows.length }}</span> Operacion{{ blockTradeRows.length !== 1 ? 'es' : '' }}
                     </div>
                   </div>
-                  <div class="col-6">
+                  <div class="col-12 col-md-6">
                     <div class="total-monto">
-                      <span>Total de monto cotizado</span>
-                      <span>{{ calculateBlockTradeNotional() }}</span>
+                      <span class="title-monto-total">Total de monto cotizado</span>
+                      <span class="calculo-monto-total">{{ calculateBlockTradeNotional() }}</span>
                     </div>
                   </div>
                 </div>
@@ -330,12 +330,12 @@
               class="row">
               <div class="col-6">
                 <div class="box-rfs">
-                  <span>RFS.</span>
+                  <span>RFS</span>
                 </div>
               </div>
               <div class="col-6">
                 <div class="box-rfs">
-                  <span>RFS.</span>
+                  <span>RFS</span>
                 </div>
               </div>
             </div>
@@ -497,7 +497,7 @@
                         </tbody>
                       </table>
                       <div class="row box-monto-detalle">
-                        <div class="col-6">
+                        <div class="col-precio col-12 col-md-6">
                           <div class="monto-title">
                             Precio Promedio
                           </div>
@@ -505,7 +505,7 @@
                             21, 4960333
                           </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-precio col-12 col-md-6">
                           <div class="monto-title">
                             Total del monto cotizado (Nocional USD)
                           </div>
