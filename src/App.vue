@@ -4,6 +4,7 @@
     class="wrapper-widget">
     <operaciones-fx v-if="currentView === 'operacionesFx'" />
     <operacion-concertada v-if="currentView === 'operacionConcertada'" />
+    <instrucciones-liquidacion v-if="currentView === 'instruccionesLiquidacion'" />
   </div>
 </template>
 
@@ -11,12 +12,14 @@
 import { mapState } from 'vuex';
 import OperacionesFx from './components/OperacionesFx.vue';
 import OperacionConcertada from './components/OperacionConcertada.vue';
+import InstruccionesLiquidacion from './components/InstruccionesLiquidacion.vue';
 
 export default {
   name: 'App',
   components: {
     OperacionesFx,
     OperacionConcertada,
+    InstruccionesLiquidacion,
   },
   data() {
     return {
