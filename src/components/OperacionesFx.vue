@@ -4,7 +4,7 @@
     :class="[solicitarPrecio == false ? 'widget-operaciones-fx' : 'widget-operacion-comprar-vender' ]">
     <h1
       class="mb-4 title-widget">
-      Operaciones <span>
+      Operaciones <span @click="solicitarPrecio = !solicitarPrecio">
         FX
       </span>
     </h1>
@@ -326,16 +326,64 @@
               </div>
             </div>
             <div
-              v-if="operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio === true"
+              v-if="operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio"
               class="row">
               <div class="col-6">
-                <div class="box-rfs">
+                <div
+                  v-if="blockTradeSide === '2'"
+                  class="box-rfs">
                   <span>RFS</span>
+                </div>
+                <div
+                  v-if="blockTradeSide === '1' || blockTradeSide === '3'"
+                  class="box-vender tipo-venta">
+                  <div class="title-operacion">
+                    Comprar {{ currencySelected }}
+                  </div>
+                  <div
+                    v-if="blockTradeRows[0]"
+                    class="box-precio">
+                    <span
+                      :class="{greenValue: blockTradeRows[0].priceComparation === '+',
+                               redValue: blockTradeRows[0].priceComparation === '-'}">
+                      {{ formatoPrecioCuatroDigitos(blockTradeRows[0].price) }}
+                    </span>
+                  </div>
+                  <button
+                    type="submit"
+                    class="btn btn-block btn-operacion"
+                    @click.prevent="eventOperation('Vender')">
+                    Comprar {{ currencySelected }}
+                  </button>
                 </div>
               </div>
               <div class="col-6">
-                <div class="box-rfs">
+                <div
+                  v-if="blockTradeSide === '1'"
+                  class="box-rfs">
                   <span>RFS</span>
+                </div>
+                <div
+                  v-if="blockTradeSide === '2' || blockTradeSide === '3'"
+                  class="box-vender tipo-venta">
+                  <div class="title-operacion">
+                    Vender {{ currencySelected }}
+                  </div>
+                  <div
+                    v-if="blockTradeRows[0]"
+                    class="box-precio">
+                    <span
+                      :class="{greenValue: blockTradeRows[0].priceComparation === '+',
+                               redValue: blockTradeRows[0].priceComparation === '-'}">
+                      {{ formatoPrecioCuatroDigitos(blockTradeRows[0].price) }}
+                    </span>
+                  </div>
+                  <button
+                    type="submit"
+                    class="btn btn-block btn-operacion"
+                    @click.prevent="eventOperation('Vender')">
+                    Vender {{ currencySelected }}
+                  </button>
                 </div>
               </div>
             </div>
@@ -368,8 +416,7 @@
                       v-else
                       :class="{greenValue: valueComparationSwapPointsSell === '+',
                                redValue: valueComparationSwapPointsSell === '-'}">
-                      <!-- eslint-disable-next-line max-len -->
-                      {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 } ).format(formatSwapPointsSell) }}
+                      {{ formatoPrecioCuatroDigitos(formatSwapPointsSell) }}
                     </span>
                   </div>
                   <button
@@ -406,7 +453,7 @@
                       :class="{greenValue: valueComparationSwapPointsBuy === '+',
                                redValue: valueComparationSwapPointsBuy === '-'}">
                       <!-- eslint-disable-next-line max-len -->
-                      {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 } ).format(formatSwapPointsBuy) }}
+                      {{ formatoPrecioCuatroDigitos(formatSwapPointsBuy) }}
                     </span>
                   </div>
                   <button
@@ -420,46 +467,11 @@
             </div>
             <div
               v-if="operacionSeleccionada !== 'BLOCKTRADE' ||
-                operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio === true"
+                operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio"
               class="row">
               <div class="col-12">
                 <div
-                  v-if="!solicitarPrecio || operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio === true"
-                  class="title-actions">
-                  Selecciona una acción
-                </div>
-                <div
-                  class="box-btn-operacion">
-                  <button
-                    v-if="!solicitarPrecio || operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio === true"
-                    type="button"
-                    class="btn btn-outline-operacion btn-sm"
-                    :class="{ 'active': optionSelected === 'Vender' }"
-                    @click="clickOption('Vender')">
-                    {{ isBuy ? 'Comprar' : 'Vender' }} {{ currencySelected }}
-                  </button>
-
-                  <button
-                    v-if="mostrarTwoWay && !solicitarPrecio || operacionSeleccionada == 'BLOCKTRADE'
-                      && solicitarPrecio === true"
-                    type="button"
-                    class="btn btn-outline-operacion btn-sm"
-                    :class="{ 'active': mostrarTwoWay == true && optionSelected === 'Twoway'}"
-                    @click="clickOption('Twoway')">
-                    Two Way
-                  </button>
-
-                  <button
-                    v-if="!solicitarPrecio"
-                    type="button"
-                    class="btn btn-outline-operacion btn-sm"
-                    :class="{ 'active': optionSelected === 'Comprar' }"
-                    @click="clickOption('Comprar')">
-                    {{ isBuy ? 'Vender' : 'Comprar' }} {{ currencySelected }}
-                  </button>
-                </div>
-                <div
-                  v-if="operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio === true"
+                  v-if="operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio"
                   class="box-block-detalle mt-4">
                   <div class="box-spot-mes">
                     <details>
@@ -487,7 +499,7 @@
                             <td
                               :class="{greenValue: blockTradeRow.priceComparation === '+',
                                        redValue: blockTradeRow.priceComparation === '-'}">
-                              {{ blockTradeRow.price }}
+                              {{ formatoPrecioCuatroDigitos(blockTradeRow.price) }}
                             </td>
                           </tr>
                         </tbody>
@@ -1026,7 +1038,7 @@ export default {
       cuentaOrigen: null,
       cuentaDestino: null,
       fechaBloqueMax: null,
-      blockTradeSide: 1,
+      blockTradeSide: '1',
     };
   },
   computed: {
@@ -1137,13 +1149,7 @@ export default {
         this.showModalHorario = true;
       }
     }
-    const responseApiOperaciones = await this.$store.dispatch('updateListarOperaciones');
-    if (responseApiOperaciones.status === 200 || responseApiOperaciones.status === 201) {
-      // console.log('operaciones ok');
-    } else {
-      // console.log('operaciones error');
-      // this.showModalError = true;
-    }
+    await this.$store.dispatch('updateListarOperaciones');
   },
   methods: {
     add() {
@@ -1312,7 +1318,6 @@ export default {
         this.solicitarPrecio = true;
         this.startTimer();
       } catch (err) {
-        // console.log(err);
         this.customModalProps.open = true;
         this.customModalProps.title = 'Error en su solicitud';
         this.customModalProps.message = 'Intente de nuevo';
@@ -1327,25 +1332,11 @@ export default {
         const Symbol = this.currenciesSelected.join('/');
         let totalCompra = 0;
         let totalVenta = 0;
-        let dateCompra = new Date(Date.now() - 86400000);
-        let dateStrCompra = '';
-        let dateVenta = new Date(Date.now() - 86400000);
-        let dateStrVenta = '';
         const NoLegs = this.blockTradeRows.map((blockTradeRow) => {
           if (blockTradeRow.compra) {
             totalCompra += blockTradeRow.nocional;
-            const fechaSeleccionada = new Date(blockTradeRow.fechaSeleccionada);
-            if (dateCompra < fechaSeleccionada) {
-              dateCompra = fechaSeleccionada;
-              dateStrCompra = blockTradeRow.fechaSeleccionada.replace(/-/g, '');
-            }
           } else {
             totalVenta += blockTradeRow.nocional;
-            const fechaSeleccionada = new Date(blockTradeRow.fechaSeleccionada);
-            if (dateVenta < fechaSeleccionada) {
-              dateVenta = fechaSeleccionada;
-              dateStrVenta = blockTradeRow.fechaSeleccionada.replace(/-/g, '');
-            }
           }
           const LegSettlDate = blockTradeRow.fechaSeleccionada.replace(/-/g, '');
           return {
@@ -1359,7 +1350,6 @@ export default {
           };
         });
         const Side = totalCompra >= totalVenta ? '1' : '2';
-        const SettlDate = Side === '1' ? dateStrCompra : dateStrVenta;
         this.blockTradeSide = Side;
         const body = {
           ProductType: 'FX_BT',
@@ -1367,7 +1357,6 @@ export default {
             Symbol,
             Side,
             OrderQty: '0',
-            SettlDate,
             Currency: this.currencySelected,
             Account: this.userData.data.user360T,
             ExpireTime: '300',
@@ -1381,7 +1370,7 @@ export default {
         this.$store.dispatch('setLoading', false);
         // eslint-disable-next-line no-console
         console.log('se consumio el quote request', new Date());
-        if (quoteRequest.message === 'Success' && quoteRequest.data && quoteRequest.data.DataIdentifier) {
+        if (quoteRequest.data && quoteRequest.data.DataIdentifier) {
           this.qQuoteReqID = quoteRequest.data.message.QuoteReqID;
           this.setNewBlockTradeRowsValues(quoteRequest.data.message);
           this.segundosTimmer = 299;
@@ -1508,7 +1497,6 @@ export default {
     async getCalendar() {
       try {
         const currenciesSelected = this.currenciesSelected.join('/');
-        // console.log('currenciesSelected', currenciesSelected);
         await this.$store.dispatch('getCalendario', currenciesSelected, this.userData.data.user360T);
         this.calendarOptions = this.calendario;
         this.calendarOptionsPataCorta = this.calendario;
@@ -1784,28 +1772,30 @@ export default {
       }
     },
     setNewBlockTradeRowsValues(newValues) {
-      this.blockTradeRows = this.blockTradeRows.map((blockTradeRow, ind) => {
-        const returnBlockTradeRow = blockTradeRow;
-        if (newValues.LegInfo[ind]) {
-          const price = blockTradeRow.compra ? 'BuyPrice' : 'SellPrice';
-          const priceValue = newValues.LegInfo[ind][price];
-          if (returnBlockTradeRow.price) {
-            if (Number(returnBlockTradeRow.price) > Number(priceValue)) {
-              returnBlockTradeRow.priceComparation = '+';
-            } else if (Number(returnBlockTradeRow.price) < Number(priceValue)) {
-              returnBlockTradeRow.priceComparation = '-';
-            } else {
-              returnBlockTradeRow.priceComparation = '';
+      if (newValues) {
+        this.blockTradeRows = this.blockTradeRows.map((blockTradeRow, ind) => {
+          const returnBlockTradeRow = blockTradeRow;
+          if (newValues.LegInfo[ind]) {
+            const price = blockTradeRow.compra ? 'BuyPrice' : 'SellPrice';
+            const priceValue = newValues.LegInfo[ind][price];
+            if (returnBlockTradeRow.price) {
+              if (Number(returnBlockTradeRow.price) > Number(priceValue)) {
+                returnBlockTradeRow.priceComparation = '+';
+              } else if (Number(returnBlockTradeRow.price) < Number(priceValue)) {
+                returnBlockTradeRow.priceComparation = '-';
+              } else {
+                returnBlockTradeRow.priceComparation = '';
+              }
             }
+            returnBlockTradeRow.price = newValues.LegInfo[ind][price];
           }
-          returnBlockTradeRow.price = newValues.LegInfo[ind][price];
-        }
-        return returnBlockTradeRow;
-      });
+          return returnBlockTradeRow;
+        });
+      }
     },
     async getQuoteBlock() {
       const rsp = await this.$store.dispatch('getQuoteBlock', { quoteId: this.qQuoteReqID, opSide: this.blockTradeSide });
-      if (rsp.message === 'Success' && rsp.data && rsp.DataIdentifier === 7) {
+      if (rsp.data && rsp.data.DataIdentifier === 7) {
         this.setNewBlockTradeRowsValues(rsp.data.message);
       }
     },
@@ -1925,10 +1915,8 @@ export default {
       console.log('finalizo el consumo del create concertacion', new Date());
       if (responseApiConcertacion.DataIdentifier === 9) {
         this.showModal = true;
-        // console.log('concertacion ok');
       } else {
         this.showModalError = true;
-        // console.log('concertacion error');
       }
     },
     handleClose() {
@@ -2143,6 +2131,12 @@ export default {
     formatoFechaBlockTradeDetail(fecha) {
       moment.locale('es');
       return moment(fecha, 'YYYY-MM-DD HH:mm:ss').format('ddd DD. MMM YYYY');
+    },
+    formatoPrecioCuatroDigitos(precio) {
+      if (!precio) return '';
+      const numberPrecio = Number(precio);
+      if (numberPrecio.isNaN) return '';
+      return new Intl.NumberFormat('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 }).format(numberPrecio);
     },
   },
 };
