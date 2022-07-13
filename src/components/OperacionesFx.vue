@@ -1923,6 +1923,26 @@ export default {
     },
     async eventOperationBloque() {
       const Symbol = this.currenciesSelected.join('/');
+      let totalCompra = 0;
+      let totalVenta = 0;
+      const NoLegs = this.blockTradeRows.map((blockTradeRow) => {
+        if (blockTradeRow.compra) {
+          totalCompra += blockTradeRow.nocional;
+        } else {
+          totalVenta += blockTradeRow.nocional;
+        }
+        const LegSettlDate = blockTradeRow.fechaSeleccionada.replace(/-/g, '');
+        return {
+          LegSymbol: Symbol,
+          LegSidel: blockTradeRow.compra ? '1' : '2',
+          LegQty: blockTradeRow.nocional,
+          LegSettlDate,
+          LegPrice: blockTradeRow.price,
+          LegRefID: '00020220711093311150-01',
+        };
+      });
+      const Side = totalCompra >= totalVenta ? '1' : '2';
+      this.blockTradeSide = Side;
       const bodyCerrarOperacion = {
         CLOrdID: this.qQuoteReqID,
         Currency: this.currencySelected,
@@ -1930,21 +1950,7 @@ export default {
         Side: this.blockTradeSide,
         Symbol,
         QuoteID: this.qQuoteID,
-        NoLegs: [{
-          LegSymbol: 'USD/MXN',
-          LegSidel: '1',
-          LegQty: '1000',
-          LegSettlDate: '20220712',
-          LegPrice: '20.01772',
-          LegRefID: '00020220711093311150-01',
-        }, {
-          LegSymbol: 'USD/MXN',
-          LegSidel: '1',
-          LegQty: '2000',
-          LegSettlDate: '20220713',
-          LegPrice: '20.02407',
-          LegRefID: '00020220711093311150-02',
-        }],
+        NoLegs,
         Account: this.userData.data.user360T,
         Product: 'BLOCKTRADE',
         RequestSystem: 'PORTALFX',
@@ -1952,7 +1958,7 @@ export default {
       };
       clearInterval(this.timmerId);
       const responseApiConcertacion = await this.$store.dispatch('createCerrarOperacion', bodyCerrarOperacion);
-      if (responseApiConcertacion.status === 200) {
+      if (responseApiConcertacion.status === 'OK') {
         this.showModal = true;
       } else {
         this.showModalError = true;

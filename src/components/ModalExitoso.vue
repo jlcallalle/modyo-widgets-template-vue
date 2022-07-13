@@ -40,11 +40,23 @@
               </h5>
               <p>La operación fue realizada correctamente.</p>
             </div>
-            <div class="modal-footer justify-content-center">
+            <div
+              v-if="operacionSeleccionada !== 'BLOCKTRADE'"
+              class="modal-footer justify-content-center">
               <button
                 type="button"
                 class="btn btn-solicita"
                 @click="goToOperacionConcertada">
+                Aceptar 1
+              </button>
+            </div>
+            <div
+              v-else
+              class="modal-footer justify-content-center">
+              <button
+                type="button"
+                class="btn btn-solicita"
+                @click="goToInstruccionLiquidacion">
                 Aceptar
               </button>
             </div>
@@ -56,6 +68,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'ModalExitoso',
   props: {
@@ -67,9 +81,15 @@ export default {
 
     };
   },
+  computed: {
+    ...mapState(['operacionSeleccionada']),
+  },
   methods: {
     goToOperacionConcertada() {
       this.$store.dispatch('updatePage', 'operacionConcertada');
+    },
+    goToInstruccionLiquidacion() {
+      this.$store.dispatch('updatePage', 'instruccionesLiquidacion');
     },
   },
 };

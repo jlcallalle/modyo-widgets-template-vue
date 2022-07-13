@@ -82,7 +82,8 @@
           <div class="box-two-btn d-flex justify-content-around">
             <a
               href="#;"
-              class="btn btn-outline-primary btn-cancelar">Realizar otra operación</a>
+              class="btn btn-outline-primary btn-cancelar"
+              @click.prevent="otraOperacion">Realizar otra operación</a>
             <button
               type="submit"
               class="btn btn-primary btn-solicita">
@@ -155,6 +156,9 @@ export default {
     ...mapState(['currentView', 'loading']),
   },
   methods: {
+    otraOperacion() {
+      this.$store.dispatch('updatePage', 'operacionesFx');
+    },
   },
 };
 </script>
