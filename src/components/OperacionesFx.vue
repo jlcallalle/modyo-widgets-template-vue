@@ -352,12 +352,6 @@
                   <button
                     type="submit"
                     class="btn btn-block btn-operacion"
-                    @click.prevent="eventOperation('Vender')">
-                    Comprar {{ currencySelected }}
-                  </button>
-                   <button
-                    type="submit"
-                    class="btn btn-block btn-operacion"
                     @click.prevent="eventOperationBloque">
                     Cerrar Operación
                   </button>
@@ -387,8 +381,8 @@
                   <button
                     type="submit"
                     class="btn btn-block btn-operacion"
-                    @click.prevent="eventOperation('Vender')">
-                    Vender {{ currencySelected }}
+                    @click.prevent="eventOperationBloque">
+                    Cerrar Operación
                   </button>
                 </div>
               </div>
@@ -516,15 +510,15 @@
                             Precio Promedio
                           </div>
                           <div class="monto-cantidad">
-                            21, 4960333
+                            {{ formatoPrecioCuatroDigitos(obtenerPromedioBlockTrade()) }}
                           </div>
                         </div>
                         <div class="col-precio col-12 col-md-6">
                           <div class="monto-title">
-                            Total del monto cotizado (Nocional USD)
+                            Total del monto cotizado (Nocional {{ currencySelected }})
                           </div>
                           <div class="monto-cantidad">
-                            0.00
+                            {{ obtenerMontoTotal() }}
                           </div>
                         </div>
                       </div>
@@ -1795,6 +1789,7 @@ export default {
               }
             }
             returnBlockTradeRow.price = newValues.LegInfo[ind][price];
+            returnBlockTradeRow.sumaTotal = Number(returnBlockTradeRow.price) * Number(returnBlockTradeRow.nocional);
           }
           return returnBlockTradeRow;
         });
@@ -1927,12 +1922,13 @@ export default {
       }
     },
     async eventOperationBloque() {
+      const Symbol = this.currenciesSelected.join('/');
       const bodyCerrarOperacion = {
         CLOrdID: this.qQuoteReqID,
         Currency: this.currencySelected,
         OrderQty: '0',
         Side: this.blockTradeSide,
-        Symbol: 'USD/MXN',
+        Symbol,
         QuoteID: this.qQuoteID,
         NoLegs: [{
           LegSymbol: 'USD/MXN',
@@ -1949,10 +1945,10 @@ export default {
           LegPrice: '20.02407',
           LegRefID: '00020220711093311150-02',
         }],
-        Account: 'INVEXCOMP1.TEST',
+        Account: this.userData.data.user360T,
         Product: 'BLOCKTRADE',
-        RequestSystem: 'Request_Insert_144342312_3',
-        InternetFolio: '12882',
+        RequestSystem: 'PORTALFX',
+        InternetFolio: this.userData.data.internetFolio,
       };
       clearInterval(this.timmerId);
       const responseApiConcertacion = await this.$store.dispatch('createCerrarOperacion', bodyCerrarOperacion);
@@ -2180,6 +2176,20 @@ export default {
       const numberPrecio = Number(precio);
       if (numberPrecio.isNaN) return '';
       return new Intl.NumberFormat('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 }).format(numberPrecio);
+    },
+    obtenerPromedioBlockTrade() {
+      const sum = this.blockTradeRows.reduce((acc, curVal) => acc + Number(curVal ? curVal.sumaTotal : 0), 0);
+      if (Number.isNaN(sum) || sum === 0) return 0;
+      return sum / this.blockTradeRows.length;
+    },
+    obtenerMontoTotal() {
+      let totalCompras = 0;
+      let totalVentas = 0;
+      this.blockTradeRows.forEach((blockTradeRow) => {
+        if (blockTradeRow.compra) totalCompras += blockTradeRow.nocional;
+        if (!blockTradeRow.compra) totalVentas += blockTradeRow.nocional;
+      });
+      return Math.abs(totalCompras - totalVentas);
     },
   },
 };
