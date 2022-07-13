@@ -1788,6 +1788,7 @@ export default {
                 returnBlockTradeRow.priceComparation = '';
               }
             }
+            returnBlockTradeRow.LegRefID = newValues.LegInfo[ind].QuoteReqID;
             returnBlockTradeRow.price = newValues.LegInfo[ind][price];
             returnBlockTradeRow.sumaTotal = Number(returnBlockTradeRow.price) * Number(returnBlockTradeRow.nocional);
           }
@@ -1938,7 +1939,7 @@ export default {
           LegQty: blockTradeRow.nocional,
           LegSettlDate,
           LegPrice: blockTradeRow.price,
-          LegRefID: '00020220711093311150-01',
+          LegRefID: blockTradeRow.LegRefID,
         };
       });
       const Side = totalCompra >= totalVenta ? '1' : '2';
