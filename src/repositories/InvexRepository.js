@@ -39,6 +39,9 @@ export default {
   confirmConcertacion(body) {
     return InvexClient.post(`${prefixUrl}/confirmacion-concertacion`, body);
   },
+  cerrarOperacion(body) {
+    return InvexClient.post(`${prefixUrl}/orderblock`, body);
+  },
   listaCuentasDestino(body) {
     return InvexClient.post(`${prefixUrl}/listaCuentasDestino`, body);
   },

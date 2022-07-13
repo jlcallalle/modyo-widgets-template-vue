@@ -355,6 +355,12 @@
                     @click.prevent="eventOperation('Vender')">
                     Comprar {{ currencySelected }}
                   </button>
+                   <button
+                    type="submit"
+                    class="btn btn-block btn-operacion"
+                    @click.prevent="eventOperationBloque">
+                    Cerrar Operación
+                  </button>
                 </div>
               </div>
               <div class="col-6">
@@ -1371,6 +1377,7 @@ export default {
         // eslint-disable-next-line no-console
         console.log('se consumio el quote request', new Date());
         if (quoteRequest.data && quoteRequest.data.DataIdentifier) {
+          this.qQuoteID = quoteRequest.data.message.QuoteID;
           this.qQuoteReqID = quoteRequest.data.message.QuoteReqID;
           this.setNewBlockTradeRowsValues(quoteRequest.data.message);
           this.segundosTimmer = 299;
@@ -1426,7 +1433,7 @@ export default {
           case 'BLOCKTRADE':
             this.fechaTrade();
             await this.getRecuperaFechaBloque();
-            if (this.recuperaFecha.data.result === 'dTRUE') {
+            if (this.recuperaFecha.data.result === 'TRUE') {
               this.customModalProps.open = true;
               this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
               this.customModalProps.message = '¿Deseas continuar con la operación?';
@@ -1914,6 +1921,42 @@ export default {
       // eslint-disable-next-line no-console
       console.log('finalizo el consumo del create concertacion', new Date());
       if (responseApiConcertacion.DataIdentifier === 9) {
+        this.showModal = true;
+      } else {
+        this.showModalError = true;
+      }
+    },
+    async eventOperationBloque() {
+      const bodyCerrarOperacion = {
+        CLOrdID: this.qQuoteReqID,
+        Currency: this.currencySelected,
+        OrderQty: '0',
+        Side: this.blockTradeSide,
+        Symbol: 'USD/MXN',
+        QuoteID: this.qQuoteID,
+        NoLegs: [{
+          LegSymbol: 'USD/MXN',
+          LegSidel: '1',
+          LegQty: '1000',
+          LegSettlDate: '20220712',
+          LegPrice: '20.01772',
+          LegRefID: '00020220711093311150-01',
+        }, {
+          LegSymbol: 'USD/MXN',
+          LegSidel: '1',
+          LegQty: '2000',
+          LegSettlDate: '20220713',
+          LegPrice: '20.02407',
+          LegRefID: '00020220711093311150-02',
+        }],
+        Account: 'INVEXCOMP1.TEST',
+        Product: 'BLOCKTRADE',
+        RequestSystem: 'Request_Insert_144342312_3',
+        InternetFolio: '12882',
+      };
+      clearInterval(this.timmerId);
+      const responseApiConcertacion = await this.$store.dispatch('createCerrarOperacion', bodyCerrarOperacion);
+      if (responseApiConcertacion.status === 200) {
         this.showModal = true;
       } else {
         this.showModalError = true;

@@ -27,6 +27,10 @@ export default {
     state.crearOperacionConcertada = payload;
   },
 
+  updateCerrarOperacion(state, payload) {
+    state.cerrarOperacion = payload;
+  },
+
   // Datos invex
   setListaOperaciones(state, payload) {
     state.listaOperaciones = payload;

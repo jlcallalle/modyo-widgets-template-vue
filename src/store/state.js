@@ -8,6 +8,7 @@ export default {
   fechaCatalogoSeleccionada: '',
   servicio: null,
   crearOperacionConcertada: null,
+  cerrarOperacion: null,
   listarOperacion: null,
   listaOperaciones: [],
   listaDivisas: [],

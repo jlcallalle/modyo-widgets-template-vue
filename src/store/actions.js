@@ -192,6 +192,20 @@ export default {
     }
   },
 
+  async createCerrarOperacion({ commit }, body) {
+    commit('setLoading', true);
+    try {
+      const response = await InvexRepository.cerrarOperacion(body);
+      const infos = response;
+      commit('updateCerrarOperacion', infos);
+      return response;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
+  },
+
   async getListaOrigen({ commit }, body) {
     commit('setLoading', true);
     try {
