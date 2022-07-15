@@ -548,12 +548,14 @@
 
 .content-trade {
     padding: 0 15px 15px;
-    @include media-breakpoint-up(md) { 
-        // overflow-y: auto;
-        // max-height: 446px;
-    }
      .row {
         padding-bottom: 20px;
+    }
+    &.block-scroll {
+        @include media-breakpoint-up(md) { 
+            max-height: 545px;
+            overflow-y: auto;
+        }
     }
 }
 

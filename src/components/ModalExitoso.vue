@@ -47,7 +47,7 @@
                 type="button"
                 class="btn btn-solicita"
                 @click="goToOperacionConcertada">
-                Aceptar 1
+                Aceptar
               </button>
             </div>
             <div

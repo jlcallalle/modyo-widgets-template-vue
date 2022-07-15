@@ -4,7 +4,7 @@
     :class="[solicitarPrecio == false ? 'widget-operaciones-fx' : 'widget-operacion-comprar-vender' ]">
     <h1
       class="mb-4 title-widget">
-      Operaciones <span @click="solicitarPrecio = !solicitarPrecio">
+      Operaciones <span>
         FX
       </span>
     </h1>
@@ -111,7 +111,9 @@
                       </div>
                     </div>
                   </div>
-                  <div class="content-trade">
+                  <div
+                    class="content-trade"
+                    :class="[blockTradeRows.length >= 5 ? 'block-scroll' : '' ]">
                     <div
                       v-for="(blockTradeRow, indexRow) in blockTradeRows"
                       :key="indexRow"
