@@ -73,7 +73,6 @@
     background-color: #FFFFFF;
     padding: 15px;
     margin-bottom: 18px;
-
     details[open] summary:after {
         content: "▲";
     }
@@ -86,6 +85,10 @@
         justify-content: space-between;
         list-style-type: none;
         list-style: none;
+        outline: none;
+        &:focus {
+            outline: none;
+        }
         &::-webkit-details-marker {
             display: none
         }
@@ -608,6 +611,9 @@
     @include media-breakpoint-up(lg) { 
         gap: 0 20px;
     }
+    @media (min-width: 1220px) and (max-width: 1380px) { 
+        gap: 0 10px;
+    }
 }
 
 .icon-delete {
@@ -621,12 +627,15 @@
     align-items: center;
     height: 40px;
     width: 116px;
+    @media (min-width: 768px) and (max-width: 1380px) {
+        width: auto;
+    }
     &:hover {
         color: $brand-invex;
     }
     span {
         margin-right: 6px;
-        @media (min-width: 768px) and (max-width: 980px) {
+        @media (min-width: 768px) and (max-width: 1380px) {
             display: none;
         }
     }

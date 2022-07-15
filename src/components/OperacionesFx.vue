@@ -256,7 +256,8 @@
                 <div class="row">
                   <div class="col-12 col-md-6">
                     <div class="cantidad">
-                      <span>{{ blockTradeRows.length }}</span> Operacion{{ blockTradeRows.length !== 1 ? 'es' : '' }}
+                      <span>{{ blockTradeRows.length }}</span>
+                      {{ blockTradeRows.length !== 1 ? 'Operaciones' : 'Operación' }}
                     </div>
                   </div>
                   <div class="col-12 col-md-6">
