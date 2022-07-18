@@ -1518,6 +1518,10 @@ export default {
           this.calendarTipoPataCorta = this.calendarOptions[0].date;
           this.calendarTipoPataLarga = this.calendarOptions[1].date;
         }
+        if (this.operacionSeleccionada === 'BLOCKTRADE') {
+          this.blockTradeRows[0].calendarOptions = [...this.calendarOptions];
+          this.blockTradeRows[0].fechaSeleccionada = this.calendarOptions[0].date;
+        }
       } catch (error) {
         this.showModalError = true;
       }

@@ -157,7 +157,6 @@ export default {
   },
   methods: {
     otraOperacion() {
-      this.$store.dispatch('updateOperacionSeleccionada', 'SPOT');
       this.$store.dispatch('updatePage', 'operacionesFx');
     },
   },
