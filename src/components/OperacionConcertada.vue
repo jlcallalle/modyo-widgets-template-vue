@@ -84,13 +84,11 @@
                       </tr>
                       <tr class="texto-color">
                         <td>Notional Amount</td>
-                        <!-- eslint-disable-next-line max-len -->
-                        <td> {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 } ).format(formatMonto) }}  {{ currencyDivisa }} </td>
+                        <td> {{ formatoMoneda(formatMonto) }}  {{ currencyDivisa }} </td>
                       </tr>
                       <tr class="texto-color">
                         <td>Opposite Amount</td>
-                        <!-- eslint-disable-next-line max-len -->
-                        <td> {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 } ).format(calculoOpposite()) }} {{ oppositiveDivisa }} </td>
+                        <td> {{ formatoMoneda(calculoOpposite()) }} {{ oppositiveDivisa }} </td>
                       </tr>
                       <tr class="texto-color">
                         <td>Effective Date</td>
@@ -144,15 +142,13 @@
                         v-if="operacionSeleccionada == 'SWAP'"
                         class="texto-color">
                         <td>Notional Amount</td>
-                        <!-- eslint-disable-next-line max-len -->
-                        <td> {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 } ).format(formatMontoFarLeg) }}  {{ currencyDivisa }} </td>
+                        <td> {{ formatoMoneda(formatMontoFarLeg) }}  {{ currencyDivisa }} </td>
                       </tr>
                       <tr
                         v-if="operacionSeleccionada == 'SWAP'"
                         class="texto-color">
                         <td>Opposite Amount</td>
-                        <!-- eslint-disable-next-line max-len -->
-                        <td> {{ new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 } ).format(calculoOppositeFarLeg()) }} {{ oppositiveDivisa }} </td>
+                        <td> {{ formatoMoneda(calculoOppositeFarLeg()) }} {{ oppositiveDivisa }} </td>
                       </tr>
                       <tr
                         v-if="operacionSeleccionada == 'SWAP'"
@@ -497,14 +493,15 @@ export default {
       const actual = this.$store.state.crearOperacionConcertada.Currency;
       const valor = this.$store.state.crearOperacionConcertada.Symbol;
       const separa = valor.split('/');
+      const { LastPx, LastSpotRate } = this.$store.state.crearOperacionConcertada;
+      const spotRate = this.operacionSeleccionada === 'SWAP' ? LastPx : LastSpotRate;
       let total;
-      // eslint-disable-next-line
       if (separa[0] === actual) {
         // eslint-disable-next-line
-        total = this.$store.state.crearOperacionConcertada.OrderQty * this.$store.state.crearOperacionConcertada.LastPx;
+        total = this.$store.state.crearOperacionConcertada.OrderQty * spotRate;
       } else {
         // eslint-disable-next-line
-        total = this.$store.state.crearOperacionConcertada.OrderQty / this.$store.state.crearOperacionConcertada.LastPx;
+        total = this.$store.state.crearOperacionConcertada.OrderQty / spotRate;
       }
       return total;
     },
@@ -738,7 +735,7 @@ export default {
       const valor = this.$store.state.crearOperacionConcertada.Symbol;
       const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
       const separa = valor.split('/');
-      let str = `I ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[0]} // ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[1]}`;
+      let str = `I ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[0]} // ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[1]}`;
       if (separa[0] === actual) {
         str = `I ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[0]} // ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[1]}`;
       }
@@ -751,9 +748,12 @@ export default {
       const separa = valor.split('/');
       let str = `I ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[0]} // ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[1]}`;
       if (separa[0] === actual) {
-        str = `I ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[0]} // ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[1]}`;
+        str = `I ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[0]} // ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[1]}`;
       }
       return str;
+    },
+    formatoMoneda(precio) {
+      return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(precio);
     },
   },
 };
