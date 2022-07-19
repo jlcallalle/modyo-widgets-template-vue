@@ -1930,6 +1930,7 @@ export default {
         this.showModalError = true;
       }
     },
+    /* eslint-disable no-param-reassign */
     async eventOperationBloque() {
       const Symbol = this.currenciesSelected.join('/');
       let totalCompra = 0;
@@ -1966,14 +1967,17 @@ export default {
         InternetFolio: this.userData.data.internetFolio,
       };
       clearInterval(this.timmerId);
-      const responseApiConcertacion = await this.$store.dispatch('createCerrarOperacion', bodyCerrarOperacion); //
+      const responseApiConcertacion = await this.$store.dispatch('createCerrarOperacion', bodyCerrarOperacion);
       if (responseApiConcertacion.status === 'OK') {
         this.showModal = true;
-        localStorage.setItem('subOps', JSON.stringify(this.blockTradeRows));
+        const cleanBlockTradeRows = this.blockTradeRows;
+        cleanBlockTradeRows.forEach((row) => { delete row.calendarOptions; delete row.compra; });
+        localStorage.setItem('subOps', JSON.stringify(cleanBlockTradeRows));
       } else {
         this.showModalError = true;
       }
     },
+    /* eslint-disable no-param-reassign */
     handleClose() {
       this.showModal = false;
     },

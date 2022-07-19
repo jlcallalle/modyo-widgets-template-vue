@@ -11,7 +11,7 @@ const invexClient = axios.create({
 
 const handleTimeExpiration = (timeToExpire, tkn) => {
   const date = new Date();
-  date.setSeconds(date.getSeconds() + timeToExpire);
+  date.setSeconds(date.getSeconds() + timeToExpire - 5);
   localStorage.setItem('tokenExpirationDate', date);
   localStorage.setItem('tkn', tkn);
 };

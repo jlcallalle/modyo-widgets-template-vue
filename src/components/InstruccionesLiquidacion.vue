@@ -87,11 +87,10 @@
               Operaciones
             </h2>
           </div>
-          <div class="subtitle-sec test-small mb-4 ml-5 ">
-            <span class="font-weight-bold">Spot Rate:</span>
-            <span>21,50000</span>
-          </div>
           <vue-good-table
+            :columns="columns"
+            :rows="blockTradeRows"/>
+          <!-- <vue-good-table
             :columns="columns"
             :rows="blockTradeRows"
             :select-options="{
@@ -103,14 +102,10 @@
               disableSelectInfo: true,
               selectAllByGroup: true,
             }"
-            @on-selected-rows-change="selectionChanged" />
+            @on-selected-rows-change="selectionChanged" /> -->
           <div class="subtitle-sec test-small mt-4">
-            <span class="sub-with">Avg. Rate:</span>
-            <span>21, 4960333</span>
-          </div>
-          <div class="subtitle-sec test-small mt-2">
-            <span class="sub-with">P&amp;L:</span>
-            <span>0.003</span>
+            <span class="monto-title">Precio Promedio:</span>
+            <span class="monto-cantidad">{{precioPromedio}}</span>
           </div>
           <div class="box-two-btn d-flex justify-content-around">
             <a
@@ -119,7 +114,7 @@
               @click.prevent="otraOperacion">Realizar otra operación</a>
             <button
               type="submit"
-              :disabled="destinoSelected === null || destinoSelected === '' || selectedRowsLength === 0"
+              :disabled="destinoSelected === null || destinoSelected === ''"
               class="btn btn-primary btn-solicita"
               @click.prevent="evenInstrucciones">
               Asignar Instrucciones
@@ -186,9 +181,10 @@ export default {
       listadoDestino: [],
       origenSelected: null,
       destinoSelected: null,
-      selectedRowsLength: 0,
-      selectedRows: [],
-      responsesAssingAccounts: [],
+      precioPromedio: 982.4512,
+      // selectedRowsLength: 0,
+      // selectedRows: [],
+      // responsesAssingAccounts: [],
     };
   },
   computed: {
@@ -353,11 +349,9 @@ export default {
     async evenInstrucciones() {
       this.responsesAssingAccounts = [];
       const concretadaData = this.$store.state.cerrarOperacion.data;
-      this.selectedRows.forEach(async (row) => this.saveResponse(this.assingAccounts(row, concretadaData)));
-      await this.showModalAssing(this.blockTradeRows.length, this.responsesAssingAccounts.length);
-      console.log(this.responsesAssingAccounts);
-      // this.removeAssigned(this.blockTradeRows, this.responsesAssingAccounts);
-      // Eliminar las filas ya capturadas y dejar las que no se han capturado y las que causaron problema
+      const current = new Date();
+      this.blockTradeRows.forEach((row) => this.assingAccounts(row, concretadaData, current));
+      this.showModalAssing(this.blockTradeRows.length, this.responsesAssingAccounts.length);
     },
     async showModalAssing(selected, assigned) {
       this.customModalProps.title = 'Confirmación de instrucciones';
@@ -367,23 +361,13 @@ export default {
       this.customModalProps.btnCloseHide = true;
       this.customModalProps.btnAcceptFunc = () => {
         this.closeModal();
-        if (selected === assigned) {
-          this.blockTradeRows = null;
-          this.$store.dispatch('updatePage', 'operacionesFx');
-        }
+        this.blockTradeRows = null;
+        localStorage.removeItem('subOps');
+        this.$store.dispatch('updatePage', 'operacionesFx');
       };
       this.customModalProps.open = true;
     },
-    removeAssigned(blockTradeRows, responsesAssingAccounts) {
-      console.log(responsesAssingAccounts);
-      responsesAssingAccounts.forEach((response) => console.log(response.Body.data.orderId.split('_')[1]));
-      // this.cuentaDestino = this.listadoDestino.find((item) => item.BeneficiaryAccount === this.destinoSelected); //
-    },
-    async saveResponse(responses) {
-      await this.responsesAssingAccounts.push(responses.then((response) => console.log(response)));
-    },
-    async assingAccounts(row, concretadaData) {
-      const current = new Date();
+    async assingAccounts(row, concretadaData, current) {
       try {
         const body = {
           transactionId: `${this.userData.data.user360T}-${current.getFullYear()}${current.getMonth() + 1}${current.getDate()}${current.getHours()}${current.getMinutes()}${current.getSeconds()}`,
@@ -399,19 +383,20 @@ export default {
             body.creditAccount = `${destino.customerAccount}`;
           }
         });
-        return this.$store.dispatch('actualizarOperacion', body);
+        await this.$store.dispatch('actualizarOperacion', body);
       } catch (err) {
         this.showModal = true;
-        return null;
+        // Ocurrio un error, se debe manejar
       }
     },
     getDataTable() {
       this.blockTradeRows = JSON.parse(localStorage.getItem('subOps'));
+      this.precioPromedio = this.blockTradeRows[0].sumaTotal;
     },
-    selectionChanged(event) {
-      this.selectedRowsLength = event.selectedRows.length;
-      this.selectedRows = event.selectedRows;
-    },
+    // selectionChanged(event) {
+    //   this.selectedRowsLength = event.selectedRows.length;
+    //   this.selectedRows = event.selectedRows;
+    // },
   },
 };
 </script>
