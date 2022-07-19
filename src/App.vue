@@ -5,7 +5,6 @@
     <operaciones-fx v-if="currentView === 'operacionesFx'" />
     <operacion-concertada v-if="currentView === 'operacionConcertada'" />
     <instrucciones-liquidacion v-if="currentView === 'instruccionesLiquidacion'" />
-    <!-- <instrucciones-liquidacion /> -->
   </div>
 </template>
 

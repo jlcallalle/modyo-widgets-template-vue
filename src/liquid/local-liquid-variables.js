@@ -16,6 +16,6 @@ export default {
     urltokeninvex: 'https://wsqa.invextarjetas.com.mx/token',
     base_api_test: 'https://jsonplaceholder.typicode.com',
     segundopeticiones: 1,
-    enviroment: 'production',
+    enviroment: 'development',
   },
 };
