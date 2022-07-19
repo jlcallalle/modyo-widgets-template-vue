@@ -1384,6 +1384,7 @@ export default {
           throw new Error('Error en su solicitud');
         }
       } catch (e) {
+        this.$store.dispatch('setLoading', false);
         this.customModalProps.open = true;
         this.customModalProps.title = 'Error en su solicitud';
         this.customModalProps.message = 'Intente de nuevo';
@@ -1965,9 +1966,10 @@ export default {
         InternetFolio: this.userData.data.internetFolio,
       };
       clearInterval(this.timmerId);
-      const responseApiConcertacion = await this.$store.dispatch('createCerrarOperacion', bodyCerrarOperacion);
+      const responseApiConcertacion = await this.$store.dispatch('createCerrarOperacion', bodyCerrarOperacion); //
       if (responseApiConcertacion.status === 'OK') {
         this.showModal = true;
+        localStorage.setItem('subOps', JSON.stringify(this.blockTradeRows));
       } else {
         this.showModalError = true;
       }
