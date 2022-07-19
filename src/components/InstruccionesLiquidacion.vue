@@ -21,16 +21,48 @@
           </div>
           <div class="form-row mt-2 row-instrucciones">
             <div class="form-group col-12 col-md-4 ">
-              <label for="inputProducto">Cuenta Origen</label>
-              <select class="form-control">
-                <option> MXN INVEX - 1254483 </option>
+              <label for="inputProducto">Cuenta Origen:</label>
+              <select
+                id="tipoCuentalSelect"
+                class="form-control"
+                @change="setOrigen($event)">
+                <option
+                  v-for="(origen, index) in listadoOrigen"
+                  :id="index"
+                  :key="index"
+                  :selected="origenSelected === origen.customerAccount"
+                  :value="origen.customerAccount">
+                  {{ origenTxt(origen) }}
+                </option>
               </select>
             </div>
             <div class="form-group col-12 col-md-4">
               <label for="inputFecha">Cuenta Destino</label>
-              <select class="form-control">
-                <option> MXN INVEX - 1254483 </option>
+              <select
+                id="tipoCuentalSelect"
+                class="form-control"
+                :disabled="origenSelected === null"
+                @change="setDestino($event)">
+                <option
+                  v-for="(destino, index) in listadoDestino"
+                  :id="index"
+                  :key="index"
+                  :selected="destinoSelected === destino.BeneficiaryAccount"
+                  :value="destino.BeneficiaryAccount">
+                  {{ destinoTxt(destino) }}
+                </option>
               </select>
+              <div
+                v-for="(destino, index) in listadoDestino"
+                :key="index">
+                <div
+                  v-if="listadoDestino.length === 0 || allListadoDestino.length === 0"
+                  class="mensaje-cuenta alert alert-warning d-flex align-items-center">
+                  <div class="small in-normal">
+                    No hay cuentas asignadas, por favor seleccionar otra Cuenta  Origen
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="form-group col-12 col-md-4 col-alta-cuenta">
               <select class="form-control">
@@ -55,13 +87,12 @@
               Operaciones
             </h2>
           </div>
-          <div class="subtitle-sec test-small mb-4 ml-5 ">
-            <span class="font-weight-bold">Spot Rate:</span>
-            <span>21,50000</span>
-          </div>
           <vue-good-table
             :columns="columns"
-            :rows="rows"
+            :rows="blockTradeRows"/>
+          <!-- <vue-good-table
+            :columns="columns"
+            :rows="blockTradeRows"
             :select-options="{
               enabled: true,
               selectOnCheckboxOnly: true,
@@ -70,14 +101,11 @@
               clearSelectionText: 'clear',
               disableSelectInfo: true,
               selectAllByGroup: true,
-            }" />
+            }"
+            @on-selected-rows-change="selectionChanged" /> -->
           <div class="subtitle-sec test-small mt-4">
-            <span class="sub-with">Avg. Rate:</span>
-            <span>21, 4960333</span>
-          </div>
-          <div class="subtitle-sec test-small mt-2">
-            <span class="sub-with">P&amp;L:</span>
-            <span>0.003</span>
+            <span class="monto-title">Precio Promedio:</span>
+            <span class="monto-cantidad">{{precioPromedio}}</span>
           </div>
           <div class="box-two-btn d-flex justify-content-around">
             <a
@@ -86,79 +114,289 @@
               @click.prevent="otraOperacion">Realizar otra operación</a>
             <button
               type="submit"
-              class="btn btn-primary btn-solicita">
+              :disabled="destinoSelected === null || destinoSelected === ''"
+              class="btn btn-primary btn-solicita"
+              @click.prevent="evenInstrucciones">
               Asignar Instrucciones
             </button>
           </div>
         </div>
       </div>
+      <custom-modal
+        v-if="customModalProps.open"
+        :open="customModalProps.open"
+        :type="customModalProps.type"
+        :title="customModalProps.title"
+        :message="customModalProps.message"
+        :btn-accept-text="customModalProps.btnAcceptText"
+        :btn-close-text="customModalProps.btnCancelText"
+        :btn-accept-func="customModalProps.btnAcceptFunc"
+        :btn-close-func="customModalProps.btnCancelFunc"
+        :btn-close-hide="customModalProps.btnCloseHide"
+        @close="closeModal" />
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+import CustomModal from './CustomModal.vue';
 
 export default {
   name: 'InstruccionesLiquidacion',
+  components: { CustomModal },
   data() {
     return {
       loading: false,
       columns: [
         {
-          label: 'Date',
-          field: 'date',
-        },
-        {
-          label: 'Maturity Date',
-          field: 'maturity',
+          label: 'Fecha',
+          field: 'fechaSeleccionada',
+          sortable: false,
         },
         {
           label: 'Notional',
-          field: 'notional',
+          field: 'nocional',
+          sortable: false,
         },
         {
-          label: 'Points',
-          field: 'points',
-        },
-        {
-          label: 'Rate',
-          field: 'rate',
-        },
-        {
-          label: 'PTMMM Points',
-          field: 'PTMMM',
+          label: 'Tipo de Cambio',
+          field: 'price',
+          sortable: false,
         },
       ],
-      rows: [
-        {
-          id: 1, date: 'Today', maturity: 'mar, 20-11-2021', notional: '1.00', points: 85.000, rate: 21.4915000, PTMMM: 115.100,
-        },
-        {
-          id: 2, date: 'Tomorrow', maturity: 'mar, 20-11-2021', notional: '1.00', points: 85.000, rate: 21.4915000, PTMMM: 115.100,
-        },
-        {
-          id: 3, date: 'Susan', maturity: 'mar, 20-11-2021', notional: '1.00', points: 85.000, rate: 21.4915000, PTMMM: 115.100,
-        },
-        {
-          id: 4, date: 'SpotNext', maturity: 'mar, 20-11-2021', notional: '1.00', points: 85.000, rate: 21.4915000, PTMMM: 115.100,
-        },
-        {
-          id: 5, date: 'SpotNext', maturity: 'mar, 20-11-2021', notional: '1.00', points: 85.000, rate: 21.4915000, PTMMM: 115.100,
-        },
-        {
-          id: 6, date: 'Tomorrow', maturity: 'mar, 20-11-2021', notional: '1.00', points: 85.000, rate: 21.4915000, PTMMM: 115.100,
-        },
-      ],
+      blockTradeRows: null,
+      customModalProps: {
+        title: 'No se han asignado instrucciones',
+        message: '¿Deseas salir sin asignar instrucciones de liquidación a tus operaciones?',
+        type: 'warning',
+        open: false,
+        btnAcceptText: 'Asignar ahora',
+        btnCancelText: 'Asignar despues',
+        btnCloseHide: false,
+      },
+      allListadoDestino: [],
+      destinoCurrency: '',
+      listadoOrigen: [],
+      listadoDestino: [],
+      origenSelected: null,
+      destinoSelected: null,
+      precioPromedio: 982.4512,
+      // selectedRowsLength: 0,
+      // selectedRows: [],
+      // responsesAssingAccounts: [],
     };
   },
   computed: {
     ...mapState(['currentView', 'loading']),
+    ...mapState(['userData']),
+  },
+  async mounted() {
+    this.getDataTable();
+    await this.getListadoOrigen();
+    await this.getListadoDestino();
+    // await this.$store.dispatch('generarTokenSeguridad', {
+    //   CUI: this.mapClientLogeo.CUI,
+    //   internetFolio: this.mapClientLogeo.internetFolio,
+    // });
   },
   methods: {
     otraOperacion() {
       this.$store.dispatch('updatePage', 'operacionesFx');
     },
+    setOrigen(event) {
+      this.origenSelected = event.target.value;
+      this.cuentaOrigen = this.listadoOrigen.find((item) => item.customerAccount === this.origenSelected);
+    },
+    setDestino(event) {
+      this.destinoSelected = event.target.value;
+      this.cuentaDestino = this.listadoDestino.find((item) => item.BeneficiaryAccount === this.destinoSelected);
+    },
+    async getLogicCurrencies(destino) {
+      const concretadaData = await this.$store.state.cerrarOperacion.data;
+      const currencyData = concretadaData.Currency;
+      const separa = concretadaData.Symbol.split('/');
+      const opcion = concretadaData.Side; // SELL = "2" / BUY = "1"
+      const segundaMoneda = currencyData === separa[1];
+      const contrario = currencyData === separa[0] ? separa[1] : separa[0];
+      if (segundaMoneda) {
+        if (destino) {
+          this.destinoCurrency = opcion === '2' ? currencyData : contrario;
+          return opcion === '2' ? currencyData : contrario;
+        }
+        return opcion === '2' ? contrario : currencyData;
+      }
+      if (destino) {
+        this.destinoCurrency = opcion === '1' ? currencyData : contrario;
+        return opcion === '1' ? currencyData : contrario;
+      }
+      return opcion === '1' ? contrario : currencyData;
+    },
+    async getListadoOrigen() {
+      try {
+        const current = new Date();
+        const body = {
+          transactionId: `${this.userData.data.user360T}-${current.getFullYear()}${current.getMonth() + 1}${current.getDate()}${current.getHours()}${current.getMinutes()}${current.getSeconds()}`,
+          requestSystem: 'PORTAL',
+          source: 'PORTALSYS',
+          userId: 'PORTALUSR',
+          branch: '001',
+          sourceUserId: 'PORTALUSR',
+          CustomerNumber: this.userData.data.CUI,
+          Type: 'CE',
+          InternetFolio: this.userData.data.internetFolio,
+          AllowOperate: 'T',
+          Currency: await this.getLogicCurrencies(),
+        };
+        const response = await this.$store.dispatch('getListaOrigen', body);
+        if (!response) return false;
+        if (Array.isArray(response.cuentas)) {
+          this.listadoOrigen = response.cuentas;
+        } else {
+          this.listadoOrigen = [response.cuentas];
+        }
+        if (this.listadoOrigen.length > 0) {
+          this.setOrigen({ target: { value: this.listadoOrigen[0].customerAccount } });
+        }
+        return this.listadoOrigen.length > 0;
+      } catch (e) {
+        return false;
+      }
+    },
+    async getListadoDestino() {
+      try {
+        const current = new Date();
+        const body = {
+          transactionId: `${this.userData.data.user360T}-${current.getFullYear()}${current.getMonth() + 1}${current.getDate()}${current.getHours()}${current.getMinutes()}${current.getSeconds()}`,
+          requestSystem: 'PORTALFX',
+          source: 'FXSYS',
+          userId: 'FXUSR',
+          branch: '001',
+          sourceUserId: 'FXUSR',
+          CustomerNumber: this.userData.data.CUI,
+          Type: 'CE',
+          InternetFolio: this.userData.data.internetFolio,
+          AllowOperate: 'S',
+          Currency: await this.getLogicCurrencies(true),
+          SameBank: false,
+          IsBeneficiaryCreditCard: false,
+        };
+        const response = await this.$store.dispatch('getListaDestino', body);
+        const respAux = JSON.parse(JSON.stringify(response));
+        if (response) {
+          if (Array.isArray(respAux)) {
+            this.$set(this, 'allListadoDestino', respAux);
+          } else {
+            this.$set(this, 'allListadoDestino', [respAux]);
+          }
+          if (this.allListadoDestino.length > 0) {
+            this.listadoDestino = [];
+            this.destinoSelected = '';
+            this.cuentaDestino = null;
+            const listadoAux = JSON.parse(JSON.stringify(this.allListadoDestino));
+            if (Array.isArray(listadoAux)) {
+              listadoAux.forEach((item) => {
+                if (item.cuentas.beneficiaryData) {
+                  if (Array.isArray(item.cuentas.beneficiaryData.beneficiaryAccount)) {
+                    item.cuentas.beneficiaryData.beneficiaryAccount.forEach((item2) => {
+                      const auxPush = { ...item2, customerAccount: item.cuentas.customerAccount };
+                      this.listadoDestino.push(auxPush);
+                    });
+                  } else {
+                    this.listadoDestino.push({
+                      ...item.cuentas.beneficiaryData.beneficiaryAccount,
+                      customerAccount: item.cuentas.customerAccount,
+                    });
+                  }
+                }
+              });
+            }
+            this.setDestino({ target: { value: this.listadoDestino[0].BeneficiaryAccount } });
+          }
+        } else {
+          this.returnMsgDestino();
+        }
+      } catch (e) {
+        this.returnMsgDestino();
+      }
+    },
+    async returnMsgDestino() {
+      this.customModalProps.title = 'No se encontraron cuentas destino';
+      this.customModalProps.message = `No existen cuentas destino registradas para la divisa ${this.currencyDivisa} para poder realizar la asignación de las cuentas a la operación`;
+      this.customModalProps.btnAcceptText = 'Aceptar';
+      this.customModalProps.btnCloseHide = true;
+      this.customModalProps.btnAcceptFunc = () => {
+        this.mostrarInstrucciones = false;
+        this.closeModal();
+      };
+      this.customModalProps.open = true;
+    },
+    destinoTxt(destino) {
+      if (!destino) return '';
+      const destinoAux = JSON.parse(JSON.stringify(destino));
+      if (!destinoAux.BeneficiaryAccount) return '';
+      return `${this.destinoCurrency} ${destinoAux.BeneficiaryBank} - **********${destinoAux.BeneficiaryAccount.toString()
+        .slice(destinoAux.BeneficiaryAccount.toString().length - 4)}`;
+    },
+    origenTxt(origen) {
+      if (!origen) return '';
+      return `${origen.currency}
+                        ${origen.type} - **********${origen.customerAccount.slice(origen.customerAccount.length - 4)}`;
+    },
+    closeModal() {
+      this.customModalProps.open = false;
+    },
+    async evenInstrucciones() {
+      this.responsesAssingAccounts = [];
+      const concretadaData = this.$store.state.cerrarOperacion.data;
+      const current = new Date();
+      this.blockTradeRows.forEach((row) => this.assingAccounts(row, concretadaData, current));
+      this.showModalAssing(this.blockTradeRows.length, this.responsesAssingAccounts.length);
+    },
+    async showModalAssing(selected, assigned) {
+      this.customModalProps.title = 'Confirmación de instrucciones';
+      this.customModalProps.message = assigned > 1 ? 'Se han asignado cuentas a estas operaciones.' : 'Se han asignado cuentas a esta operación.';
+      this.customModalProps.btnAcceptText = 'Aceptar';
+      this.customModalProps.type = 'confirm';
+      this.customModalProps.btnCloseHide = true;
+      this.customModalProps.btnAcceptFunc = () => {
+        this.closeModal();
+        this.blockTradeRows = null;
+        localStorage.removeItem('subOps');
+        this.$store.dispatch('updatePage', 'operacionesFx');
+      };
+      this.customModalProps.open = true;
+    },
+    async assingAccounts(row, concretadaData, current) {
+      try {
+        const body = {
+          transactionId: `${this.userData.data.user360T}-${current.getFullYear()}${current.getMonth() + 1}${current.getDate()}${current.getHours()}${current.getMinutes()}${current.getSeconds()}`,
+          requestSystem: 'FX',
+          orderID: concretadaData.OrderID,
+          debitAccount: this.origenSelected,
+          creditAccount: '',
+          settlAccount: this.destinoSelected,
+          blockid: parseInt(row.LegRefID.split('-')[1], 10),
+        };
+        this.listadoDestino.forEach((destino) => {
+          if (destino.BeneficiaryAccount === this.destinoSelected) {
+            body.creditAccount = `${destino.customerAccount}`;
+          }
+        });
+        await this.$store.dispatch('actualizarOperacion', body);
+      } catch (err) {
+        this.showModal = true;
+        // Ocurrio un error, se debe manejar
+      }
+    },
+    getDataTable() {
+      this.blockTradeRows = JSON.parse(localStorage.getItem('subOps'));
+      this.precioPromedio = this.blockTradeRows[0].sumaTotal;
+    },
+    // selectionChanged(event) {
+    //   this.selectedRowsLength = event.selectedRows.length;
+    //   this.selectedRows = event.selectedRows;
+    // },
   },
 };
 </script>

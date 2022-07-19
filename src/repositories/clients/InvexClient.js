@@ -9,25 +9,48 @@ const invexClient = axios.create({
   timeout: 60000, // 60 seconds
 });
 
+const handleTimeExpiration = (timeToExpire, tkn) => {
+  const date = new Date();
+  date.setSeconds(date.getSeconds() + timeToExpire - 5);
+  localStorage.setItem('tokenExpirationDate', date);
+  localStorage.setItem('tkn', tkn);
+};
+
+const isExpired = () => {
+  const tokenExpirationDate = localStorage.getItem('tokenExpirationDate');
+  if (tokenExpirationDate !== null) {
+    const date = new Date(tokenExpirationDate);
+    return new Date() > date;
+  }
+  return true;
+};
+
 const injectToken = async (config) => {
-  try {
-    const params = {
-      grant_type: 'client_credentials',
-    };
-    const data = Object.keys(params)
-      .map((key) => `${key}=${encodeURIComponent(params[key])}`)
-      .join('&');
-    const response = await axios.post(`${urltokeninvex}`, data, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${tokenAuth}`,
-      },
-    });
+  if (isExpired()) {
+    try {
+      const params = {
+        grant_type: 'client_credentials',
+      };
+      const data = Object.keys(params)
+        .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+        .join('&');
+      const response = await axios.post(`${urltokeninvex}`, data, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Basic ${tokenAuth}`,
+        },
+      });
+      handleTimeExpiration(response.data.expires_in, response.data.access_token);
+      const newConfig = config;
+      newConfig.headers.authorization = `Bearer ${response.data.access_token}`;
+      return newConfig;
+    } catch (error) {
+      throw new Error('Unauthorized');
+    }
+  } else {
     const newConfig = config;
-    newConfig.headers.authorization = `Bearer ${response.data.access_token}`;
+    newConfig.headers.authorization = `Bearer ${localStorage.getItem('tkn')}`;
     return newConfig;
-  } catch (error) {
-    throw new Error('Unauthorized');
   }
 };
 
