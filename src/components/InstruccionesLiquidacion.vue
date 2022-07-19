@@ -157,14 +157,17 @@ export default {
         {
           label: 'Fecha',
           field: 'fechaSeleccionada',
+          sortable: false,
         },
         {
           label: 'Notional',
           field: 'nocional',
+          sortable: false,
         },
         {
           label: 'Tipo de Cambio',
           field: 'price',
+          sortable: false,
         },
       ],
       blockTradeRows: null,
@@ -185,6 +188,7 @@ export default {
       destinoSelected: null,
       selectedRowsLength: 0,
       selectedRows: [],
+      responsesAssingAccounts: [],
     };
   },
   computed: {
@@ -192,9 +196,6 @@ export default {
     ...mapState(['userData']),
   },
   async mounted() {
-    // Se puede comentar esta parte para temas de desarrollo
-    await this.validateSession();
-    // Fin de lo que se puede comentar para temas de desarrollo
     this.getDataTable();
     await this.getListadoOrigen();
     await this.getListadoDestino();
@@ -204,20 +205,6 @@ export default {
     // });
   },
   methods: {
-    async validateSession() {
-      if (localStorage.getItem('userData') === null) {
-        this.getTokenFronParam();
-        await this.$store.dispatch('validarToken', {
-          token: this.tkn,
-        });
-      } else {
-        await this.$store.dispatch('setUserData', localStorage.getItem('userData'));
-      }
-      this.validateUserData();
-    },
-    validateUserData() {
-      localStorage.setItem('userData', JSON.stringify(this.userData));
-    },
     otraOperacion() {
       this.$store.dispatch('updatePage', 'operacionesFx');
     },
@@ -364,11 +351,39 @@ export default {
       this.customModalProps.open = false;
     },
     async evenInstrucciones() {
+      this.responsesAssingAccounts = [];
       const concretadaData = this.$store.state.cerrarOperacion.data;
-      const current = new Date();
-      this.selectedRows.forEach((row) => this.assingAccounts(row, concretadaData, current));
+      this.selectedRows.forEach(async (row) => this.saveResponse(this.assingAccounts(row, concretadaData)));
+      await this.showModalAssing(this.blockTradeRows.length, this.responsesAssingAccounts.length);
+      console.log(this.responsesAssingAccounts);
+      // this.removeAssigned(this.blockTradeRows, this.responsesAssingAccounts);
+      // Eliminar las filas ya capturadas y dejar las que no se han capturado y las que causaron problema
     },
-    async assingAccounts(row, concretadaData, current) {
+    async showModalAssing(selected, assigned) {
+      this.customModalProps.title = 'Confirmación de instrucciones';
+      this.customModalProps.message = assigned > 1 ? 'Se han asignado cuentas a estas operaciones.' : 'Se han asignado cuentas a esta operación.';
+      this.customModalProps.btnAcceptText = 'Aceptar';
+      this.customModalProps.type = 'confirm';
+      this.customModalProps.btnCloseHide = true;
+      this.customModalProps.btnAcceptFunc = () => {
+        this.closeModal();
+        if (selected === assigned) {
+          this.blockTradeRows = null;
+          this.$store.dispatch('updatePage', 'operacionesFx');
+        }
+      };
+      this.customModalProps.open = true;
+    },
+    removeAssigned(blockTradeRows, responsesAssingAccounts) {
+      console.log(responsesAssingAccounts);
+      responsesAssingAccounts.forEach((response) => console.log(response.Body.data.orderId.split('_')[1]));
+      // this.cuentaDestino = this.listadoDestino.find((item) => item.BeneficiaryAccount === this.destinoSelected); //
+    },
+    async saveResponse(responses) {
+      await this.responsesAssingAccounts.push(responses.then((response) => console.log(response)));
+    },
+    async assingAccounts(row, concretadaData) {
+      const current = new Date();
       try {
         const body = {
           transactionId: `${this.userData.data.user360T}-${current.getFullYear()}${current.getMonth() + 1}${current.getDate()}${current.getHours()}${current.getMinutes()}${current.getSeconds()}`,
@@ -384,10 +399,10 @@ export default {
             body.creditAccount = `${destino.customerAccount}`;
           }
         });
-        await this.$store.dispatch('actualizarOperacion', body);
-        this.showModal = true;
+        return this.$store.dispatch('actualizarOperacion', body);
       } catch (err) {
         this.showModal = true;
+        return null;
       }
     },
     getDataTable() {
