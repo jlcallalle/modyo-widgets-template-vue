@@ -331,46 +331,12 @@
             <div
               v-if="operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio"
               class="row">
-              <div class="col-6">
+              <div class="col-12 col-md-6 mx-auto">
                 <div
-                  v-if="blockTradeSide === '2'"
-                  class="box-rfs">
-                  <span>RFS</span>
-                </div>
-                <div
-                  v-if="blockTradeSide === '1' || blockTradeSide === '3'"
+                  v-if="blockTradeSide === '1' || blockTradeSide === '2'"
                   class="box-vender tipo-venta">
                   <div class="title-operacion">
-                    Comprar {{ currencySelected }}
-                  </div>
-                  <div
-                    v-if="blockTradeRows[0]"
-                    class="box-precio">
-                    <span
-                      :class="{greenValue: blockTradeRows[0].priceComparation === '+',
-                               redValue: blockTradeRows[0].priceComparation === '-'}">
-                      {{ formatoPrecioCuatroDigitos(blockTradeRows[0].price) }}
-                    </span>
-                  </div>
-                  <button
-                    type="submit"
-                    class="btn btn-block btn-operacion"
-                    @click.prevent="eventOperationBloque">
-                    Cerrar Operación
-                  </button>
-                </div>
-              </div>
-              <div class="col-6">
-                <div
-                  v-if="blockTradeSide === '1'"
-                  class="box-rfs">
-                  <span>RFS</span>
-                </div>
-                <div
-                  v-if="blockTradeSide === '2' || blockTradeSide === '3'"
-                  class="box-vender tipo-venta">
-                  <div class="title-operacion">
-                    Vender {{ currencySelected }}
+                    {{ blockTradeSide === '1' ? 'Comprar' : 'Vender' }} {{ currencySelected }}
                   </div>
                   <div
                     v-if="blockTradeRows[0]"

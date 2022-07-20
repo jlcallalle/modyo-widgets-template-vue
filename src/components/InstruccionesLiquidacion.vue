@@ -89,7 +89,7 @@
           </div>
           <vue-good-table
             :columns="columns"
-            :rows="blockTradeRows"/>
+            :rows="blockTradeRows" />
           <!-- <vue-good-table
             :columns="columns"
             :rows="blockTradeRows"
@@ -105,7 +105,7 @@
             @on-selected-rows-change="selectionChanged" /> -->
           <div class="subtitle-sec test-small mt-4">
             <span class="monto-title">Precio Promedio:</span>
-            <span class="monto-cantidad">{{precioPromedio}}</span>
+            <span class="monto-cantidad">{{ precioPromedio }}</span>
           </div>
           <div class="box-two-btn d-flex justify-content-around">
             <a
