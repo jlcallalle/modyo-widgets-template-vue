@@ -2067,10 +2067,13 @@ export default {
       this.blockTradeRows[ind].nocional = ev;
     },
     calculateBlockTradeNotional() {
-      // eslint-disable-next-line max-len
-      let sum = this.blockTradeRows.reduce((acc, currentVal) => acc + Number(currentVal ? currentVal.nocional : 0), 0);
-      if (Number.isNaN(sum)) sum = 0;
-      return sum.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+      let totalCompras = 0;
+      let totalVentas = 0;
+      this.blockTradeRows.forEach((blockTradeRow) => {
+        if (blockTradeRow.compra) totalCompras += blockTradeRow.nocional;
+        if (!blockTradeRow.compra) totalVentas += blockTradeRow.nocional;
+      });
+      return Math.abs(totalCompras - totalVentas);
     },
     dateCalendarBlockTradeRow(ind) {
       if (!this.blockTradeRows[ind]) return '';
