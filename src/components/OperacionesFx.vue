@@ -435,8 +435,62 @@
               </div>
             </div>
             <div
-              v-if="operacionSeleccionada !== 'BLOCKTRADE' ||
-                operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio"
+              v-if="operacionSeleccionada !== 'BLOCKTRADE'"
+              class="row">
+              <div class="col-12">
+                <div
+                  v-if="!solicitarPrecio"
+                  class="title-actions">
+                  Selecciona una acción
+                </div>
+                <div
+                  class="box-btn-operacion">
+                  <button
+                    v-if="!solicitarPrecio"
+                    type="button"
+                    class="btn btn-outline-operacion btn-sm"
+                    :class="{ 'active': optionSelected === 'Vender' }"
+                    @click="clickOption('Vender')">
+                    {{ isBuy ? 'Comprar' : 'Vender' }} {{ currencySelected }}
+                  </button>
+
+                  <button
+                    v-if="mostrarTwoWay && !solicitarPrecio"
+                    type="button"
+                    class="btn btn-outline-operacion btn-sm"
+                    :class="{ 'active': mostrarTwoWay == true && optionSelected === 'Twoway'}"
+                    @click="clickOption('Twoway')">
+                    Two Way
+                  </button>
+
+                  <button
+                    v-if="!solicitarPrecio"
+                    type="button"
+                    class="btn btn-outline-operacion btn-sm"
+                    :class="{ 'active': optionSelected === 'Comprar' }"
+                    @click="clickOption('Comprar')">
+                    {{ isBuy ? 'Vender' : 'Comprar' }} {{ currencySelected }}
+                  </button>
+                </div>
+                <div
+                  v-if="solicitarPrecio"
+                  class="box-tiempo">
+                  <div class="title-tiempo">
+                    Tiempo restante para completar tu operación:
+                  </div>
+                  <div class="box-timer">
+                    <vue-ellipse-progress
+                      color="#A41D36"
+                      :size="90"
+                      :progress="progress">
+                      <span>{{ timeLeft }}</span>
+                    </vue-ellipse-progress>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              v-if="operacionSeleccionada == 'BLOCKTRADE' && solicitarPrecio"
               class="row">
               <div class="col-12">
                 <div
