@@ -1350,7 +1350,7 @@ export default {
         this.customModalProps.btnAcceptFunc = this.closeModal;
       }
     },
-    async onSubmitBlockTrade() { 
+    async onSubmitBlockTrade() {
       try {
         const Symbol = this.currenciesSelected.join('/');
         let totalCompra = 0;
@@ -1952,7 +1952,7 @@ export default {
       }
     },
     /* eslint-disable no-param-reassign */
-    async eventOperationBloque() { 
+    async eventOperationBloque() {
       const Symbol = this.currenciesSelected.join('/');
       let totalCompra = 0;
       let totalVenta = 0;
