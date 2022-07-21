@@ -746,9 +746,9 @@ export default {
       const valor = this.$store.state.crearOperacionConcertada.Symbol;
       const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
       const separa = valor.split('/');
-      let str = `I ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[0]} // ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[1]}`;
+      let str = `I ${opcion === '1' ? 'Buy' : 'Sell'} ${separa[0]} // ${opcion === '1' ? 'Sell' : 'Buy'} ${separa[1]}`;
       if (separa[0] === actual) {
-        str = `I ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[0]} // ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[1]}`;
+        str = `I ${opcion === '1' ? 'Sell' : 'Buy'} ${separa[0]} // ${opcion === '1' ? 'Buy' : 'Sell'} ${separa[1]}`;
       }
       return str;
     },
