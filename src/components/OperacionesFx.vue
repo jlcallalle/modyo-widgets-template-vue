@@ -1350,7 +1350,7 @@ export default {
         this.customModalProps.btnAcceptFunc = this.closeModal;
       }
     },
-    async onSubmitBlockTrade() {
+    async onSubmitBlockTrade() { 
       try {
         const Symbol = this.currenciesSelected.join('/');
         let totalCompra = 0;
@@ -1802,6 +1802,7 @@ export default {
     },
     setNewBlockTradeRowsValues(newValues) {
       if (newValues) {
+        this.qQuoteID = newValues.QuoteID;
         this.blockTradeRows = this.blockTradeRows.map((blockTradeRow, ind) => {
           const returnBlockTradeRow = blockTradeRow;
           if (newValues.LegInfo[ind]) {
@@ -1951,7 +1952,7 @@ export default {
       }
     },
     /* eslint-disable no-param-reassign */
-    async eventOperationBloque() {
+    async eventOperationBloque() { 
       const Symbol = this.currenciesSelected.join('/');
       let totalCompra = 0;
       let totalVenta = 0;
