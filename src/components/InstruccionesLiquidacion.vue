@@ -89,7 +89,12 @@
           </div>
           <vue-good-table
             :columns="columns"
-            :rows="blockTradeRows" />
+            :rows="blockTradeRows"
+            :select-options="{
+              enabled: true,
+              selectOnCheckboxOnly: true,
+              disableSelectInfo: true,
+            }" />
           <!-- <vue-good-table
             :columns="columns"
             :rows="blockTradeRows"

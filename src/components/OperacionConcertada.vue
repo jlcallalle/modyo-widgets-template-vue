@@ -79,7 +79,7 @@
                           <span v-else> Requester Action</span>
                         </td>
                         <td>
-                          {{ returnTxtOperacionFarLeg() }}
+                          {{ returnTxtOperacionNearLeg() }}
                         </td>
                       </tr>
                       <tr class="texto-color">
@@ -135,7 +135,7 @@
                           Far Leg
                         </td>
                         <td>
-                          {{ returnTxtOperacion() }}
+                          {{ returnTxtOperacionFarLeg() }}
                         </td>
                       </tr>
                       <tr
@@ -731,24 +731,29 @@ export default {
       this.customModalProps.open = true;
     },
     returnTxtOperacion() {
-      const actual = this.$store.state.crearOperacionConcertada.Currency;
-      const valor = this.$store.state.crearOperacionConcertada.Symbol;
-      const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
-      const separa = valor.split('/');
-      let str = `I ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[0]} // ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[1]}`;
-      if (separa[0] === actual) {
-        str = `I ${opcion === '2' ? 'Sell' : 'Buy'} ${separa[0]} // ${opcion === '2' ? 'Buy' : 'Sell'} ${separa[1]}`;
+      const { Currency, Symbol, Side } = this.$store.state.crearOperacionConcertada; // SELL = "2" / BUY = "1"
+      const separa = Symbol.split('/');
+      let str = `I ${Side === '2' ? 'Buy' : 'Sell'} ${separa[0]} // ${Side === '2' ? 'Sell' : 'Buy'} ${separa[1]}`;
+      if (separa[0] === Currency) {
+        str = `I ${Side === '2' ? 'Sell' : 'Buy'} ${separa[0]} // ${Side === '2' ? 'Buy' : 'Sell'} ${separa[1]}`;
       }
       return str;
     },
     returnTxtOperacionFarLeg() {
-      const actual = this.$store.state.crearOperacionConcertada.Currency;
-      const valor = this.$store.state.crearOperacionConcertada.Symbol;
-      const opcion = this.$store.state.crearOperacionConcertada.Side; // SELL = "2" / BUY = "1"
-      const separa = valor.split('/');
-      let str = `I ${opcion === '1' ? 'Buy' : 'Sell'} ${separa[0]} // ${opcion === '1' ? 'Sell' : 'Buy'} ${separa[1]}`;
-      if (separa[0] === actual) {
-        str = `I ${opcion === '1' ? 'Sell' : 'Buy'} ${separa[0]} // ${opcion === '1' ? 'Buy' : 'Sell'} ${separa[1]}`;
+      const { Currency, Symbol, Side } = this.$store.state.crearOperacionConcertada; // SELL = "2" / BUY = "1"
+      const separa = Symbol.split('/');
+      let str = `I ${Side === '1' ? 'Buy' : 'Sell'} ${separa[0]} // ${Side === '1' ? 'Sell' : 'Buy'} ${separa[1]}`;
+      if (separa[0] === Currency) {
+        str = `I ${Side === '2' ? 'Sell' : 'Buy'} ${separa[0]} // ${Side === '2' ? 'Buy' : 'Sell'} ${separa[1]}`;
+      }
+      return str;
+    },
+    returnTxtOperacionNearLeg() {
+      const { Currency, Symbol, Side } = this.$store.state.crearOperacionConcertada; // SELL = "2" / BUY = "1"
+      const separa = Symbol.split('/');
+      let str = `I ${Side === '2' ? 'Buy' : 'Sell'} ${separa[0]} // ${Side === '2' ? 'Sell' : 'Buy'} ${separa[1]}`;
+      if (separa[0] === Currency) {
+        str = `I ${Side === '1' ? 'Sell' : 'Buy'} ${separa[0]} // ${Side === '1' ? 'Buy' : 'Sell'} ${separa[1]}`;
       }
       return str;
     },
