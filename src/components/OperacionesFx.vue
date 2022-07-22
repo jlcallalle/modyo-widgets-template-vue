@@ -1991,9 +1991,8 @@ export default {
       const responseApiConcertacion = await this.$store.dispatch('createCerrarOperacion', bodyCerrarOperacion);
       if (responseApiConcertacion.status === 'OK') {
         this.showModal = true;
-        const cleanBlockTradeRows = this.blockTradeRows;
-        cleanBlockTradeRows.forEach((row) => { delete row.calendarOptions; delete row.compra; });
-        localStorage.setItem('subOps', JSON.stringify(cleanBlockTradeRows));
+        localStorage.setItem('subOps', JSON.stringify(NoLegs));
+        localStorage.setItem('finalPrice', this.obtenerPromedioBlockTrade());
       } else {
         this.showModalError = true;
       }

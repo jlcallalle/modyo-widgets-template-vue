@@ -368,6 +368,7 @@ export default {
         this.closeModal();
         this.blockTradeRows = null;
         localStorage.removeItem('subOps');
+        localStorage.removeItem('finalPrice');
         this.$store.dispatch('updatePage', 'operacionesFx');
       };
       this.customModalProps.open = true;
@@ -395,8 +396,20 @@ export default {
       }
     },
     getDataTable() {
-      this.blockTradeRows = JSON.parse(localStorage.getItem('subOps'));
-      this.precioPromedio = this.blockTradeRows[0].sumaTotal;
+      const blockTradeRows = JSON.parse(localStorage.getItem('subOps'));
+      this.blockTradeRows = blockTradeRows.map((blockTradeRow) => {
+        const fechaSeleccionada = this.dateFormat(blockTradeRow.LegSettlDate);
+        return {
+          nocional: blockTradeRow.LegQty,
+          fechaSeleccionada,
+          price: blockTradeRow.LegPrice,
+          LegRefID: blockTradeRow.LegRefID,
+        };
+      });
+      this.precioPromedio = localStorage.getItem('finalPrice');
+    },
+    dateFormat(date) {
+      return `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}`;
     },
     // selectionChanged(event) {
     //   this.selectedRowsLength = event.selectedRows.length;
