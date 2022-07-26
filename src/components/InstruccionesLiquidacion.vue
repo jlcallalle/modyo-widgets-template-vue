@@ -88,9 +88,9 @@
             </h2>
           </div>
           <vue-good-table
+            ref="liquidacion"
             :columns="columns"
             :rows="blockTradeRows"
-            ref="liquidacion"
             :select-options="{
               enabled: true,
               selectOnCheckboxOnly: true,
@@ -187,6 +187,7 @@ export default {
       origenSelected: null,
       destinoSelected: null,
       precioPromedio: 982.4512,
+      asignados: [],
       // selectedRowsLength: 0,
       // selectedRows: [],
       // responsesAssingAccounts: [],
@@ -352,20 +353,24 @@ export default {
       this.customModalProps.open = false;
     },
     async evenInstrucciones() {
-      this.responsesAssingAccounts = [];
       const concretadaData = this.$store.state.cerrarOperacion.data;
       const current = new Date();
       this.$refs.liquidacion.selectedRows.forEach((row) => this.assingAccounts(row, concretadaData, current));
       this.showModalAssing();
     },
     async showModalAssing() {
-      const assigned = this.responsesAssingAccounts.length;
+      const assigned = this.asignados.length;
       this.customModalProps.title = 'Confirmación de instrucciones';
       this.customModalProps.message = assigned > 1 ? 'Se han asignado cuentas a estas operaciones.' : 'Se han asignado cuentas a esta operación.';
       this.customModalProps.btnAcceptText = 'Aceptar';
       this.customModalProps.type = 'confirm';
       this.customModalProps.btnCloseHide = true;
       this.customModalProps.btnAcceptFunc = () => {
+        this.asignados = this.$refs.liquidacion.selectedRows;
+        this.asignados.forEach((asignado) => {
+          this.$set(this.blockTradeRows[asignado.originalIndex], 'vgtDisabled', true);
+          this.$set(this.blockTradeRows[asignado.originalIndex], 'vgtSelected', false);
+        });
         this.closeModal();
         // this.blockTradeRows = null;
         // localStorage.removeItem('subOps');
