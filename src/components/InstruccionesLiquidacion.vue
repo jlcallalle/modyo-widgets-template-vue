@@ -90,6 +90,7 @@
           <vue-good-table
             :columns="columns"
             :rows="blockTradeRows"
+            ref="liquidacion"
             :select-options="{
               enabled: true,
               selectOnCheckboxOnly: true,
@@ -152,7 +153,6 @@ export default {
   components: { CustomModal },
   data() {
     return {
-      loading: false,
       columns: [
         {
           label: 'Fecha',
@@ -355,10 +355,11 @@ export default {
       this.responsesAssingAccounts = [];
       const concretadaData = this.$store.state.cerrarOperacion.data;
       const current = new Date();
-      this.blockTradeRows.forEach((row) => this.assingAccounts(row, concretadaData, current));
-      this.showModalAssing(this.blockTradeRows.length, this.responsesAssingAccounts.length);
+      this.$refs.liquidacion.selectedRows.forEach((row) => this.assingAccounts(row, concretadaData, current));
+      this.showModalAssing();
     },
-    async showModalAssing(selected, assigned) {
+    async showModalAssing() {
+      const assigned = this.responsesAssingAccounts.length;
       this.customModalProps.title = 'Confirmación de instrucciones';
       this.customModalProps.message = assigned > 1 ? 'Se han asignado cuentas a estas operaciones.' : 'Se han asignado cuentas a esta operación.';
       this.customModalProps.btnAcceptText = 'Aceptar';
@@ -366,10 +367,10 @@ export default {
       this.customModalProps.btnCloseHide = true;
       this.customModalProps.btnAcceptFunc = () => {
         this.closeModal();
-        this.blockTradeRows = null;
-        localStorage.removeItem('subOps');
-        localStorage.removeItem('finalPrice');
-        this.$store.dispatch('updatePage', 'operacionesFx');
+        // this.blockTradeRows = null;
+        // localStorage.removeItem('subOps');
+        // localStorage.removeItem('finalPrice');
+        // this.$store.dispatch('updatePage', 'operacionesFx');
       };
       this.customModalProps.open = true;
     },
