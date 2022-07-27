@@ -289,7 +289,7 @@
                 </div>
                 <a
                   class="box-alta"
-                  @click="getListadoDestino()">
+                  @click="goToPortalEfectivo()">
                   <i class="icon-cruz">
                     <svg
                       width="15"
@@ -759,6 +759,20 @@ export default {
     },
     formatoMoneda(precio) {
       return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(precio);
+    },
+    goToPortalEfectivo() {
+      this.customModalProps.btnAcceptFunc = () => {
+        window.location.href = 'https://invex.com/';
+      };
+      this.customModalProps.btnCancelFunc = () => {
+        this.customModalProps.open = false;
+      };
+      this.customModalProps.title = 'Serás dirigido al Portal de Efectivo';
+      this.customModalProps.message = 'Para dar de alta una nueva cuenta de origen o destino, toma en cuenta que únicacamente se podrían agregar cuentas en territorio nacional.';
+      this.customModalProps.btnAcceptText = 'Dar de alta nueva cuenta';
+      this.customModalProps.btnCancelText = 'Cancelar';
+      this.customModalProps.btnCloseHide = false;
+      this.customModalProps.open = true;
     },
   },
 };
