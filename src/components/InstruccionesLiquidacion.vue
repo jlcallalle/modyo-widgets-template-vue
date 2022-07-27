@@ -327,8 +327,11 @@ export default {
       }
     },
     async returnMsgDestino() {
+      let currencyDivisa = '';
+      if (this.destinoCurrency) currencyDivisa = this.destinoCurrency;
+      if (this.currencyDivisa) currencyDivisa = this.currencyDivisa;
       this.customModalProps.title = 'No se encontraron cuentas destino';
-      this.customModalProps.message = `No existen cuentas destino registradas para la divisa ${this.currencyDivisa} para poder realizar la asignación de las cuentas a la operación`;
+      this.customModalProps.message = `No existen cuentas destino registradas para la divisa ${currencyDivisa} para poder realizar la asignación de las cuentas a la operación`;
       this.customModalProps.btnAcceptText = 'Aceptar';
       this.customModalProps.btnCloseHide = true;
       this.customModalProps.btnAcceptFunc = () => {
