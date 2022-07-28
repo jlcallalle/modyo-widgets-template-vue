@@ -406,25 +406,29 @@ export default {
       this.customModalProps.open = true;
     },
     async assingAccounts(row, concretadaData, current) {
-      try {
-        const body = {
-          transactionId: `${this.userData.data.user360T}-${current.getFullYear()}${current.getMonth() + 1}${current.getDate()}${current.getHours()}${current.getMinutes()}${current.getSeconds()}`,
-          requestSystem: 'FX',
-          orderID: concretadaData.OrderID,
-          debitAccount: this.origenSelected,
-          creditAccount: '',
-          settlAccount: this.destinoSelected,
-          blockid: parseInt(row.LegRefID.split('-')[1], 10),
-        };
-        this.listadoDestino.forEach((destino) => {
-          if (destino.BeneficiaryAccount === this.destinoSelected) {
-            body.creditAccount = `${destino.customerAccount}`;
-          }
-        });
-        await this.$store.dispatch('actualizarOperacion', body);
-      } catch (err) {
-        this.showModal = true;
-        // Ocurrio un error, se debe manejar
+      const findIndexAssign = this.asignados.findIndex((asignado) => asignado.originalIndex === row.originalIndex);
+      if (!this.asignados[findIndexAssign].completado) {
+        try {
+          const body = {
+            transactionId: `${this.userData.data.user360T}-${current.getFullYear()}${current.getMonth() + 1}${current.getDate()}${current.getHours()}${current.getMinutes()}${current.getSeconds()}`,
+            requestSystem: 'FX',
+            orderID: concretadaData.OrderID,
+            debitAccount: this.origenSelected,
+            creditAccount: '',
+            settlAccount: this.destinoSelected,
+            blockid: parseInt(row.LegRefID.split('-')[1], 10),
+          };
+          this.listadoDestino.forEach((destino) => {
+            if (destino.BeneficiaryAccount === this.destinoSelected) {
+              body.creditAccount = `${destino.customerAccount}`;
+            }
+          });
+          await this.$store.dispatch('actualizarOperacion', body);
+          this.asignados[findIndexAssign].completado = true;
+        } catch (err) {
+          this.showModal = true;
+          // Ocurrio un error, se debe manejar
+        }
       }
     },
     getDataTable() {
