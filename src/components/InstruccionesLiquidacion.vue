@@ -30,8 +30,8 @@
                   v-for="(origen, index) in listadoOrigen"
                   :id="index"
                   :key="index"
-                  :selected="origenSelected === origen.customerAccount"
-                  :value="origen.customerAccount">
+                  :selected="origen ? origenSelected === origen.customerAccount : false"
+                  :value="origen ? origen.customerAccount: ''">
                   {{ origenTxt(origen) }}
                 </option>
               </select>
@@ -182,6 +182,7 @@ export default {
       },
       allListadoDestino: [],
       destinoCurrency: '',
+      origenCurrency: '',
       listadoOrigen: [],
       listadoDestino: [],
       origenSelected: null,
@@ -264,8 +265,10 @@ export default {
         if (this.listadoOrigen.length > 0) {
           this.setOrigen({ target: { value: this.listadoOrigen[0].customerAccount } });
         }
+        if (this.listadoOrigen.length === 0) this.returnMsgOrigen();
         return this.listadoOrigen.length > 0;
       } catch (e) {
+        this.returnMsgOrigen();
         return false;
       }
     },
@@ -327,11 +330,21 @@ export default {
       }
     },
     async returnMsgDestino() {
-      let currencyDivisa = '';
-      if (this.destinoCurrency) currencyDivisa = this.destinoCurrency;
-      if (this.currencyDivisa) currencyDivisa = this.currencyDivisa;
+      const currencyDivisa = await this.getLogicCurrencies(true);
       this.customModalProps.title = 'No se encontraron cuentas destino';
       this.customModalProps.message = `No existen cuentas destino registradas para la divisa ${currencyDivisa} para poder realizar la asignación de las cuentas a la operación`;
+      this.customModalProps.btnAcceptText = 'Aceptar';
+      this.customModalProps.btnCloseHide = true;
+      this.customModalProps.btnAcceptFunc = () => {
+        this.mostrarInstrucciones = false;
+        this.closeModal();
+      };
+      this.customModalProps.open = true;
+    },
+    async returnMsgOrigen() {
+      const currencyDivisa = await this.getLogicCurrencies();
+      this.customModalProps.title = 'No se encontraron cuentas origen';
+      this.customModalProps.message = `No existen cuentas origen registradas para la divisa ${currencyDivisa} para poder realizar la asignación de las cuentas a la operación`;
       this.customModalProps.btnAcceptText = 'Aceptar';
       this.customModalProps.btnCloseHide = true;
       this.customModalProps.btnAcceptFunc = () => {
@@ -358,8 +371,15 @@ export default {
     async evenInstrucciones() {
       const concretadaData = this.$store.state.cerrarOperacion.data;
       const current = new Date();
-      this.$refs.liquidacion.selectedRows.forEach((row) => this.assingAccounts(row, concretadaData, current));
+      this.asignados = this.arrayWithNoDuplicates([...this.$refs.liquidacion.selectedRows, ...this.asignados], 'originalIndex');
+      this.asignados.forEach((row) => this.assingAccounts(row, concretadaData, current));
       this.showModalAssing();
+    },
+    arrayWithNoDuplicates(array, field) {
+      const arrayWithoutNoDuplicates = array.filter((value, index, self) => index === self.findIndex((t) => (
+        t[field] === value[field]
+      )));
+      return arrayWithoutNoDuplicates;
     },
     async showModalAssing() {
       const assigned = this.asignados.length;
@@ -369,11 +389,14 @@ export default {
       this.customModalProps.type = 'confirm';
       this.customModalProps.btnCloseHide = true;
       this.customModalProps.btnAcceptFunc = () => {
-        this.asignados = this.$refs.liquidacion.selectedRows;
         this.asignados.forEach((asignado) => {
           this.$set(this.blockTradeRows[asignado.originalIndex], 'vgtDisabled', true);
           this.$set(this.blockTradeRows[asignado.originalIndex], 'vgtSelected', false);
         });
+        if (this.asignados.length === this.blockTradeRows.length) {
+          this.closeModal();
+          this.$store.dispatch('updatePage', 'operacionesFx');
+        }
         this.closeModal();
         // this.blockTradeRows = null;
         // localStorage.removeItem('subOps');
