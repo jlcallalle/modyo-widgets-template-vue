@@ -1158,8 +1158,6 @@ export default {
     await this.getOperations();
     this.getValueTwoWay();
     await this.getHoraRestriccion();
-    this.getListadoOrigen();
-    this.getListadoDestino();
     // await this.$store.dispatch('generarTokenSeguridad', {
     //   CUI: this.mapClientLogeo.CUI,
     //   internetFolio: this.mapClientLogeo.internetFolio,
@@ -1640,6 +1638,9 @@ export default {
         this.removePataLarga();
         this.calendarTipoPataCorta = this.datoFechaToday;
         this.calendarTipoPataLarga = this.datoFechaTomorrow;
+      } else if (this.operacionSeleccionada === 'BLOCKTRADE') {
+        this.getListadoOrigen();
+        this.getListadoDestino();
       }
       this.cancelClick();
     },

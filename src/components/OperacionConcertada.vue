@@ -239,23 +239,6 @@
                     </option>
                   </select>
                 </div>
-                <a
-                  class="box-alta"
-                  @click="getListadoOrigen()">
-                  <i class="icon-cruz">
-                    <svg
-                      width="15"
-                      height="15"
-                      viewBox="0 0 15 15"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg">
-                      <path
-                        d="M15 8.57143H8.57143V15H6.42857V8.57143H0V6.42857H6.42857V0H8.57143V6.42857H15V8.57143Z"
-                        fill="#A41D36" />
-                    </svg>
-                  </i>
-                  <span>Dar de alta nueva cuenta origen</span>
-                </a>
               </div>
               <div class="box-cuenta">
                 <div class="form-group">

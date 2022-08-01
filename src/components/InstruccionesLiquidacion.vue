@@ -65,17 +65,10 @@
               </div>
             </div>
             <div class="form-group col-12 col-md-4 col-alta-cuenta">
-              <select class="form-control">
-                <option selected="selected">
-                  Alta de cuenta Nueva
-                </option>
-                <option value="destino">
-                  Destino
-                </option>
-                <option value="origen">
-                  Origen
-                </option>
-              </select>
+              <button
+                class="btn btn-outline-operacion">
+                Ata de nueva cuenta destino
+              </button>
             </div>
           </div>
         </div>
