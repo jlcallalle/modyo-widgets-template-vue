@@ -2242,14 +2242,16 @@ export default {
         this.renderFirstTime = false;
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('operation')) {
-          if (this.listarOperacion.find((operation) => operation.productCode === urlParams.get('operation'))) {
-            this.$store.dispatch('updateOperacionSeleccionada', urlParams.get('operation'));
+          const operationParams = urlParams.get('operation').toUpperCase();
+          if (this.listarOperacion.find((operation) => operation.productCode === operationParams)) {
+            this.seleccionarOperacion({ target: { value: operationParams } });
           }
         }
         if (urlParams.has('currencies')) {
-          const currencyInd = this.currenciesOptions.findIndex((currency) => `${currency.Ccy1}${currency.Ccy2}` === urlParams.get('currencies'));
+          const currenciesParams = urlParams.get('currencies').toUpperCase();
+          const currencyInd = this.currenciesOptions.findIndex((currency) => `${currency.Ccy1}${currency.Ccy2}` === currenciesParams);
           if (currencyInd > -1) {
-            this.currencySelectedId = currencyInd;
+            this.setCurrenciesOptions({ target: { value: currencyInd } });
           }
         }
       }
