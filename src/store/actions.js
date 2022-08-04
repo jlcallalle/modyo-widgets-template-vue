@@ -1,5 +1,7 @@
 import Repository from '../repositories/RepositoryFactory';
+import liquidParser from '../liquid/liquidParser';
 
+const urlRedirect = liquidParser.parse('{{ vars.urlredirect }}');
 const PostRepository = Repository.get('posts');
 // const ApiRepository = Repository.get('api');
 const JsonPlaceholderRepository = Repository.get('jsonPlaceholder');
@@ -323,6 +325,21 @@ export default {
       const data = await InvexRepository.fechapataCortapataLarga(body);
       commit('setpataCortapataLarga', data);
       return data;
+    } catch (error) {
+      return error;
+    } finally {
+      commit('setLoading', false);
+    }
+  },
+  async generarUrlRedireccion({ commit }, body) {
+    commit('setLoading', true);
+    try {
+      const data = await InvexRepository.generarTokenSeguridad(body);
+      commit('setTokenSeguridad', data);
+      if (data) {
+        return `${urlRedirect}?PortalToken=${data.data.notificationDescription}`;
+      }
+      return null;
     } catch (error) {
       return error;
     } finally {

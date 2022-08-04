@@ -1062,6 +1062,7 @@ export default {
       cuentaDestino: null,
       fechaBloqueMax: null,
       blockTradeSide: '1',
+      renderFirstTime: true,
     };
   },
   computed: {
@@ -1472,6 +1473,7 @@ export default {
     async getOperations() {
       try {
         await this.$store.dispatch('getListaOperaciones');
+        this.renderByParams();
       } catch (error) {
         this.showModalError = true;
       }
@@ -2234,6 +2236,23 @@ export default {
         if (!blockTradeRow.compra) totalVentas += blockTradeRow.nocional;
       });
       return Math.abs(totalCompras - totalVentas);
+    },
+    renderByParams() {
+      if (this.renderFirstTime) {
+        this.renderFirstTime = false;
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('operation')) {
+          if (this.listarOperacion.find((operation) => operation.productCode === urlParams.get('operation'))) {
+            this.$store.dispatch('updateOperacionSeleccionada', urlParams.get('operation'));
+          }
+        }
+        if (urlParams.has('currencies')) {
+          const currencyInd = this.currenciesOptions.findIndex((currency) => `${currency.Ccy1}${currency.Ccy2}` === urlParams.get('currencies'));
+          if (currencyInd > -1) {
+            this.currencySelectedId = currencyInd;
+          }
+        }
+      }
     },
   },
 };

@@ -209,6 +209,10 @@
                 @click="goToLiquidacion">
                 Asignar Instrucciones
               </button>
+              <a
+                href="#;"
+                class="btn btn-outline-primary btn-cancelar"
+                @click="goToPortalEfectivo">tttn</a>
             </div>
           </form>
         </div>
@@ -744,8 +748,19 @@ export default {
       return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(precio);
     },
     goToPortalEfectivo() {
-      this.customModalProps.btnAcceptFunc = () => {
-        window.location.href = 'https://invex.com/';
+      this.customModalProps.btnAcceptFunc = async () => {
+        try {
+          const body = {
+            CUI: this.mapClientLogeo.CUI,
+            internetFolio: this.mapClientLogeo.internetFolio,
+          };
+          const url = await this.$store.dispatch('generarUrlRedireccion', body);
+          if (url) {
+            window.location.href = url;
+          }
+        } catch (error) {
+          this.customModalProps.open = false;
+        }
       };
       this.customModalProps.btnCancelFunc = () => {
         this.customModalProps.open = false;

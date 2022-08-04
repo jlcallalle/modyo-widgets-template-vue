@@ -17,5 +17,6 @@ export default {
     base_api_test: 'https://jsonplaceholder.typicode.com',
     segundopeticiones: 1,
     enviroment: 'development',
+    urlredirect: 'https://cdincom03.invexgf.com/Autenticacion/ValidateSesionAddAccount',
   },
 };
