@@ -2237,7 +2237,7 @@ export default {
       });
       return Math.abs(totalCompras - totalVentas);
     },
-    renderByParams() {
+    async renderByParams() {
       if (this.renderFirstTime) {
         this.renderFirstTime = false;
         const urlParams = new URLSearchParams(window.location.search);
@@ -2254,13 +2254,16 @@ export default {
             this.setCurrenciesOptions({ target: { value: currencyInd } });
           }
         }
+        if (urlParams.has('bill')) {
+          await this.$store.dispatch('setLocalStorage');
+        }
       }
     },
   },
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+<!-- Add "scoped" attribute to limit CSS to this component only  -->
 <style scoped lang="scss">
 $brand-invex: #A41D36;
 .btn-outline-operacion {

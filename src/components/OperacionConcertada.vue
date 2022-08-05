@@ -209,10 +209,6 @@
                 @click="goToLiquidacion">
                 Asignar Instrucciones
               </button>
-              <a
-                href="#;"
-                class="btn btn-outline-primary btn-cancelar"
-                @click="goToPortalEfectivo">tttn</a>
             </div>
           </form>
         </div>
@@ -363,10 +359,6 @@ export default {
     ...mapState(['currentView', 'loading']),
     ...mapState(['mapClientLogeo']),
     ...mapState(['crearOperacionConcertada']),
-    ...mapState(['listarOperacionConcertada']),
-    ...mapState(['listarOperacion']),
-    ...mapState(['listaOrigen']),
-    ...mapState(['listaDestino']),
     ...mapState(['operacionSeleccionada']),
     ...mapState(['operacionPataCorta']),
     ...mapState(['operacionPataLarga']),
@@ -426,6 +418,12 @@ export default {
     getOperacionPataLarga() {
       return this.operacionPataLarga.toLowerCase();
     },
+  },
+  async mounted() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('bill')) {
+      this.goToLiquidacion();
+    }
   },
   methods: {
     getFechaSeleccionada() {
@@ -756,6 +754,18 @@ export default {
           };
           const url = await this.$store.dispatch('generarUrlRedireccion', body);
           if (url) {
+            const {
+              crearOperacionConcertada,
+              operacionSeleccionada,
+              operacionPataCorta,
+              operacionPataLarga,
+              fechaCatalogoSeleccionada,
+            } = this.$store.state;
+            this.guardarEnLocalStorage('crearOperacionConcertada', crearOperacionConcertada);
+            this.guardarEnLocalStorage('operacionSeleccionada', operacionSeleccionada);
+            this.guardarEnLocalStorage('operacionPataCorta', operacionPataCorta);
+            this.guardarEnLocalStorage('operacionPataLarga', operacionPataLarga);
+            this.guardarEnLocalStorage('fechaCatalogoSeleccionada', fechaCatalogoSeleccionada);
             window.location.href = url;
           }
         } catch (error) {
@@ -771,6 +781,9 @@ export default {
       this.customModalProps.btnCancelText = 'Cancelar';
       this.customModalProps.btnCloseHide = false;
       this.customModalProps.open = true;
+    },
+    guardarEnLocalStorage(key, value) {
+      window.localStorage.setItem(key, JSON.stringify(value));
     },
   },
 };

@@ -8,6 +8,14 @@ const JsonPlaceholderRepository = Repository.get('jsonPlaceholder');
 const ListaOperacionesRepository = Repository.get('listaOperaciones');
 const InvexRepository = Repository.get('invex');
 
+const getLocalStorageValue = (key) => {
+  let value = window.localStorage.getItem(key);
+  if (value) {
+    value = JSON.parse(value);
+  }
+  return value;
+};
+
 export default {
   async updatePage({ commit }, payload) {
     commit('updatePage', payload);
@@ -345,5 +353,18 @@ export default {
     } finally {
       commit('setLoading', false);
     }
+  },
+  async setLocalStorage({ commit }) {
+    commit('setLoading', true);
+    const tieneOperacionConcertada = getLocalStorageValue('crearOperacionConcertada');
+    if (tieneOperacionConcertada) {
+      commit('updateCrearOperacionConcertada', tieneOperacionConcertada);
+      commit('setOperacionSeleccionada', getLocalStorageValue('operacionSeleccionada'));
+      commit('setOperacionPataCorta', getLocalStorageValue('operacionPataCorta'));
+      commit('setOperacionPataLarga', getLocalStorageValue('operacionPataLarga'));
+      commit('setFechaCatalogoSeleccionada', getLocalStorageValue('fechaCatalogoSeleccionada'));
+      commit('updatePage', 'operacionConcertada');
+    }
+    commit('setLoading', false);
   },
 };
