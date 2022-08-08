@@ -936,6 +936,7 @@ import Repository from '../repositories/RepositoryFactory';
 const InvexRepository = Repository.get('invex');
 const segundoPeticiones = liquidParser.parse('{{ vars.segundopeticiones }}');
 const ENVIROMENT = liquidParser.parse('{{ vars.enviroment }}');
+const urlParams = new URLSearchParams(window.location.search);
 /* const fechasForwardValidasCambios = [
   'TODAY',
   'TOMORROW',
@@ -1063,6 +1064,8 @@ export default {
       fechaBloqueMax: null,
       blockTradeSide: '1',
       renderFirstTime: true,
+      renderFirstTimeOperations: true,
+      cancelClickFirst: false,
     };
   },
   computed: {
@@ -1155,6 +1158,9 @@ export default {
       await this.$store.dispatch('setUserData', JSON.stringify(userDefault));
     }
     // Fin de lo que se puede comentar para temas de desarrollo
+    if (urlParams.has('bill')) {
+      await this.$store.dispatch('setLocalStorage');
+    }
     await this.getCurrencies();
     await this.getOperations();
     this.getValueTwoWay();
@@ -1473,7 +1479,13 @@ export default {
     async getOperations() {
       try {
         await this.$store.dispatch('getListaOperaciones');
-        this.renderByParams();
+        if (urlParams.has('operation') && this.renderFirstTimeOperations) {
+          const operationParams = urlParams.get('operation').toUpperCase();
+          if (this.listarOperacion.find((operation) => operation.productCode === operationParams)) {
+            this.renderFirstTimeOperations = false;
+            this.seleccionarOperacion({ target: { value: operationParams } });
+          }
+        }
       } catch (error) {
         this.showModalError = true;
       }
@@ -1482,8 +1494,14 @@ export default {
       try {
         await this.$store.dispatch('getDivisas');
         this.currenciesOptions = this.listaDivisas;
-        const findUSD = this.currenciesOptions.findIndex((item) => item.Ccy1 === 'USD' && item.Ccy2 === 'MXN');
-        this.setCurrenciesOptions({ target: { value: findUSD || 0 } });
+        let findCurrency = this.currenciesOptions.findIndex((item) => item.Ccy1 === 'USD' && item.Ccy2 === 'MXN');
+        if (urlParams.has('currencies') && this.renderFirstTime) {
+          const currenciesParams = urlParams.get('currencies').toUpperCase();
+          findCurrency = this.currenciesOptions.findIndex((currency) => `${currency.Ccy1.toUpperCase()}${currency.Ccy2.toUpperCase()}` === currenciesParams);
+          this.renderFirstTime = false;
+          this.cancelClickFirst = true;
+        }
+        await this.setCurrenciesOptions({ target: { value: findCurrency > -1 ? findCurrency : 0 } });
       } catch (error) {
         this.showModalError = true;
       }
@@ -1522,6 +1540,7 @@ export default {
     async getCalendar() {
       try {
         const currenciesSelected = this.currenciesSelected.join('/');
+        this.$store.dispatch('setLoading', true);
         await this.$store.dispatch('getCalendario', currenciesSelected, this.userData.data.user360T);
         this.calendarOptions = this.calendario;
         this.calendarOptionsPataCorta = this.calendario;
@@ -1543,8 +1562,10 @@ export default {
           this.blockTradeRows[0].calendarOptions = [...this.calendarOptions];
           this.blockTradeRows[0].fechaSeleccionada = this.calendarOptions[0].date;
         }
+        this.$store.dispatch('setLoading', false);
       } catch (error) {
         this.showModalError = true;
+        this.$store.dispatch('setLoading', false);
       }
     },
     async getpataCortapataLarga() {
@@ -1608,14 +1629,16 @@ export default {
     setMontoPataLarga(ev) {
       this.montoPataLarga = ev;
     },
-    setCurrenciesOptions(ev) {
+    async setCurrenciesOptions(ev) {
       if (this.currenciesOptions.length > ev.target.value) {
         const auxSelected = this.currenciesOptions[ev.target.value];
         this.currencySelectedId = ev.target.value;
         this.currenciesSelected = [auxSelected.Ccy1, auxSelected.Ccy2];
         this.currencySelected = auxSelected.Ccy1;
         this.isBuy = false;
-        this.getCalendar();
+        if (!urlParams.has('currencies') || !this.renderFirstTime) {
+          await this.getCalendar();
+        }
       }
     },
     seleccionarOperacion(ev) {
@@ -1728,13 +1751,6 @@ export default {
           this.remove();
         }
         this.calendarTipoSelected = opcionCalendario.Description;
-      }
-    },
-    setCurrency(id) {
-      const findId = this.currenciesOptions.find((currency) => currency.id === id);
-      if (findId) {
-        this.currencySelectedId = id;
-        this.setCurrenciesOptions({ target: { value: id } });
       }
     },
     clickOption(txt) {
@@ -1872,8 +1888,11 @@ export default {
       this.removePataLarga();
       this.solicitarPrecio = false;
       this.monto = '0';
-      const findUSD = this.currenciesOptions.findIndex((item) => item.Ccy1 === 'USD' && item.Ccy2 === 'MXN');
-      this.setCurrenciesOptions({ target: { value: findUSD || 0 } });
+      // if (this.cancelClickFirst) {
+      //   this.cancelClickFirst = false;
+      //   const findUSD = this.currenciesOptions.findIndex((item) => item.Ccy1 === 'USD' && item.Ccy2 === 'MXN');
+      //   this.setCurrenciesOptions({ target: { value: findUSD || 0 } });
+      // }
       if (this.operacionSeleccionada === 'FORWARD') {
         this.calendarSelected = this.datoFechaToday;
       } else if (this.operacionSeleccionada === 'SWAP') {
@@ -2044,8 +2063,6 @@ export default {
       }
     },
     getTokenFronParam() {
-      const queryString = window.location.search;
-      const urlParams = new URLSearchParams(queryString);
       const token = urlParams.get('token');
       this.tkn = token;
     },
@@ -2236,28 +2253,6 @@ export default {
         if (!blockTradeRow.compra) totalVentas += blockTradeRow.nocional;
       });
       return Math.abs(totalCompras - totalVentas);
-    },
-    async renderByParams() {
-      if (this.renderFirstTime) {
-        this.renderFirstTime = false;
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('operation')) {
-          const operationParams = urlParams.get('operation').toUpperCase();
-          if (this.listarOperacion.find((operation) => operation.productCode === operationParams)) {
-            this.seleccionarOperacion({ target: { value: operationParams } });
-          }
-        }
-        if (urlParams.has('currencies')) {
-          const currenciesParams = urlParams.get('currencies').toUpperCase();
-          const currencyInd = this.currenciesOptions.findIndex((currency) => `${currency.Ccy1}${currency.Ccy2}` === currenciesParams);
-          if (currencyInd > -1) {
-            this.setCurrenciesOptions({ target: { value: currencyInd } });
-          }
-        }
-        if (urlParams.has('bill')) {
-          await this.$store.dispatch('setLocalStorage');
-        }
-      }
     },
   },
 };
