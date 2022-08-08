@@ -41,7 +41,6 @@ export default {
   },
   // Servicio Listar Operaciones FX
   async updateListarOperaciones({ commit }) {
-    commit('setLoading', true);
     try {
       const response = await ListaOperacionesRepository.getListaOpera();
       const infos = response.data.operationTypeResponseInterface.body.operationTypeResponse.return.catalogList;
@@ -50,8 +49,6 @@ export default {
       return response;
     } catch (error) {
       return error;
-    } finally {
-      commit('setLoading', false);
     }
   },
 
@@ -99,7 +96,7 @@ export default {
       const response = await InvexRepository.getOperations();
       const infos = response.operationTypeResponseInterface.body.operationTypeResponse.return.catalogList;
       commit('setListaOperaciones', [infos]);
-      return response;
+      return [infos];
     } catch (error) {
       return error;
     } finally {
