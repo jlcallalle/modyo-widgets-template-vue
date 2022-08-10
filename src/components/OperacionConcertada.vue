@@ -335,6 +335,8 @@ import ModalConfirma from './ModalConfirma.vue';
 import CustomModal from './CustomModal.vue';
 import ModalConfirmacionInstrucciones from './ModalConfirmacionInstrucciones.vue';
 
+const urlParams = new URLSearchParams(window.location.search);
+
 export default {
   name: 'OperacionConcertada',
   components: {
@@ -432,7 +434,6 @@ export default {
     },
   },
   async mounted() {
-    const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('bill')) {
       this.showModalInstrucciones = true;
       this.goToLiquidacion();
@@ -530,7 +531,10 @@ export default {
           this.goToLiquidacion();
         }
       };
-      this.customModalProps.btnCancelFunc = () => this.$store.dispatch('updatePage', 'operacionesFx');
+      this.customModalProps.btnCancelFunc = () => {
+        window.localStorage.removeItem('crearOperacionConcertada');
+        this.$store.dispatch('updatePage', 'operacionesFx');
+      };
       this.customModalProps.title = 'No se han asignado instrucciones';
       this.customModalProps.message = '¿Deseas salir sin asignar instrucciones de liquidación a tus operaciones?';
       this.customModalProps.btnAcceptText = 'Asignar ahora';
