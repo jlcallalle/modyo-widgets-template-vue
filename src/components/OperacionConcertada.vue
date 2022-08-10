@@ -306,6 +306,11 @@
         v-if="showModal"
         :open="showModal"
         @close="handleClose" />
+      <modal-confirmacion-instrucciones
+        v-if="showModalInstrucciones"
+        :open="showModalInstrucciones"
+        :close-modal="closeModalInstrucciones"
+        @close="closeModalInstrucciones" />
       <custom-modal
         v-if="customModalProps.open"
         :open="customModalProps.open"
@@ -328,10 +333,16 @@ import moment from 'moment-timezone';
 import Sidebar from './Sidebar.vue';
 import ModalConfirma from './ModalConfirma.vue';
 import CustomModal from './CustomModal.vue';
+import ModalConfirmacionInstrucciones from './ModalConfirmacionInstrucciones.vue';
 
 export default {
   name: 'OperacionConcertada',
-  components: { Sidebar, ModalConfirma, CustomModal },
+  components: {
+    Sidebar,
+    ModalConfirma,
+    CustomModal,
+    ModalConfirmacionInstrucciones,
+  },
   data() {
     return {
       mostrarInstrucciones: false,
@@ -353,6 +364,7 @@ export default {
         btnCancelText: 'Asignar despues',
         btnCloseHide: false,
       },
+      showModalInstrucciones: false,
     };
   },
   computed: {
@@ -422,6 +434,7 @@ export default {
   async mounted() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('bill')) {
+      this.showModalInstrucciones = true;
       this.goToLiquidacion();
     }
   },
@@ -749,8 +762,8 @@ export default {
       this.customModalProps.btnAcceptFunc = async () => {
         try {
           const body = {
-            CUI: this.userData.data.CUI,
-            internetFolio: this.userData.data.internetFolio,
+            CUI: this.mapClientLogeo.CUI,
+            internetFolio: this.mapClientLogeo.internetFolio,
           };
           const url = await this.$store.dispatch('generarUrlRedireccion', body);
           if (url) {
@@ -784,6 +797,9 @@ export default {
     },
     guardarEnLocalStorage(key, value) {
       window.localStorage.setItem(key, JSON.stringify(value));
+    },
+    closeModalInstrucciones() {
+      this.showModalInstrucciones = false;
     },
   },
 };
