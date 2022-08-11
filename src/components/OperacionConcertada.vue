@@ -434,7 +434,7 @@ export default {
     },
   },
   async mounted() {
-    if (urlParams.has('bill')) {
+    if (urlParams.has('bill') && window.localStorage.getItem('crearOperacionConcertada')) {
       this.showModalInstrucciones = true;
       this.goToLiquidacion();
     }
@@ -803,6 +803,7 @@ export default {
       window.localStorage.setItem(key, JSON.stringify(value));
     },
     closeModalInstrucciones() {
+      window.localStorage.removeItem('crearOperacionConcertada');
       this.showModalInstrucciones = false;
     },
   },
