@@ -766,8 +766,8 @@ export default {
       this.customModalProps.btnAcceptFunc = async () => {
         try {
           const body = {
-            CUI: this.mapClientLogeo.CUI,
-            internetFolio: this.mapClientLogeo.internetFolio,
+            CUI: this.userData.data.CUI,
+            internetFolio: this.userData.data.internetFolio,
           };
           const url = await this.$store.dispatch('generarUrlRedireccion', body);
           if (url) {
