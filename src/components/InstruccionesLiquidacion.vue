@@ -134,19 +134,28 @@
         :btn-close-func="customModalProps.btnCancelFunc"
         :btn-close-hide="customModalProps.btnCloseHide"
         @close="closeModal" />
+      <modal-confirmacion-instrucciones
+        v-if="showModalInstrucciones"
+        :open="showModalInstrucciones"
+        :close-modal="closeModalInstrucciones"
+        @close="closeModalInstrucciones" />
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+import ModalConfirmacionInstrucciones from './ModalConfirmacionInstrucciones.vue';
 import CustomModal from './CustomModal.vue';
 
 const urlParams = new URLSearchParams(window.location.search);
 
 export default {
   name: 'InstruccionesLiquidacion',
-  components: { CustomModal },
+  components: {
+    CustomModal,
+    ModalConfirmacionInstrucciones,
+  },
   data() {
     return {
       columns: [
@@ -185,6 +194,7 @@ export default {
       destinoSelected: null,
       precioPromedio: 982.4512,
       asignados: [],
+      showModalInstrucciones: false,
       // selectedRowsLength: 0,
       // selectedRows: [],
       // responsesAssingAccounts: [],
@@ -202,6 +212,7 @@ export default {
     await this.getListadoOrigen();
     await this.getListadoDestino();
     if (urlParams.has('bill') && window.localStorage.getItem('instrucciones')) {
+      this.showModalInstrucciones = true;
       window.localStorage.removeItem('instrucciones');
       window.localStorage.removeItem('crearOperacionConcertada');
     }
@@ -490,6 +501,9 @@ export default {
     },
     guardarEnLocalStorage(key, value) {
       window.localStorage.setItem(key, JSON.stringify(value));
+    },
+    closeModalInstrucciones() {
+      this.showModalInstrucciones = false;
     },
     // selectionChanged(event) {
     //   this.selectedRowsLength = event.selectedRows.length;
