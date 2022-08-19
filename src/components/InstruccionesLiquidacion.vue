@@ -66,7 +66,8 @@
             </div>
             <div class="form-group col-12 col-md-4 col-alta-cuenta">
               <button
-                class="btn btn-outline-operacion">
+                class="btn btn-outline-operacion"
+                @click="goToPortalEfectivo()">
                 Ata de nueva cuenta destino
               </button>
             </div>
@@ -190,6 +191,8 @@ export default {
   computed: {
     ...mapState(['currentView', 'loading']),
     ...mapState(['userData']),
+    ...mapState(['mapClientLogeo']),
+    ...mapState(['operacionSeleccionada']),
   },
   async mounted() {
     this.getDataTable();
@@ -243,8 +246,10 @@ export default {
           branch: '001',
           sourceUserId: 'PORTALUSR',
           CustomerNumber: this.userData.data.CUI,
+          // CustomerNumber: this.mapClientLogeo.CUI,
           Type: 'CE',
           InternetFolio: this.userData.data.internetFolio,
+          // InternetFolio: this.mapClientLogeo.internetFolio,
           AllowOperate: 'T',
           Currency: await this.getLogicCurrencies(),
         };
@@ -276,8 +281,10 @@ export default {
           branch: '001',
           sourceUserId: 'FXUSR',
           CustomerNumber: this.userData.data.CUI,
+          // CustomerNumber: this.mapClientLogeo.CUI,
           Type: 'CE',
           InternetFolio: this.userData.data.internetFolio,
+          // InternetFolio: this.mapClientLogeo.internetFolio,
           AllowOperate: 'S',
           Currency: await this.getLogicCurrencies(true),
           SameBank: false,
@@ -439,6 +446,41 @@ export default {
     },
     dateFormat(date) {
       return `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}`;
+    },
+    goToPortalEfectivo() {
+      this.customModalProps.btnAcceptFunc = async () => {
+        try {
+          const body = {
+            CUI: this.userData.data.CUI,
+            internetFolio: this.userData.data.internetFolio,
+          };
+          const url = await this.$store.dispatch('generarUrlRedireccion', body);
+          if (url) {
+            const {
+              crearOperacionConcertada,
+              operacionSeleccionada,
+            } = this.$store.state;
+            this.guardarEnLocalStorage('crearOperacionConcertada', crearOperacionConcertada);
+            this.guardarEnLocalStorage('operacionSeleccionada', operacionSeleccionada);
+            this.guardarEnLocalStorage('instrucciones', true);
+            window.location.href = url;
+          }
+        } catch (error) {
+          this.customModalProps.open = false;
+        }
+      };
+      this.customModalProps.btnCancelFunc = () => {
+        this.customModalProps.open = false;
+      };
+      this.customModalProps.title = 'Serás dirigido al Portal de Efectivo';
+      this.customModalProps.message = 'Para dar de alta una nueva cuenta de origen o destino, toma en cuenta que únicamente se podrían agregar cuentas en territorio nacional.';
+      this.customModalProps.btnAcceptText = 'Dar de alta nueva cuenta';
+      this.customModalProps.btnCancelText = 'Cancelar';
+      this.customModalProps.btnCloseHide = false;
+      this.customModalProps.open = true;
+    },
+    guardarEnLocalStorage(key, value) {
+      window.localStorage.setItem(key, JSON.stringify(value));
     },
     // selectionChanged(event) {
     //   this.selectedRowsLength = event.selectedRows.length;
