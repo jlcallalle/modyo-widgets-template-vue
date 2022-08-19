@@ -68,7 +68,7 @@
               <button
                 class="btn btn-outline-operacion"
                 @click="goToPortalEfectivo()">
-                Ata de nueva cuenta destino
+                Alta de nueva cuenta destino
               </button>
             </div>
           </div>
