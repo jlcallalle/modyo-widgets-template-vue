@@ -142,6 +142,8 @@
 import { mapState } from 'vuex';
 import CustomModal from './CustomModal.vue';
 
+const urlParams = new URLSearchParams(window.location.search);
+
 export default {
   name: 'InstruccionesLiquidacion',
   components: { CustomModal },
@@ -193,11 +195,16 @@ export default {
     ...mapState(['userData']),
     ...mapState(['mapClientLogeo']),
     ...mapState(['operacionSeleccionada']),
+    ...mapState(['cerrarOperacion']),
   },
   async mounted() {
     this.getDataTable();
     await this.getListadoOrigen();
     await this.getListadoDestino();
+    if (urlParams.has('bill') && window.localStorage.getItem('instrucciones')) {
+      window.localStorage.removeItem('instrucciones');
+      window.localStorage.removeItem('crearOperacionConcertada');
+    }
     // await this.$store.dispatch('generarTokenSeguridad', {
     //   CUI: this.mapClientLogeo.CUI,
     //   internetFolio: this.mapClientLogeo.internetFolio,
@@ -216,7 +223,7 @@ export default {
       this.cuentaDestino = this.listadoDestino.find((item) => item.BeneficiaryAccount === this.destinoSelected);
     },
     async getLogicCurrencies(destino) {
-      const concretadaData = await this.$store.state.cerrarOperacion.data;
+      const concretadaData = await this.cerrarOperacion.data;
       const currencyData = concretadaData.Currency;
       const separa = concretadaData.Symbol.split('/');
       const opcion = concretadaData.Side; // SELL = "2" / BUY = "1"
@@ -369,7 +376,7 @@ export default {
       this.customModalProps.open = false;
     },
     async evenInstrucciones() {
-      const concretadaData = this.$store.state.cerrarOperacion.data;
+      const concretadaData = this.cerrarOperacion.data;
       const current = new Date();
       this.asignados = this.arrayWithNoDuplicates([...this.$refs.liquidacion.selectedRows, ...this.asignados], 'originalIndex');
       this.asignados.forEach((row) => this.assingAccounts(row, concretadaData, current));
@@ -459,9 +466,11 @@ export default {
             const {
               crearOperacionConcertada,
               operacionSeleccionada,
+              cerrarOperacion,
             } = this.$store.state;
             this.guardarEnLocalStorage('crearOperacionConcertada', crearOperacionConcertada);
             this.guardarEnLocalStorage('operacionSeleccionada', operacionSeleccionada);
+            this.guardarEnLocalStorage('cerrarOperacion', cerrarOperacion);
             this.guardarEnLocalStorage('instrucciones', true);
             window.location.href = url;
           }

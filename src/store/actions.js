@@ -360,6 +360,7 @@ export default {
       commit('setOperacionPataCorta', getLocalStorageValue('operacionPataCorta'));
       commit('setOperacionPataLarga', getLocalStorageValue('operacionPataLarga'));
       commit('setFechaCatalogoSeleccionada', getLocalStorageValue('fechaCatalogoSeleccionada'));
+      commit('updateCerrarOperacion', getLocalStorageValue('cerrarOperacion'));
       if (getLocalStorageValue('instrucciones')) {
         commit('updatePage', 'instruccionesLiquidacion');
       } else {
