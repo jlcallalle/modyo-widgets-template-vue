@@ -79,8 +79,7 @@
                           <span v-else> Requester Action</span>
                         </td>
                         <td>
-                          {{ operacionSeleccionada == 'SWAP' ?
-                            returnTxtOperacionNearLeg() : returnTxtOperacionFarLeg() }}
+                          {{ returnTxtOperacionNearLeg() }}
                         </td>
                       </tr>
                       <tr class="texto-color">
@@ -336,8 +335,6 @@ import ModalConfirma from './ModalConfirma.vue';
 import CustomModal from './CustomModal.vue';
 import ModalConfirmacionInstrucciones from './ModalConfirmacionInstrucciones.vue';
 
-const urlParams = new URLSearchParams(window.location.search);
-
 export default {
   name: 'OperacionConcertada',
   components: {
@@ -435,7 +432,8 @@ export default {
     },
   },
   async mounted() {
-    if (urlParams.has('bill') && window.localStorage.getItem('crearOperacionConcertada')) {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('bill')) {
       this.showModalInstrucciones = true;
       this.goToLiquidacion();
     }
@@ -532,10 +530,7 @@ export default {
           this.goToLiquidacion();
         }
       };
-      this.customModalProps.btnCancelFunc = () => {
-        window.localStorage.removeItem('crearOperacionConcertada');
-        this.$store.dispatch('updatePage', 'operacionesFx');
-      };
+      this.customModalProps.btnCancelFunc = () => this.$store.dispatch('updatePage', 'operacionesFx');
       this.customModalProps.title = 'No se han asignado instrucciones';
       this.customModalProps.message = '¿Deseas salir sin asignar instrucciones de liquidación a tus operaciones?';
       this.customModalProps.btnAcceptText = 'Asignar ahora';
@@ -767,8 +762,8 @@ export default {
       this.customModalProps.btnAcceptFunc = async () => {
         try {
           const body = {
-            CUI: this.userData.data.CUI,
-            internetFolio: this.userData.data.internetFolio,
+            CUI: this.mapClientLogeo.CUI,
+            internetFolio: this.mapClientLogeo.internetFolio,
           };
           const url = await this.$store.dispatch('generarUrlRedireccion', body);
           if (url) {
@@ -794,11 +789,7 @@ export default {
         this.customModalProps.open = false;
       };
       this.customModalProps.title = 'Serás dirigido al Portal de Efectivo';
-<<<<<<< HEAD
       this.customModalProps.message = 'Para dar de alta una nueva cuenta de destino, toma en cuenta que únicacamente se podrían agregar cuentas en territorio nacional.';
-=======
-      this.customModalProps.message = 'Para dar de alta una nueva cuenta de origen o destino, toma en cuenta que únicamente se podrían agregar cuentas en territorio nacional.';
->>>>>>> 067835a46a5c60bb6e0ca61e3f8f899ed2961378
       this.customModalProps.btnAcceptText = 'Dar de alta nueva cuenta';
       this.customModalProps.btnCancelText = 'Cancelar';
       this.customModalProps.btnCloseHide = false;
@@ -808,7 +799,6 @@ export default {
       window.localStorage.setItem(key, JSON.stringify(value));
     },
     closeModalInstrucciones() {
-      window.localStorage.removeItem('crearOperacionConcertada');
       this.showModalInstrucciones = false;
     },
   },
