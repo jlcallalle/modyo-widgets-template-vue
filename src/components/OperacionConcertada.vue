@@ -789,7 +789,7 @@ export default {
         this.customModalProps.open = false;
       };
       this.customModalProps.title = 'Serás dirigido al Portal de Efectivo';
-      this.customModalProps.message = 'Para dar de alta una nueva cuenta de origen o destino, toma en cuenta que únicacamente se podrían agregar cuentas en territorio nacional.';
+      this.customModalProps.message = 'Para dar de alta una nueva cuenta de destino, toma en cuenta que únicacamente se podrían agregar cuentas en territorio nacional.';
       this.customModalProps.btnAcceptText = 'Dar de alta nueva cuenta';
       this.customModalProps.btnCancelText = 'Cancelar';
       this.customModalProps.btnCloseHide = false;
