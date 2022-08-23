@@ -354,13 +354,18 @@ export default {
   async setLocalStorage({ commit }) {
     commit('setLoading', true);
     const tieneOperacionConcertada = getLocalStorageValue('crearOperacionConcertada');
-    if (tieneOperacionConcertada) {
+    if (tieneOperacionConcertada || getLocalStorageValue('instrucciones')) {
       commit('updateCrearOperacionConcertada', tieneOperacionConcertada);
       commit('setOperacionSeleccionada', getLocalStorageValue('operacionSeleccionada'));
       commit('setOperacionPataCorta', getLocalStorageValue('operacionPataCorta'));
       commit('setOperacionPataLarga', getLocalStorageValue('operacionPataLarga'));
       commit('setFechaCatalogoSeleccionada', getLocalStorageValue('fechaCatalogoSeleccionada'));
-      commit('updatePage', 'operacionConcertada');
+      commit('updateCerrarOperacion', getLocalStorageValue('cerrarOperacion'));
+      if (getLocalStorageValue('instrucciones')) {
+        commit('updatePage', 'instruccionesLiquidacion');
+      } else {
+        commit('updatePage', 'operacionConcertada');
+      }
     }
     commit('setLoading', false);
   },

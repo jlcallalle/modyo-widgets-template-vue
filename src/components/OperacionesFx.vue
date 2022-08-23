@@ -1994,7 +1994,7 @@ export default {
           LegRefID: blockTradeRow.LegRefID,
         };
       });
-      const Side = totalCompra >= totalVenta ? '1' : '2';
+      const Side = totalCompra > totalVenta ? '1' : '2';
       this.blockTradeSide = Side;
       const bodyCerrarOperacion = {
         CLOrdID: this.qQuoteReqID,

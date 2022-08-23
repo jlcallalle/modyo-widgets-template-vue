@@ -66,8 +66,9 @@
             </div>
             <div class="form-group col-12 col-md-4 col-alta-cuenta">
               <button
-                class="btn btn-outline-operacion">
-                Ata de nueva cuenta destino
+                class="btn btn-outline-operacion"
+                @click="goToPortalEfectivo()">
+                Alta de nueva cuenta destino
               </button>
             </div>
           </div>
@@ -133,17 +134,28 @@
         :btn-close-func="customModalProps.btnCancelFunc"
         :btn-close-hide="customModalProps.btnCloseHide"
         @close="closeModal" />
+      <modal-confirmacion-instrucciones
+        v-if="showModalInstrucciones"
+        :open="showModalInstrucciones"
+        :close-modal="closeModalInstrucciones"
+        @close="closeModalInstrucciones" />
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+import ModalConfirmacionInstrucciones from './ModalConfirmacionInstrucciones.vue';
 import CustomModal from './CustomModal.vue';
+
+const urlParams = new URLSearchParams(window.location.search);
 
 export default {
   name: 'InstruccionesLiquidacion',
-  components: { CustomModal },
+  components: {
+    CustomModal,
+    ModalConfirmacionInstrucciones,
+  },
   data() {
     return {
       columns: [
@@ -182,6 +194,7 @@ export default {
       destinoSelected: null,
       precioPromedio: 982.4512,
       asignados: [],
+      showModalInstrucciones: false,
       // selectedRowsLength: 0,
       // selectedRows: [],
       // responsesAssingAccounts: [],
@@ -190,11 +203,19 @@ export default {
   computed: {
     ...mapState(['currentView', 'loading']),
     ...mapState(['userData']),
+    ...mapState(['mapClientLogeo']),
+    ...mapState(['operacionSeleccionada']),
+    ...mapState(['cerrarOperacion']),
   },
   async mounted() {
     this.getDataTable();
     await this.getListadoOrigen();
     await this.getListadoDestino();
+    if (urlParams.has('bill') && window.localStorage.getItem('instrucciones')) {
+      this.showModalInstrucciones = true;
+      window.localStorage.removeItem('instrucciones');
+      window.localStorage.removeItem('crearOperacionConcertada');
+    }
     // await this.$store.dispatch('generarTokenSeguridad', {
     //   CUI: this.mapClientLogeo.CUI,
     //   internetFolio: this.mapClientLogeo.internetFolio,
@@ -213,7 +234,7 @@ export default {
       this.cuentaDestino = this.listadoDestino.find((item) => item.BeneficiaryAccount === this.destinoSelected);
     },
     async getLogicCurrencies(destino) {
-      const concretadaData = await this.$store.state.cerrarOperacion.data;
+      const concretadaData = await this.cerrarOperacion.data;
       const currencyData = concretadaData.Currency;
       const separa = concretadaData.Symbol.split('/');
       const opcion = concretadaData.Side; // SELL = "2" / BUY = "1"
@@ -243,8 +264,10 @@ export default {
           branch: '001',
           sourceUserId: 'PORTALUSR',
           CustomerNumber: this.userData.data.CUI,
+          // CustomerNumber: this.mapClientLogeo.CUI,
           Type: 'CE',
           InternetFolio: this.userData.data.internetFolio,
+          // InternetFolio: this.mapClientLogeo.internetFolio,
           AllowOperate: 'T',
           Currency: await this.getLogicCurrencies(),
         };
@@ -276,8 +299,10 @@ export default {
           branch: '001',
           sourceUserId: 'FXUSR',
           CustomerNumber: this.userData.data.CUI,
+          // CustomerNumber: this.mapClientLogeo.CUI,
           Type: 'CE',
           InternetFolio: this.userData.data.internetFolio,
+          // InternetFolio: this.mapClientLogeo.internetFolio,
           AllowOperate: 'S',
           Currency: await this.getLogicCurrencies(true),
           SameBank: false,
@@ -362,7 +387,7 @@ export default {
       this.customModalProps.open = false;
     },
     async evenInstrucciones() {
-      const concretadaData = this.$store.state.cerrarOperacion.data;
+      const concretadaData = this.cerrarOperacion.data;
       const current = new Date();
       this.asignados = this.arrayWithNoDuplicates([...this.$refs.liquidacion.selectedRows, ...this.asignados], 'originalIndex');
       this.asignados.forEach((row) => this.assingAccounts(row, concretadaData, current));
@@ -439,6 +464,46 @@ export default {
     },
     dateFormat(date) {
       return `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}`;
+    },
+    goToPortalEfectivo() {
+      this.customModalProps.btnAcceptFunc = async () => {
+        try {
+          const body = {
+            CUI: this.userData.data.CUI,
+            internetFolio: this.userData.data.internetFolio,
+          };
+          const url = await this.$store.dispatch('generarUrlRedireccion', body);
+          if (url) {
+            const {
+              crearOperacionConcertada,
+              operacionSeleccionada,
+              cerrarOperacion,
+            } = this.$store.state;
+            this.guardarEnLocalStorage('crearOperacionConcertada', crearOperacionConcertada);
+            this.guardarEnLocalStorage('operacionSeleccionada', operacionSeleccionada);
+            this.guardarEnLocalStorage('cerrarOperacion', cerrarOperacion);
+            this.guardarEnLocalStorage('instrucciones', true);
+            window.location.href = url;
+          }
+        } catch (error) {
+          this.customModalProps.open = false;
+        }
+      };
+      this.customModalProps.btnCancelFunc = () => {
+        this.customModalProps.open = false;
+      };
+      this.customModalProps.title = 'Serás dirigido al Portal de Efectivo';
+      this.customModalProps.message = 'Para dar de alta una nueva cuenta de origen o destino, toma en cuenta que únicamente se podrían agregar cuentas en territorio nacional.';
+      this.customModalProps.btnAcceptText = 'Dar de alta nueva cuenta';
+      this.customModalProps.btnCancelText = 'Cancelar';
+      this.customModalProps.btnCloseHide = false;
+      this.customModalProps.open = true;
+    },
+    guardarEnLocalStorage(key, value) {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    },
+    closeModalInstrucciones() {
+      this.showModalInstrucciones = false;
     },
     // selectionChanged(event) {
     //   this.selectedRowsLength = event.selectedRows.length;
