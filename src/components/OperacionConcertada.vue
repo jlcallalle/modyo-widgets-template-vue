@@ -79,7 +79,8 @@
                           <span v-else> Requester Action</span>
                         </td>
                         <td>
-                          {{ returnTxtOperacionNearLeg() }}
+                          {{ operacionSeleccionada == 'SWAP' ?
+                            returnTxtOperacionNearLeg() : returnTxtOperacionFarLeg() }}
                         </td>
                       </tr>
                       <tr class="texto-color">
