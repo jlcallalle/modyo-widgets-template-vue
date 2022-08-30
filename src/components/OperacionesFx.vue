@@ -2067,7 +2067,7 @@ export default {
       this.tkn = token;
     },
     async validateSession() {
-      if (localStorage.getItem('userData') === null) {
+      if (urlParams.has('token')) {
         this.getTokenFronParam();
         await this.$store.dispatch('validarToken', {
           token: this.tkn,
