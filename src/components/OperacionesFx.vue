@@ -2062,13 +2062,22 @@ export default {
         this.clickOption('Comprar');
       }
     },
-    getTokenFronParam() {
+    getTokenFromParam() {
       const token = urlParams.get('token');
+      const sessionClosed = localStorage.getItem('logout_action');
+      const tokenStorage = localStorage.getItem('token_storage');
+      this.tkn = null;
+      if (sessionClosed && tokenStorage === token) {
+        return true;
+      }
+      localStorage.removeItem('logout_action');
       this.tkn = token;
+      localStorage.setItem('token_storage', token);
+      return true;
     },
     async validateSession() {
       if (urlParams.has('token')) {
-        this.getTokenFronParam();
+        this.getTokenFromParam();
         await this.$store.dispatch('validarToken', {
           token: this.tkn,
         });
