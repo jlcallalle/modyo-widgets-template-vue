@@ -2066,10 +2066,11 @@ export default {
       const token = urlParams.get('token');
       const sessionClosed = localStorage.getItem('logout_action');
       const tokenStorage = localStorage.getItem('token_storage');
-      this.tkn = token;
+      this.tkn = null;
       if (sessionClosed && tokenStorage === token) {
         return true;
       }
+      this.tkn = token;
       localStorage.removeItem('logout_action');
       localStorage.setItem('token_storage', token);
       return true;
