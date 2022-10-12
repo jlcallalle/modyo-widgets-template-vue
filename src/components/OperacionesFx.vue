@@ -1066,6 +1066,18 @@ export default {
       renderFirstTime: true,
       renderFirstTimeOperations: true,
       cancelClickFirst: false,
+      parametrosDerivados: {
+        cui: '00457160',
+        idGlobal: '45716004571',
+        nombreCliente: 'ALEJANDRO DE LA BARREDA GOMEZ',
+        tieneCodigoLei: 'SI',
+        codigoLei: '4469000001BRWAVH5085',
+        obligadoCodigoLei: 'SI',
+        fechaVigencia: '14/01/2022',
+        nocionalUDI: '1480000.00',
+        nocionalMXN: '450000.00',
+        tipoCambioUDI: '14.52',
+      },
     };
   },
   computed: {
@@ -1141,6 +1153,9 @@ export default {
     formatSwapPointsBuy() {
       const swapPointsBuy = this.currencySwapPointsBuy;
       return Math.floor(swapPointsBuy * 10000) / 10000;
+    },
+    validaLei() {
+      return this.parametrosDerivados.codigoLei.length > 0;
     },
   },
   async mounted() {
@@ -1277,6 +1292,18 @@ export default {
     },
     closeModal() {
       this.customModalProps.open = false;
+    },
+    validaDerivado() {
+      if (this.parametrosDerivados.codigoLei.length !== null) {
+        this.customModalProps.open = false;
+        this.onSumbitOperacion();
+      } else {
+        this.customModalProps.title = 'No logramos identificar tu contrato de derivados';
+        this.customModalProps.message = 'Por favor contacte a su Ejecutivo en caso de requerir operar Derivados';
+        this.customModalProps.type = 'warning';
+        this.customModalProps.btnAcceptText = 'Aceptar';
+        this.customModalProps.btnAcceptFunc = this.closeModal;
+      }
     },
     enterForm() {
       // console.log('enterForm');
@@ -1448,7 +1475,7 @@ export default {
               this.customModalProps.btnCancelText = 'Cancelar';
               this.customModalProps.btnCloseHide = false;
               this.customModalProps.btnCancelFunc = this.closeModal;
-              this.customModalProps.btnAcceptFunc = this.closeModal;
+              this.customModalProps.btnAcceptFunc = this.validaDerivado;
             } else {
               await this.onSumbitOperacion();
             }
