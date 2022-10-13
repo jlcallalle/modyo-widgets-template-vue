@@ -1066,6 +1066,7 @@ export default {
       renderFirstTime: true,
       renderFirstTimeOperations: true,
       cancelClickFirst: false,
+      banderaDerivados: false,
     };
   },
   computed: {
@@ -1448,7 +1449,7 @@ export default {
               this.customModalProps.btnCancelText = 'Cancelar';
               this.customModalProps.btnCloseHide = false;
               this.customModalProps.btnCancelFunc = this.closeModal;
-              this.customModalProps.btnAcceptFunc = this.closeModal;
+              this.customModalProps.btnAcceptFunc = this.validarBanderaDerivados;
             } else {
               await this.onSumbitOperacion();
             }
@@ -1465,7 +1466,7 @@ export default {
               this.customModalProps.btnCancelText = 'Cancelar';
               this.customModalProps.btnCloseHide = false;
               this.customModalProps.btnCancelFunc = this.closeModal;
-              this.customModalProps.btnAcceptFunc = this.closeModal;
+              this.customModalProps.btnAcceptFunc = this.validarBanderaDerivados;
             } else {
               await this.onSubmitBlockTrade();
             }
@@ -1707,7 +1708,7 @@ export default {
           this.customModalProps.btnCancelText = 'Cancelar';
           this.customModalProps.btnCloseHide = false;
           this.customModalProps.btnCancelFunc = this.closeModal;
-          this.customModalProps.btnAcceptFunc = this.closeModal;
+          this.customModalProps.btnAcceptFunc = this.validarBanderaDerivados;
         }
       } catch (error) {
         this.showModalError = true;
@@ -1973,7 +1974,6 @@ export default {
         this.showModalError = true;
       }
     },
-    /* eslint-disable no-param-reassign */
     async eventOperationBloque() {
       const Symbol = this.currenciesSelected.join('/');
       let totalCompra = 0;
@@ -2019,7 +2019,6 @@ export default {
         this.showModalError = true;
       }
     },
-    /* eslint-disable no-param-reassign */
     handleClose() {
       this.showModal = false;
     },
@@ -2262,6 +2261,30 @@ export default {
         if (!blockTradeRow.compra) totalVentas += blockTradeRow.nocional;
       });
       return Math.abs(totalCompras - totalVentas);
+    },
+    tieneBanderaDerivados() {
+      const userDataStorage = localStorage.getItem('userData');
+      if (userDataStorage) {
+        const userData = JSON.parse(userDataStorage);
+        if (userData && userData.data) {
+          userData.data.banderaDerivados = this.banderaDerivados;
+          localStorage.setItem('userData', JSON.stringify(userData));
+        }
+      }
+    },
+    validarBanderaDerivados() {
+      if (this.banderaDerivados) {
+        this.onSumbitOperacion();
+      } else {
+        this.customModalProps.title = 'Error';
+        this.customModalProps.type = 'error';
+        this.customModalProps.message = `No logramos identificar tu contrato de derivados, 
+        por favor contacte a su Ejecutivo en caso de requerir operar Derivados`;
+        this.customModalProps.open = true;
+        this.customModalProps.btnAcceptText = 'Aceptar';
+        this.customModalProps.btnCloseHide = true;
+        this.customModalProps.btnAcceptFunc = this.closeModal;
+      }
     },
   },
 };
