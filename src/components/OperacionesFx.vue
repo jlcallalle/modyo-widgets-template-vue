@@ -1067,18 +1067,7 @@ export default {
       renderFirstTimeOperations: true,
       cancelClickFirst: false,
       banderaDerivados: false,
-      parametrosDerivados: {
-        cui: '00457160',
-        idGlobal: '45716004571',
-        nombreCliente: 'ALEJANDRO DE LA BARREDA GOMEZ',
-        tieneCodigoLei: 'SI',
-        codigoLei: '4469000001BRWAVH5085',
-        obligadoCodigoLei: 'SI',
-        fechaVigencia: '14/01/2022',
-        nocionalUDI: '1480000.00',
-        nocionalMXN: '450000.00',
-        tipoCambioUDI: '14.52',
-      },
+      parametrosDerivados: [],
     };
   },
   computed: {
@@ -2291,6 +2280,7 @@ export default {
         };
         const respuesta = await InvexRepository.obtenerDerivados(body);
         if (respuesta.status && respuesta.status?.toLowerCase() === 'ok' && respuesta.data) {
+          this.parametrosDerivados = respuesta.data;
           this.banderaDerivados = respuesta.data.esCandidato;
         }
       } catch (err) {
@@ -2298,13 +2288,12 @@ export default {
       }
     },
     validarBanderaDerivados() {
-      if (this.banderaDerivados) {
+      if (this.banderaDerivados && this.validaLei && this.parametrosDerivados.vigenteLEI) {
         this.onSumbitOperacion();
       } else {
-        this.customModalProps.title = 'Error';
-        this.customModalProps.type = 'error';
-        this.customModalProps.message = `No logramos identificar tu contrato de derivados, 
-        por favor contacte a su Ejecutivo en caso de requerir operar Derivados`;
+        this.customModalProps.title = 'No logramos identificar tu contrato de derivados';
+        this.customModalProps.type = 'warning';
+        this.customModalProps.message = 'Por favor contacte a su Ejecutivo en caso de requerir operar Derivados';
         this.customModalProps.open = true;
         this.customModalProps.btnAcceptText = 'Aceptar';
         this.customModalProps.btnCloseHide = true;
