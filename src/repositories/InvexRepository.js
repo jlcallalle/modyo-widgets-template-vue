@@ -66,4 +66,7 @@ export default {
   fechapataCortapataLarga(body) {
     return InvexClient.post(`${prefixUrl}/pataCortapataLarga`, body);
   },
+  obtenerDerivados(body) {
+    return InvexClient.post(`${prefixUrl}/parametrosDerivados`, body);
+  },
 };

@@ -1067,6 +1067,18 @@ export default {
       renderFirstTimeOperations: true,
       cancelClickFirst: false,
       banderaDerivados: false,
+      parametrosDerivados: {
+        cui: '00457160',
+        idGlobal: '45716004571',
+        nombreCliente: 'ALEJANDRO DE LA BARREDA GOMEZ',
+        tieneCodigoLei: 'SI',
+        codigoLei: '4469000001BRWAVH5085',
+        obligadoCodigoLei: 'SI',
+        fechaVigencia: '14/01/2022',
+        nocionalUDI: '1480000.00',
+        nocionalMXN: '450000.00',
+        tipoCambioUDI: '14.52',
+      },
     };
   },
   computed: {
@@ -1143,6 +1155,9 @@ export default {
       const swapPointsBuy = this.currencySwapPointsBuy;
       return Math.floor(swapPointsBuy * 10000) / 10000;
     },
+    validaLei() {
+      return this.parametrosDerivados.codigoLei.length > 0;
+    },
   },
   async mounted() {
     // Se puede comentar esta parte para temas de desarrollo
@@ -1154,6 +1169,7 @@ export default {
         data: {
           user360T: 'INVEXCOMP1.TEST',
           internetFolio: '9254',
+          CUI: '00006710',
         },
       };
       await this.$store.dispatch('setUserData', JSON.stringify(userDefault));
@@ -1162,10 +1178,13 @@ export default {
     if (urlParams.has('bill')) {
       await this.$store.dispatch('setLocalStorage');
     }
-    await this.getCurrencies();
-    await this.getOperations();
+    Promise.all([
+      this.getCurrencies(),
+      this.getOperations(),
+      this.getHoraRestriccion(),
+      this.obtenerDerivados(),
+    ]);
     this.getValueTwoWay();
-    await this.getHoraRestriccion();
     // await this.$store.dispatch('generarTokenSeguridad', {
     //   CUI: this.mapClientLogeo.CUI,
     //   internetFolio: this.mapClientLogeo.internetFolio,
@@ -2262,14 +2281,20 @@ export default {
       });
       return Math.abs(totalCompras - totalVentas);
     },
-    tieneBanderaDerivados() {
-      const userDataStorage = localStorage.getItem('userData');
-      if (userDataStorage) {
-        const userData = JSON.parse(userDataStorage);
-        if (userData && userData.data) {
-          userData.data.banderaDerivados = this.banderaDerivados;
-          localStorage.setItem('userData', JSON.stringify(userData));
+    async obtenerDerivados() {
+      try {
+        const { CUI } = this.userData.data;
+        const body = {
+          cui: CUI,
+          fechaOp: '2022-05-05',
+          montoOp: 1,
+        };
+        const respuesta = await InvexRepository.obtenerDerivados(body);
+        if (respuesta.status && respuesta.status?.toLowerCase() === 'ok' && respuesta.data) {
+          this.banderaDerivados = respuesta.data.esCandidato;
         }
+      } catch (err) {
+        // error
       }
     },
     validarBanderaDerivados() {
