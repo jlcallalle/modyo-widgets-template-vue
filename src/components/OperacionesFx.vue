@@ -1068,6 +1068,7 @@ export default {
       cancelClickFirst: false,
       banderaDerivados: false,
       parametrosDerivados: [],
+      esDerivado: false,
     };
   },
   computed: {
@@ -1145,7 +1146,7 @@ export default {
       return Math.floor(swapPointsBuy * 10000) / 10000;
     },
     validaLei() {
-      return this.parametrosDerivados.codigoLei.length > 0;
+      return this.parametrosDerivados.codigoLei !== null;
     },
   },
   async mounted() {
@@ -1159,6 +1160,7 @@ export default {
           user360T: 'INVEXCOMP1.TEST',
           internetFolio: '9254',
           CUI: '00006710',
+          idGlobal: 0,
         },
       };
       await this.$store.dispatch('setUserData', JSON.stringify(userDefault));
@@ -1171,7 +1173,6 @@ export default {
       this.getCurrencies(),
       this.getOperations(),
       this.getHoraRestriccion(),
-      this.obtenerDerivados(),
     ]);
     this.getValueTwoWay();
     // await this.$store.dispatch('generarTokenSeguridad', {
@@ -1434,21 +1435,38 @@ export default {
         clearInterval(this.timmerId);
       } else {
         this.segundosTimmer = 59;
+        this.$store.dispatch('setLoading', true);
         switch (this.operacionSeleccionada) {
           case 'SPOT':
+            this.$store.dispatch('setLoading', false);
             await this.onSumbitOperacion();
             break;
           case 'SWAP':
             this.segundosTimmer = 119;
-            await this.getRecuperaFechaParam(this.calendarTipoPataCorta);
-            await this.getRecuperaFechaParam(this.calendarTipoPataLarga);
-            if (this.recuperaFecha.data.result !== 'TRUE') {
+            try {
+              await this.obtenerDerivados(this.calendarTipoPataCorta);
+              this.$store.dispatch('setLoading', false);
+            } catch (err) {
+              this.$store.dispatch('setLoading', false);
+            }
+            if (this.esDerivado) {
+              this.customModalProps.open = true;
+              this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
+              this.customModalProps.message = '¿Deseas continuar con la operación?';
+              this.customModalProps.type = 'warning';
+              this.customModalProps.btnAcceptText = 'Aceptar';
+              this.customModalProps.btnCancelText = 'Cancelar';
+              this.customModalProps.btnCloseHide = false;
+              this.customModalProps.btnCancelFunc = this.closeModal;
+              this.customModalProps.btnAcceptFunc = this.validarBanderaDerivados;
+            } else {
               await this.onSumbitOperacion();
             }
             break;
           case 'FORWARD':
-            await this.getRecuperaFecha();
-            if (this.recuperaFecha.data.result === 'TRUE') {
+            await this.obtenerDerivados();
+            this.$store.dispatch('setLoading', false);
+            if (this.esDerivado) {
               this.customModalProps.open = true;
               this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
               this.customModalProps.message = '¿Deseas continuar con la operación?';
@@ -1464,8 +1482,9 @@ export default {
             break;
           case 'BLOCKTRADE':
             this.fechaTrade();
-            await this.getRecuperaFechaBloque();
-            if (this.recuperaFecha.data.result === 'TRUE') {
+            await this.obtenerDerivados(this.fechaBloqueMax);
+            this.$store.dispatch('setLoading', false);
+            if (this.esDerivado) {
               this.customModalProps.open = true;
               this.customModalProps.title = 'La fecha de liquidación corresponde a un Derivado';
               this.customModalProps.message = '¿Deseas continuar con la operación?';
@@ -1480,6 +1499,7 @@ export default {
             }
             break;
           default:
+            this.$store.dispatch('setLoading', false);
             await this.onSumbitOperacion();
             break;
         }
@@ -2270,18 +2290,24 @@ export default {
       });
       return Math.abs(totalCompras - totalVentas);
     },
-    async obtenerDerivados() {
+    async obtenerDerivados(nuevaFecha) {
+      let fecha = this.calendarSelected;
+      if (nuevaFecha) {
+        fecha = nuevaFecha;
+      }
       try {
-        const { CUI } = this.userData.data;
+        const { CUI, idGlobal } = this.userData.data;
         const body = {
           cui: CUI,
-          fechaOp: '2022-05-05',
-          montoOp: 1,
+          fechaOp: fecha,
+          montoOp: this.monto,
+          idGlobal,
         };
         const respuesta = await InvexRepository.obtenerDerivados(body);
         if (respuesta.status && respuesta.status?.toLowerCase() === 'ok' && respuesta.data) {
           this.parametrosDerivados = respuesta.data;
           this.banderaDerivados = respuesta.data.esCandidato;
+          this.esDerivado = respuesta.data.esDerivado;
         }
       } catch (err) {
         // error
@@ -2289,7 +2315,27 @@ export default {
     },
     validarBanderaDerivados() {
       if (this.banderaDerivados && this.validaLei && this.parametrosDerivados.vigenteLEI) {
+        this.customModalProps.open = false;
         this.onSumbitOperacion();
+      } else if (this.banderaDerivados) {
+        if (!this.parametrosDerivados.vigenteLEI) {
+          this.customModalProps.title = 'La operación no puede realizarse debido a que el código LEI no es vigente';
+          this.customModalProps.type = 'warning';
+          this.customModalProps.message = 'Por favor contacte a su Ejecutivo en caso de requerir operar Derivados';
+          this.customModalProps.open = true;
+          this.customModalProps.btnAcceptText = 'Aceptar';
+          this.customModalProps.btnCloseHide = true;
+          this.customModalProps.btnAcceptFunc = this.closeModal;
+        }
+        if (!this.validaLei) {
+          this.customModalProps.title = 'La operación no puede realizarse debido a que no tiene un código LEI registrado';
+          this.customModalProps.type = 'warning';
+          this.customModalProps.message = 'Por favor contacte a su Ejecutivo en caso de requerir operar Derivados';
+          this.customModalProps.open = true;
+          this.customModalProps.btnAcceptText = 'Aceptar';
+          this.customModalProps.btnCloseHide = true;
+          this.customModalProps.btnAcceptFunc = this.closeModal;
+        }
       } else {
         this.customModalProps.title = 'No logramos identificar tu contrato de derivados';
         this.customModalProps.type = 'warning';
@@ -2297,8 +2343,16 @@ export default {
         this.customModalProps.open = true;
         this.customModalProps.btnAcceptText = 'Aceptar';
         this.customModalProps.btnCloseHide = true;
-        this.customModalProps.btnAcceptFunc = this.closeModal;
+        this.customModalProps.btnAcceptFunc = this.registrarHistorico;
       }
+    },
+    registrarHistorico() {
+      const { user360T } = this.userData.data;
+      const body = {
+        usuario: user360T,
+      };
+      InvexRepository.registrarHistorico(body);
+      this.closeModal();
     },
   },
 };

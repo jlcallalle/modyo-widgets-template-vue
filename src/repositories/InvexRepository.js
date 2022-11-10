@@ -69,4 +69,7 @@ export default {
   obtenerDerivados(body) {
     return InvexClient.post(`${prefixUrl}/parametrosDerivados`, body);
   },
+  registrarHistorico(body) {
+    return InvexClient.post(`${prefixUrl}/registrarHistorico`, body);
+  },
 };

@@ -440,6 +440,9 @@ export default {
             if (destino.BeneficiaryAccount === this.destinoSelected) {
               body.creditAccount = `${destino.customerAccount}`;
             }
+            if (body.creditAccount === this.destinoSelected) {
+              body.settlAccount = '';
+            }
           });
           await this.$store.dispatch('actualizarOperacion', body);
           this.asignados[findIndexAssign].completado = true;
