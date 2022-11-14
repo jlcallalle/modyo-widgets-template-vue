@@ -2115,8 +2115,13 @@ export default {
     },
     validateUserData() {
       if (this.userData && this.userData.data) {
+        this.banderaDerivados = false;
         localStorage.setItem('userData', JSON.stringify(this.userData));
-        this.isTwoway = this.userData.data.twoWay;
+        const { twoWay, idGlobal } = this.userData.data;
+        this.isTwoway = twoWay;
+        if (idGlobal > 0) {
+          this.banderaDerivados = true;
+        }
         if (!this.isTwoway) {
           this.optionSelected = 'Comprar';
         }
@@ -2306,7 +2311,6 @@ export default {
         const respuesta = await InvexRepository.obtenerDerivados(body);
         if (respuesta.status && respuesta.status?.toLowerCase() === 'ok' && respuesta.data) {
           this.parametrosDerivados = respuesta.data;
-          this.banderaDerivados = respuesta.data.esCandidato;
           this.esDerivado = respuesta.data.esDerivado;
         }
       } catch (err) {
