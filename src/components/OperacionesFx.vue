@@ -2040,11 +2040,51 @@ export default {
       clearInterval(this.timmerId);
       const responseApiConcertacion = await this.$store.dispatch('createCerrarOperacion', bodyCerrarOperacion);
       if (responseApiConcertacion.status === 'OK') {
-        this.showModal = true;
-        localStorage.setItem('subOps', JSON.stringify(NoLegs));
-        localStorage.setItem('finalPrice', this.obtenerPromedioBlockTrade());
+        if (this.checkedInstrucion) {
+          const current = new Date();
+          this.customModalProps.title = 'Se asignaran tus cuentas';
+          this.customModalProps.type = 'confirm';
+          this.customModalProps.message = 'En un momento se asignaran tus cuentas.';
+          this.customModalProps.open = true;
+          this.customModalProps.btnAcceptText = 'Aceptar';
+          this.customModalProps.btnCloseHide = true;
+          this.customModalProps.btnAcceptFunc = () => {
+            Promise.all(NoLegs.map((row) => this.assingAccounts(row, responseApiConcertacion.data, current)));
+            this.$store.dispatch('updatePage', 'operacionesFx');
+            this.customModalProps.open = false;
+            window.location.reload();
+          };
+        } else {
+          this.showModal = true;
+          localStorage.setItem('subOps', JSON.stringify(NoLegs));
+          localStorage.setItem('finalPrice', this.obtenerPromedioBlockTrade());
+        }
       } else {
         this.showModalError = true;
+      }
+    },
+    async assingAccounts(row, concretadaData, current) {
+      try {
+        const body = {
+          transactionId: `${this.userData.data.user360T}-${current.getFullYear()}${current.getMonth() + 1}${current.getDate()}${current.getHours()}${current.getMinutes()}${current.getSeconds()}`,
+          requestSystem: 'FX',
+          orderID: concretadaData.OrderID,
+          debitAccount: this.origenSelected,
+          creditAccount: '',
+          settlAccount: this.destinoSelected,
+          blockid: parseInt(row.LegRefID.split('-')[1], 10),
+        };
+        this.listadoDestino.forEach((destino) => {
+          if (destino.BeneficiaryAccount === this.destinoSelected) {
+            body.creditAccount = `${destino.customerAccount}`;
+          }
+          if (body.creditAccount === this.destinoSelected) {
+            body.settlAccount = '';
+          }
+        });
+        await this.$store.dispatch('actualizarOperacion', body);
+      } catch (err) {
+        // Ocurrio un error, se debe manejar
       }
     },
     handleClose() {
