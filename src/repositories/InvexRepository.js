@@ -72,4 +72,7 @@ export default {
   registrarHistorico(body) {
     return InvexClient.post(`${prefixUrl}/registrarHistorico`, body);
   },
+  orquestacionSinAsignar(body) {
+    return InvexClient.post(`${prefixUrl}/orquestacionSinAsignar`, body);
+  },
 };

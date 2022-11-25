@@ -2003,6 +2003,7 @@ export default {
       }
     },
     async eventOperationBloque() {
+      const { user360T, internetFolio } = this.userData.data;
       const Symbol = this.currenciesSelected.join('/');
       let totalCompra = 0;
       let totalVenta = 0;
@@ -2032,10 +2033,10 @@ export default {
         Symbol,
         QuoteID: this.qQuoteID,
         NoLegs,
-        Account: this.userData.data.user360T,
+        Account: user360T,
         Product: 'BLOCKTRADE',
         RequestSystem: 'PORTALFX',
-        InternetFolio: this.userData.data.internetFolio,
+        InternetFolio: internetFolio,
       };
       clearInterval(this.timmerId);
       const responseApiConcertacion = await this.$store.dispatch('createCerrarOperacion', bodyCerrarOperacion);
@@ -2056,6 +2057,11 @@ export default {
           };
         } else {
           this.showModal = true;
+          const bodyOrquestacionSinAsignar = {
+            referencia: responseApiConcertacion.data.OrderID,
+            internetFolio,
+          };
+          InvexRepository.orquestacionSinAsignar(bodyOrquestacionSinAsignar);
           localStorage.setItem('subOps', JSON.stringify(NoLegs));
           localStorage.setItem('finalPrice', this.obtenerPromedioBlockTrade());
         }
