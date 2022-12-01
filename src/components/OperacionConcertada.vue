@@ -548,6 +548,8 @@ export default {
           debitAccount: this.origenSelected,
           creditAccount: '',
           settlAccount: this.destinoSelected,
+          internetFolio: this.userData.data.internetFolio,
+          Symbol: this.$store.state.crearOperacionConcertada.Symbol,
         };
         this.listadoDestino.forEach((destino) => {
           if (destino.BeneficiaryAccount === this.destinoSelected) {
